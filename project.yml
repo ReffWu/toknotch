@@ -1,0 +1,114 @@
+name: Codenotch
+options:
+  bundleIdPrefix: com.vinz
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    # Sparkle compares CFBundleVersion to decide what is newer, and
+    # Sources/Info.plist reads both from here — hardcoding them there instead
+    # silently pins every build to one version, so no customer ever sees an
+    # update. Bump CURRENT_PROJECT_VERSION on every release.
+    MARKETING_VERSION: "1.4.0"
+    CURRENT_PROJECT_VERSION: "5"
+    # Signed with a stable identity on purpose. The app reads Claude Code's
+    # OAuth token out of the login keychain, and the keychain's ACL remembers
+    # *which signed binary* was allowed. Ad-hoc or unsigned builds get a new
+    # identity on every rebuild, so "Always Allow" would be forgotten each time
+    # and the prompt would come back after every `make run`.
+    CODE_SIGN_IDENTITY: "Developer ID Application"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: 6WFPL8B9FB
+    CODE_SIGNING_REQUIRED: "YES"
+    CODE_SIGNING_ALLOWED: "YES"
+    # Required by notarization. Worth knowing what it does *not* break here:
+    # the keychain read is unaffected (the ACL keys on the signing identity,
+    # which is unchanged), and reading Cursor's and Codex's SQLite files is
+    # ordinary file access. It is the App Sandbox that would break both, which
+    # is why that stays off — Developer ID distribution does not require it.
+    ENABLE_HARDENED_RUNTIME: "YES"
+    ENABLE_APP_SANDBOX: "NO"
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.6.0"
+
+targets:
+  Codenotch:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+    dependencies:
+      - package: Sparkle
+    info:
+      path: Sources/Info.plist
+      properties:
+        # Deliberately a normal Dock app, not an `LSUIElement` agent. The
+        # notch is ambient, but the *app* still has to be findable: without a
+        # Dock tile there is nothing to click to open it, nothing in Cmd-Tab,
+        # and no obvious way to reach settings or quit.
+        CFBundleName: Codenotch
+        CFBundleDisplayName: Codenotch
+        LSMinimumSystemVersion: "26.0"
+        # Sources/Info.plist is *generated* from this block, so editing that
+        # file directly is undone by the next `make gen`. Pointing both at the
+        # build settings keeps one place to bump.
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        # --- Sparkle -------------------------------------------------------
+        # Beside the download itself, on hivinz.com. It used to point at a
+        # GitHub Pages URL for a repo that was never created, so every check
+        # got a 404 and Sparkle reported "an error occurred in retrieving
+        # update information" — correctly, since there was nothing there.
+        #
+        # Must stay reachable for as long as any copy is installed: the feed is
+        # the only route by which a shipped build can ever be replaced.
+        SUFeedURL: https://hivinz.com/appcast.xml
+        # The public half of the EdDSA key in the login keychain. Sparkle
+        # refuses any update not signed by its private half, so a hijacked feed
+        # or a swapped download cannot install code. Losing the private key
+        # means no existing install can ever be updated again — back it up.
+        SUPublicEDKey: rmUfT5r49nR+3HdkbR5/YYLghfnAi6L49eOk3sIegSk=
+        # Set explicitly so Sparkle never asks on first launch. Left unset, it
+        # shows a "check for updates automatically?" prompt, which is exactly
+        # the permission this is meant to avoid.
+        SUEnableAutomaticChecks: true
+        SUAutomaticallyUpdate: true
+        SUScheduledCheckInterval: 86400
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vinz.codenotch
+        GENERATE_INFOPLIST_FILE: "NO"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  CodenotchTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: Codenotch
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vinz.codenotch.tests
+        GENERATE_INFOPLIST_FILE: "YES"
+
+schemes:
+  Codenotch:
+    build:
+      targets:
+        Codenotch: all
+        CodenotchTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - CodenotchTests
