@@ -294,8 +294,11 @@ struct TooltipCard: View {
                     .font(.system(size: Design.px(30), weight: .semibold))
                     .foregroundStyle(Palette.textSecondary)
             }
-            Spacer(minLength: 0)
         }
+        // Centred, unlike every row above it. Those are label-and-value pairs
+        // pinned to the two edges; this is a control, and sitting on the left
+        // made it read as one more row whose value had gone missing.
+        .frame(maxWidth: .infinity, alignment: .center)
         .padding(.top, NotchLayout.rowSpacing)
     }
 
