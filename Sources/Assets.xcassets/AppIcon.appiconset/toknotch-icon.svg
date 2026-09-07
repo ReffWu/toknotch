@@ -1,0 +1,194 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="512" y1="96" x2="512" y2="928" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e2025"/>
+      <stop offset="35%" stop-color="#121316"/>
+      <stop offset="100%" stop-color="#08080a"/>
+    </linearGradient>
+
+    <!-- Outer Rim Highlight -->
+    <linearGradient id="rimGrad" x1="512" y1="96" x2="512" y2="928" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.28)"/>
+      <stop offset="18%" stop-color="rgba(255,255,255,0.08)"/>
+      <stop offset="85%" stop-color="rgba(255,255,255,0.02)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.09)"/>
+    </linearGradient>
+
+    <!-- Inner Plate Bevel -->
+    <linearGradient id="plateInner" x1="512" y1="110" x2="512" y2="914" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0.5)"/>
+    </linearGradient>
+
+    <!-- Ambient Shadow -->
+    <filter id="dropShadow" x="0" y="30" width="1024" height="964" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="32" stdDeviation="40" flood-color="#000000" flood-opacity="0.55"/>
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+
+    <!-- Glow Filter for Rings -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Ring Gradients -->
+    <!-- 1. Coral Orange (Claude) -->
+    <linearGradient id="claudeGrad" x1="280" y1="360" x2="740" y2="760" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ff9d71"/>
+      <stop offset="60%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+
+    <!-- 2. Emerald Green (OpenAI / Cursor) -->
+    <linearGradient id="openaiGrad" x1="320" y1="380" x2="700" y2="720" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6ee7b7"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+
+    <!-- 3. Electric Violet-Blue (Gemini / Antigravity) -->
+    <linearGradient id="geminiGrad" x1="380" y1="420" x2="640" y2="680" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#67e8f9"/>
+      <stop offset="45%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+
+    <!-- Notch Fill Gradient -->
+    <linearGradient id="notchGrad" x1="512" y1="96" x2="512" y2="280" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#050507"/>
+      <stop offset="100%" stop-color="#0d0e12"/>
+    </linearGradient>
+
+    <!-- Center Core Glow -->
+    <radialGradient id="centerRadial" cx="512" cy="560" r="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="rgba(56, 189, 248, 0.12)"/>
+      <stop offset="60%" stop-color="rgba(139, 92, 246, 0.05)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base Icon Squircle (macOS continuous corner standard) -->
+  <g filter="url(#dropShadow)">
+    <rect x="96" y="96" width="832" height="832" rx="192" fill="url(#bgGrad)"/>
+    <!-- Subtle Inner Chamfer -->
+    <rect x="97.5" y="97.5" width="829" height="829" rx="190.5" stroke="url(#rimGrad)" stroke-width="3" fill="none"/>
+    <rect x="100" y="100" width="824" height="824" rx="188" stroke="url(#plateInner)" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Ambient Light Center Glow -->
+  <circle cx="512" cy="560" r="260" fill="url(#centerRadial)"/>
+
+  <!-- Subtle Radial Grid Pattern (Precision Calibration Marks) -->
+  <g opacity="0.16">
+    <circle cx="512" cy="560" r="280" stroke="#ffffff" stroke-width="1" stroke-dasharray="2 6"/>
+    <circle cx="512" cy="560" r="220" stroke="#ffffff" stroke-width="1" stroke-dasharray="2 6"/>
+    <circle cx="512" cy="560" r="160" stroke="#ffffff" stroke-width="1" stroke-dasharray="2 6"/>
+  </g>
+
+  <!-- ==================== RING 1 (OUTER): Claude Usage Ring ==================== -->
+  <g>
+    <!-- Background Track -->
+    <circle cx="512" cy="560" r="280" stroke="rgba(255,255,255,0.06)" stroke-width="22" fill="none"/>
+    <!-- Active Sweeping Arc: ~72% (approx 260 degrees) -->
+    <!-- Start at -90deg (top, 512, 280), arc to around 170deg -->
+    <path d="M 512 280 A 280 280 0 1 1 246 648" 
+          stroke="url(#claudeGrad)" stroke-width="22" stroke-linecap="round" fill="none"
+          filter="url(#neonGlow)"/>
+    <!-- End Glowing Bead -->
+    <circle cx="246" cy="648" r="11" fill="#ffedd5" filter="url(#softGlow)"/>
+    <circle cx="246" cy="648" r="5" fill="#ea580c"/>
+  </g>
+
+  <!-- ==================== RING 2 (MIDDLE): OpenAI / Cursor Usage Ring ==================== -->
+  <g>
+    <!-- Background Track -->
+    <circle cx="512" cy="560" r="220" stroke="rgba(255,255,255,0.06)" stroke-width="20" fill="none"/>
+    <!-- Active Sweeping Arc: ~55% (approx 200 degrees, starting at 12 oclock) -->
+    <path d="M 512 340 A 220 220 0 1 1 328 680" 
+          stroke="url(#openaiGrad)" stroke-width="20" stroke-linecap="round" fill="none"
+          filter="url(#neonGlow)"/>
+    <!-- End Bead -->
+    <circle cx="328" cy="680" r="10" fill="#ecfdf5" filter="url(#softGlow)"/>
+    <circle cx="328" cy="680" r="4.5" fill="#10b981"/>
+  </g>
+
+  <!-- ==================== RING 3 (INNER): Gemini / Antigravity Usage Ring ==================== -->
+  <g>
+    <!-- Background Track -->
+    <circle cx="512" cy="560" r="160" stroke="rgba(255,255,255,0.06)" stroke-width="18" fill="none"/>
+    <!-- Active Sweeping Arc: ~82% (approx 295 degrees) -->
+    <path d="M 512 400 A 160 160 0 1 1 405 442" 
+          stroke="url(#geminiGrad)" stroke-width="18" stroke-linecap="round" fill="none"
+          filter="url(#neonGlow)"/>
+    <!-- End Bead -->
+    <circle cx="405" cy="442" r="9" fill="#f0fdfa" filter="url(#softGlow)"/>
+    <circle cx="405" cy="442" r="4" fill="#3b82f6"/>
+  </g>
+
+  <!-- ==================== CENTER ICONOGRAPHY (Token / Prompt Node) ==================== -->
+  <g transform="translate(512, 560)">
+    <!-- Ambient Halo Behind Center -->
+    <circle cx="0" cy="0" r="82" fill="#0f1015" stroke="rgba(255,255,255,0.12)" stroke-width="2"/>
+    <circle cx="0" cy="0" r="80" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    
+    <!-- Stylized "T & N" / Code Prompt Glyph -->
+    <path d="M -26 -16 L 0 -36 L 26 -16 L 26 24 L 0 42 L -26 24 Z" 
+          stroke="rgba(255,255,255,0.85)" stroke-width="4.5" stroke-linejoin="round" fill="none"/>
+    <path d="M 0 -36 L 0 42" stroke="rgba(255,255,255,0.4)" stroke-width="3"/>
+    <circle cx="0" cy="3" r="6.5" fill="#38bdf8" filter="url(#softGlow)"/>
+  </g>
+
+  <!-- ==================== TOP HARDWARE NOTCH (The Signature Notch) ==================== -->
+  <g>
+    <!-- Notch Shadow onto background -->
+    <path d="M 336 96 
+             C 368 96, 380 120, 386 142 
+             L 394 176 
+             C 402 210, 424 232, 458 232 
+             L 566 232 
+             C 600 232, 622 210, 630 176 
+             L 638 142 
+             C 644 120, 656 96, 688 96 
+             Z" 
+          fill="#000000" opacity="0.6" filter="url(#dropShadow)"/>
+
+    <!-- The Realistic Notch Body -->
+    <path d="M 336 96 
+             C 368 96, 380 120, 386 142 
+             L 394 176 
+             C 402 210, 424 232, 458 232 
+             L 566 232 
+             C 600 232, 622 210, 630 176 
+             L 638 142 
+             C 644 120, 656 96, 688 96 
+             Z" 
+          fill="url(#notchGrad)"/>
+
+    <!-- Notch Rim Highlight (Polished Glass Edge) -->
+    <path d="M 336 96 
+             C 368 96, 380 120, 386 142 
+             L 394 176 
+             C 402 210, 424 232, 458 232 
+             L 566 232 
+             C 600 232, 622 210, 630 176 
+             L 638 142 
+             C 644 120, 656 96, 688 96" 
+          stroke="rgba(255, 255, 255, 0.22)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+    <!-- Notch Camera & Sensor Array -->
+    <circle cx="512" cy="164" r="10" fill="#040406" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+    <circle cx="512" cy="164" r="5" fill="#0c1220"/>
+    <circle cx="510" cy="162" r="1.8" fill="rgba(255,255,255,0.7)"/>
+
+    <!-- Green Camera Status Dot (Mac Indicator Light) -->
+    <circle cx="546" cy="164" r="3.2" fill="#22c55e" filter="url(#softGlow)"/>
+    <circle cx="546" cy="164" r="1.2" fill="#ffffff"/>
+  </g>
+</svg>
