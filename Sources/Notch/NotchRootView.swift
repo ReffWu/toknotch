@@ -56,6 +56,10 @@ struct NotchRootView: View {
             .frame(width: proxy.size.width, height: proxy.size.height)
             // Swapping cards is a movement like any other here.
             .animation(motion(NotchMotion.glide), value: model.hoveredIndex)
+            // Opening out to more models or folding back to the collapsed
+            // count changes the same card's height in place — its own small
+            // fold, so it takes the fold's own spring rather than snapping.
+            .animation(motion(NotchMotion.unfold), value: model.expandedRing)
         }
         .animation(motion(NotchMotion.unfold), value: model.isExpanded)
     }

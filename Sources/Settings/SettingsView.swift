@@ -83,7 +83,7 @@ struct SettingsView: View {
                 Button {
                     page = item
                 } label: {
-                    HStack(alignment: .top, spacing: 10) {
+                    HStack(alignment: .center, spacing: 10) {
                         SettingsIcon(symbol: item.symbol, tint: item.tint)
                         Text(item.title(language))
                             .font(.system(size: 13))

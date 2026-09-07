@@ -12,12 +12,15 @@ struct ScreenPreview<Content: View>: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [Color(hex: 0x4A5B7A), Color(hex: 0x2D3A50)],
+            // Light, not the desktop-blue it was: the mark drawn on top is
+            // black, and a dark screen left it nearly invisible — exactly the
+            // "看不清" a picture is supposed to fix, not cause.
+            LinearGradient(colors: [Color(hex: 0xEDEFF3), Color(hex: 0xD6DAE2)],
                            startPoint: .topLeading, endPoint: .bottomTrailing)
             // The menu bar, so "top" reads as the top of a Mac rather than the
             // top of a rectangle.
             VStack(spacing: 0) {
-                Rectangle().fill(.white.opacity(0.22)).frame(height: 3.5)
+                Rectangle().fill(.black.opacity(0.16)).frame(height: 3.5)
                 Spacer(minLength: 0)
             }
             notch
@@ -70,7 +73,12 @@ struct NotchVisibilityPreview: View {
                     // The resting pill: the same object, most of it folded away.
                     bar(height: full * 0.42, in: proxy.size)
                 case .hidden:
-                    EmptyView()
+                    // Not simply blank: a blank box looks identical whether or
+                    // not the click landed, and gave no way to tell the option
+                    // had actually been picked. An outline of where the pill
+                    // would sit, with nothing filling it, reads as "gone" while
+                    // still confirming a choice was drawn.
+                    outline(height: full * 0.42, in: proxy.size)
                 }
             }
         }
@@ -79,6 +87,13 @@ struct NotchVisibilityPreview: View {
     private func bar(height: CGFloat, in bounds: CGSize) -> some View {
         RoundedRectangle(cornerRadius: 2, style: .continuous)
             .fill(.black)
+            .frame(width: 5, height: height)
+            .position(x: bounds.width - 2.5, y: bounds.height / 2)
+    }
+
+    private func outline(height: CGFloat, in bounds: CGSize) -> some View {
+        RoundedRectangle(cornerRadius: 2, style: .continuous)
+            .strokeBorder(Color.black.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
             .frame(width: 5, height: height)
             .position(x: bounds.width - 2.5, y: bounds.height / 2)
     }
