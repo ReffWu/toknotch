@@ -109,4 +109,25 @@ enum UsageFormat {
     static func moment(_ date: Date, _ language: AppLanguage) -> String {
         date.formatted(.dateTime.hour().minute().second().locale(language.locale))
     }
+
+    /// A day of the month as a billing-cycle anchor — "22nd" / "3 号" / "3." —
+    /// for the "renews on the ___" picker.
+    ///
+    /// Foundation's ordinal `NumberFormatter` gets English, German and Spanish
+    /// exactly right (1st/2nd/3rd, 1./2./3., 1.º/2.º/3.º) because those
+    /// languages mark a plain ordinal the same way a calendar day is spoken.
+    /// Chinese, Japanese and Korean do not — their ordinal formatter answers
+    /// "the Nth in a sequence" (第3 / 3番目), not "the 3rd of the month", so
+    /// those keep the calendar-day phrase from the strings table instead.
+    static func dayOfMonth(_ day: Int, _ language: AppLanguage) -> String {
+        switch language.resolved {
+        case .simplifiedChinese, .traditionalChinese, .japanese, .korean:
+            return language.t("settings.dayOfMonth", day)
+        default:
+            let formatter = NumberFormatter()
+            formatter.locale = language.locale
+            formatter.numberStyle = .ordinal
+            return formatter.string(from: NSNumber(value: day)) ?? "\(day)"
+        }
+    }
 }

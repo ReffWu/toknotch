@@ -83,11 +83,12 @@ struct SettingsView: View {
                 Button {
                     page = item
                 } label: {
-                    HStack(spacing: 10) {
+                    HStack(alignment: .top, spacing: 10) {
                         SettingsIcon(symbol: item.symbol, tint: item.tint)
                         Text(item.title(language))
                             .font(.system(size: 13))
                             .foregroundStyle(page == item ? Color.white : Color.primary)
+                            .fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
                     }
                     .padding(.horizontal, 8)
@@ -115,8 +116,11 @@ struct SettingsView: View {
         }
     }
 
-    static let sidebarWidth: CGFloat = 178
-    static let width: CGFloat = 700
+    // Wide enough that the longest translated label — German's
+    // "Abos & Amortisation" — sits on one line; a language longer still
+    // wraps onto a second rather than being cut off.
+    static let sidebarWidth: CGFloat = 208
+    static let width: CGFloat = 720
     static let height: CGFloat = 650
 }
 
@@ -423,8 +427,13 @@ private struct PlanRow: View {
                     .font(.system(size: 13))
                     .lineLimit(1)
                     // Without this the name is the one flexible thing in a full
-                    // row, so it is what gets squeezed away to nothing.
+                    // row, so it is what gets squeezed away to nothing. The
+                    // minimum width is a second guard under the same idea —
+                    // layoutPriority alone still let "Anthropic" truncate to
+                    // "Ant…" once the pickers beside it needed more room for a
+                    // longer language.
                     .layoutPriority(1)
+                    .frame(minWidth: 92, alignment: .leading)
                 Spacer(minLength: 6)
 
                 Picker("", selection: selection) {
@@ -435,11 +444,11 @@ private struct PlanRow: View {
 
                 Picker("", selection: renewalDay) {
                     ForEach(1...31, id: \.self) { day in
-                        Text(language.t("settings.dayOfMonth", day)).tag(day)
+                        Text(UsageFormat.dayOfMonth(day, language)).tag(day)
                     }
                 }
                 .labelsHidden()
-                .frame(width: 68)
+                .frame(width: 78)
                 .disabled(plan == nil)
 
                 verdict.frame(width: 86, alignment: .trailing)
@@ -520,17 +529,6 @@ private struct PlanRow: View {
         value == value.rounded() ? String(Int(value)) : String(format: "%.2f", value)
     }
 
-    private func ordinal(_ day: Int) -> String {
-        let suffix: String
-        switch (day % 10, day % 100) {
-        case (1, 11), (2, 12), (3, 13): suffix = "th"
-        case (1, _): suffix = "st"
-        case (2, _): suffix = "nd"
-        case (3, _): suffix = "rd"
-        default: suffix = "th"
-        }
-        return "\(day)\(suffix)"
-    }
 
     @ViewBuilder
     private var verdict: some View {

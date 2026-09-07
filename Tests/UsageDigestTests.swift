@@ -264,6 +264,46 @@ final class UsageFormatTests: XCTestCase {
 }
 
 /// Every language the app offers has to have every string it needs.
+/// A billing-cycle day, spoken correctly in each language it is offered in.
+final class OrdinalDayTests: XCTestCase {
+    /// English is where this broke once already: a hand-written format string
+    /// applied "th" to every day, producing "the 3th" and "the 22th" in the
+    /// renewal-day picker. Foundation's ordinal formatter is what stands guard
+    /// against that regression coming back.
+    func testEnglishUsesRealOrdinals() {
+        XCTAssertEqual(UsageFormat.dayOfMonth(1, .english), "1st")
+        XCTAssertEqual(UsageFormat.dayOfMonth(2, .english), "2nd")
+        XCTAssertEqual(UsageFormat.dayOfMonth(3, .english), "3rd")
+        XCTAssertEqual(UsageFormat.dayOfMonth(4, .english), "4th")
+        XCTAssertEqual(UsageFormat.dayOfMonth(11, .english), "11th")
+        XCTAssertEqual(UsageFormat.dayOfMonth(21, .english), "21st")
+        XCTAssertEqual(UsageFormat.dayOfMonth(22, .english), "22nd")
+        XCTAssertEqual(UsageFormat.dayOfMonth(23, .english), "23rd")
+    }
+
+    /// CJK languages mark a plain ordinal ("the Nth in a sequence") differently
+    /// from a calendar day, so they take the calendar-day phrase from the
+    /// strings table rather than a generic ordinal formatter.
+    func testCJKUsesTheCalendarDayPhraseNotAGenericOrdinal() {
+        XCTAssertEqual(UsageFormat.dayOfMonth(3, .simplifiedChinese), "3 号")
+        XCTAssertEqual(UsageFormat.dayOfMonth(3, .japanese), "3 日")
+        XCTAssertEqual(UsageFormat.dayOfMonth(3, .korean), "3일")
+    }
+
+    /// Every offered language produces *something* distinct per day, and never
+    /// the untranslated key.
+    func testEveryLanguageProducesADistinctReadableDay() {
+        for language in AppLanguage.available where language != .system {
+            let days = (1...5).map { UsageFormat.dayOfMonth($0, language) }
+            XCTAssertEqual(Set(days).count, days.count, "\(language.rawValue): days collided")
+            for day in days {
+                XCTAssertFalse(day.isEmpty)
+                XCTAssertFalse(day.contains("settings.dayOfMonth"), "\(language.rawValue) leaked its key")
+            }
+        }
+    }
+}
+
 final class LocalizationTests: XCTestCase {
     /// A key with no translation shows up on screen as the key itself. This is
     /// the test that stops that reaching anybody.
