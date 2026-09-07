@@ -82,7 +82,10 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         switch self {
         case .anthropic: return Color(hex: 0xD97757)
         case .openai:    return Color(hex: 0x10A37F)
-        case .google:    return Color(hex: 0x4285F4)
+        // Gemini's own mark, not Google's four-colour "G" — the rest of the
+        // roster shows the AI product's own logo (ChatGPT's swirl, not a
+        // generic OpenAI corporate mark), and Gemini has one of its own.
+        case .google:    return Color(hex: 0x8E75B2)
         case .deepseek:  return Color(hex: 0x4D6BFE)
         case .alibaba:   return Color(hex: 0x615CED)
         case .zhipu:     return Color(hex: 0x3859FF)
@@ -109,7 +112,7 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         switch self {
         case .anthropic: return VendorOutline.anthropic
         case .openai:    return VendorOutline.openai
-        case .google:    return VendorOutline.google
+        case .google:    return VendorOutline.gemini
         case .deepseek:  return VendorOutline.deepseek
         case .alibaba:   return VendorOutline.qwen
         case .minimax:   return VendorOutline.minimax
