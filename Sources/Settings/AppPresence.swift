@@ -16,49 +16,26 @@ enum AppPresence: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var title: String {
+    /// The name shown on the control, in the reader's language.
+    func title(_ language: AppLanguage) -> String {
         switch self {
-        case .dock:    return "Dock"
-        case .menuBar: return "Menu bar"
-        case .hidden:  return "Neither"
+        case .dock: return language.t("appPresence.dock.title")
+        case .menuBar: return language.t("appPresence.menuBar.title")
+        case .hidden: return language.t("appPresence.hidden.title")
         }
     }
 
-    var chineseTitle: String {
+    /// The line under it that says what choosing this actually does.
+    func explanation(_ language: AppLanguage) -> String {
         switch self {
-        case .dock:    return "仅 Dock 栏"
-        case .menuBar: return "仅菜单栏"
-        case .hidden:  return "无图标"
+        case .dock: return language.t("appPresence.dock.explanation")
+        case .menuBar: return language.t("appPresence.menuBar.explanation")
+        case .hidden: return language.t("appPresence.hidden.explanation")
         }
     }
 
-    var explanation: String {
-        switch self {
-        case .dock:
-            return "A normal app icon in the Dock while TokNotch is running."
-        case .menuBar:
-            return "A small icon in the menu bar instead, and nothing in the Dock."
-        case .hidden:
-            // Said here because choosing this removes every visible way back to
-            // these settings, and finding that out afterwards is too late.
-            return "No icon anywhere. Open TokNotch again from Applications to "
-                 + "bring these settings back."
-        }
-    }
-
-    var chineseExplanation: String {
-        switch self {
-        case .dock:
-            return "在程序坞（Dock）显示标准应用图标。"
-        case .menuBar:
-            return "仅在顶部菜单栏显示状态图标，不在 Dock 占用空间。"
-        case .hidden:
-            return "不在任何地方显示图标，仅保留刘海。可在应用程序中再次打开唤出设置。"
-        }
-    }
-
-    /// `.regular` is the only one that gets a Dock tile. Both others are
-    /// accessory apps; what separates them is whether a status item is made.
+    /// Whether the app claims a Dock tile. `.accessory` is what keeps a
+    /// menu-bar-only or invisible copy out of the Dock and the app switcher.
     var activationPolicy: NSApplication.ActivationPolicy {
         self == .dock ? .regular : .accessory
     }

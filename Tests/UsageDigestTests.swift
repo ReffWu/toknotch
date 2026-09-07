@@ -185,7 +185,7 @@ final class VendorTests: XCTestCase {
 
     func testEveryVendorHasATitleInBothLanguages() {
         for vendor in Vendor.allCases {
-            XCTAssertFalse(vendor.title(.chinese).isEmpty)
+            XCTAssertFalse(vendor.title(.simplifiedChinese).isEmpty)
             XCTAssertFalse(vendor.title(.english).isEmpty)
         }
     }
@@ -193,24 +193,62 @@ final class VendorTests: XCTestCase {
 
 /// Numbers are read at a glance and out of the corner of an eye.
 final class UsageFormatTests: XCTestCase {
-    func testChineseGroupsByWanAndYi() {
-        XCTAssertEqual(UsageFormat.tokens(15_434_419_444, .chinese), "154亿")
-        XCTAssertEqual(UsageFormat.tokens(43_500_007, .chinese), "4350万")
-        XCTAssertEqual(UsageFormat.tokens(940_000_000, .chinese), "9.4亿")
-        XCTAssertEqual(UsageFormat.tokens(302, .chinese), "302")
+    /// The point of routing everything through `Locale`: each language groups
+    /// large numbers its own way, and getting this wrong makes a reader do
+    /// arithmetic on every glance.
+    ///
+    /// Asserted on the *unit* rather than the exact string. Foundation's
+    /// rounding and spacing may shift between OS releases, but a Chinese
+    /// reader will always be shown 亿 and a German reader Mrd. — that is the
+    /// fact worth holding.
+    func testEachLanguageGroupsLargeNumbersItsOwnWay() {
+        let big: Int64 = 15_434_419_444
+        let expectations: [(AppLanguage, String)] = [
+            (.english, "B"),            // thousands: 15.4B
+            (.simplifiedChinese, "亿"),  // myriads: 154.3亿
+            (.traditionalChinese, "億"),
+            (.japanese, "億"),
+            (.korean, "억"),
+            (.german, "Mrd"),
+            (.russian, "млрд")
+        ]
+        for (language, unit) in expectations {
+            let written = UsageFormat.tokens(big, language)
+            XCTAssertTrue(written.contains(unit),
+                          "\(language.rawValue) wrote \(written), expected \(unit)")
+        }
     }
 
-    func testEnglishGroupsByThousands() {
-        XCTAssertEqual(UsageFormat.tokens(15_434_419_444, .english), "15.4B")
-        XCTAssertEqual(UsageFormat.tokens(43_500_007, .english), "43.5M")
-        XCTAssertEqual(UsageFormat.tokens(302, .english), "302")
+    /// Ten thousand is a unit in CJK and is not one anywhere else, so the same
+    /// number crosses into an abbreviation at different points.
+    func testTheMyriadIsAUnitInCJKOnly() {
+        XCTAssertTrue(UsageFormat.tokens(43_500_007, .simplifiedChinese).contains("万"))
+        XCTAssertTrue(UsageFormat.tokens(43_500_007, .japanese).contains("万"))
+        XCTAssertTrue(UsageFormat.tokens(43_500_007, .korean).contains("만"))
+        XCTAssertTrue(UsageFormat.tokens(43_500_007, .english).contains("M"))
+    }
+
+    /// Small enough to write out is written out, in every language.
+    func testSmallNumbersAreNotAbbreviated() {
+        for language in AppLanguage.allCases {
+            XCTAssertEqual(UsageFormat.tokens(302, language), "302", language.rawValue)
+        }
+    }
+
+    /// The decimal separator moves with the language, and so does the currency
+    /// symbol — German writes 4.929,28 where English writes 4,929.28.
+    func testMoneyFollowsTheLanguageSConventions() {
+        XCTAssertTrue(UsageFormat.money(4929.28, .english).hasPrefix("$"))
+        XCTAssertTrue(UsageFormat.money(4929.28, .german).contains(","),
+                      "German uses a comma for the decimal separator")
+        XCTAssertTrue(UsageFormat.money(4929.28, .french).contains(","))
     }
 
     /// A model with a real but tiny share must not read as 0%, which looks like
     /// a bug rather than a small number.
     func testASmallShareKeepsADecimal() {
-        XCTAssertEqual(UsageFormat.share(0.004), "0.4%")
-        XCTAssertEqual(UsageFormat.share(0.402), "40%")
+        XCTAssertTrue(UsageFormat.share(0.004, .english).contains("0.4"))
+        XCTAssertEqual(UsageFormat.share(0.402, .english), "40%")
     }
 
     /// The vendor prefix has to survive: a primary card's model table mixes
@@ -225,10 +263,69 @@ final class UsageFormatTests: XCTestCase {
     }
 }
 
+/// Every language the app offers has to have every string it needs.
+final class LocalizationTests: XCTestCase {
+    /// A key with no translation shows up on screen as the key itself. This is
+    /// the test that stops that reaching anybody.
+    func testEveryOfferedLanguageHasEveryString() throws {
+        let keys = try Self.keysInUse()
+        XCTAssertGreaterThan(keys.count, 50, "the key scan found suspiciously little")
+
+        for language in AppLanguage.available where language != .system {
+            for key in keys {
+                let translated = language.t(key)
+                XCTAssertNotEqual(translated, key,
+                                  "\(language.rawValue) is missing \(key)")
+                XCTAssertFalse(translated.isEmpty, "\(language.rawValue): \(key) is empty")
+            }
+        }
+    }
+
+    /// A format string that loses one of its placeholders silently drops a
+    /// number from the sentence it was meant to carry.
+    func testFormatSpecifiersSurviveTranslation() throws {
+        let english = AppLanguage.english
+        for key in try Self.keysInUse() {
+            let source = english.t(key)
+            let placeholders = Self.specifiers(in: source)
+            guard !placeholders.isEmpty else { continue }
+            for language in AppLanguage.available where language != .system && language != .english {
+                XCTAssertEqual(Self.specifiers(in: language.t(key)), placeholders,
+                               "\(language.rawValue) changed the placeholders in \(key)")
+            }
+        }
+    }
+
+    private static func specifiers(in text: String) -> Set<String> {
+        let pattern = try! NSRegularExpression(pattern: "%(?:\\d+\\$)?[@d]")
+        let range = NSRange(text.startIndex..., in: text)
+        return Set(pattern.matches(in: text, range: range).compactMap {
+            // Positional or not, what matters is the set of types used.
+            String(text[Range($0.range, in: text)!]).replacingOccurrences(
+                of: "\\d+\\$", with: "", options: .regularExpression)
+        })
+    }
+
+    /// Read from the shipped English table, which is the list of keys the app
+    /// can actually ask for.
+    ///
+    /// As a property list, not as text: Xcode compiles `.strings` into a binary
+    /// plist on the way into the bundle, so reading the file as UTF-8 fails on
+    /// the shipped copy even though it works on the source.
+    private static func keysInUse() throws -> [String] {
+        let lproj = try XCTUnwrap(Bundle.main.path(forResource: "en", ofType: "lproj"))
+        let path = try XCTUnwrap(
+            Bundle(path: lproj)?.path(forResource: "Localizable", ofType: "strings")
+        )
+        let table = try XCTUnwrap(NSDictionary(contentsOfFile: path) as? [String: String])
+        return table.keys.sorted()
+    }
+}
+
 /// The rings the stack actually shows.
 final class RingBuilderTests: XCTestCase {
     private func rings(vendors: Set<Vendor>) -> [RingSnapshot] {
-        RingBuilder.rings(from: Fixtures.digest(), vendors: vendors, language: .chinese)
+        RingBuilder.rings(from: Fixtures.digest(), vendors: vendors, language: .simplifiedChinese)
     }
 
     func testTheThreePrimariesAlwaysComeFirst() {
@@ -254,8 +351,12 @@ final class RingBuilderTests: XCTestCase {
     /// No card may carry more rows than the panel reserved room for.
     func testNoCardExceedsTheReservedHeight() {
         for ring in rings(vendors: Set(Vendor.allCases)) {
-            XCTAssertLessThanOrEqual(ring.rows.count, NotchLayout.maxRowCount, ring.id)
-            XCTAssertLessThanOrEqual(ring.cardHeight, NotchLayout.defaultMaxCardHeight, ring.id)
+            XCTAssertLessThanOrEqual(
+                ring.rows(showingModels: RingSnapshot.collapsedModels).count,
+                NotchLayout.maxRowCount, ring.id)
+            XCTAssertLessThanOrEqual(
+                ring.cardHeight(showingModels: RingSnapshot.collapsedModels),
+                NotchLayout.defaultMaxCardHeight, ring.id)
         }
     }
 

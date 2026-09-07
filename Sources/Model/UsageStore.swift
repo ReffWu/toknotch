@@ -29,7 +29,7 @@ final class UsageStore: ObservableObject {
 
     /// Presentation, not data. Changing either re-renders from the digest we
     /// already have rather than shelling out again.
-    var language: AppLanguage = .chinese { didSet { guard language != oldValue else { return }; render() } }
+    var language: AppLanguage = .system { didSet { guard language != oldValue else { return }; render() } }
     var enabledVendors: Set<Vendor> = [] { didSet { guard enabledVendors != oldValue else { return }; render() } }
     /// The user's own answers, which override anything detected. A vendor with
     /// an entry of zero here is somebody saying "no plan", which is different
@@ -181,29 +181,19 @@ final class UsageStore: ObservableObject {
     /// that is simply not installed sends people to look in the wrong place.
     private static func explain(_ error: Error, language: AppLanguage) -> String {
         guard let failure = error as? TokscaleCLI.Failure else {
-            return language == .chinese
-                ? "读取失败：\((error as NSError).localizedDescription)"
-                : "Couldn't read usage — \((error as NSError).localizedDescription)"
+            return language.t("status.readFailed", (error as NSError).localizedDescription)
         }
         switch failure {
         case .notInstalled:
-            return language == .chinese
-                ? "未找到 tokscale。用 Homebrew 安装后即可读取用量：brew install tokscale"
-                : "tokscale isn't installed. Install it with: brew install tokscale"
+            return language.t("status.notInstalled")
         case .exited(127):
-            // tokscale is a `#!/usr/bin/env node` script, so this means node is
-            // somewhere we did not look — not that tokscale is missing.
-            return language == .chinese
-                ? "tokscale 无法启动：找不到 node。若用 nvm/fnm 管理 node，请确保它装在常规位置。"
-                : "tokscale couldn't start — node wasn't found. If you manage node with nvm or fnm, make sure it's in a standard location."
+            // tokscale is a `#!/usr/bin/env node` script when it is not the
+            // bundled binary, so this means node is somewhere we did not look.
+            return language.t("status.noNode")
         case .exited(let code):
-            return language == .chinese
-                ? "tokscale 退出（代码 \(code)）。在终端运行 tokscale 看看它说了什么。"
-                : "tokscale exited with code \(code). Run it in a terminal to see why."
+            return language.t("status.exited", code)
         case .undecodable:
-            return language == .chinese
-                ? "无法解析 tokscale 的输出，可能是版本不兼容。试试升级：brew upgrade tokscale"
-                : "Couldn't parse tokscale's output — try: brew upgrade tokscale"
+            return language.t("status.undecodable")
         }
     }
 }

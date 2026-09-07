@@ -11,7 +11,7 @@ enum Fixtures {
         .anthropic: Subscription(monthlyUSD: 200, renewalDay: 3)
     ]
 
-    static func rings(language: AppLanguage = .chinese,
+    static func rings(language: AppLanguage = .simplifiedChinese,
                       now: Date = Date(),
                       calendar: Calendar = .current) -> [RingSnapshot] {
         RingBuilder.rings(from: digest(now: now, calendar: calendar),

@@ -115,7 +115,7 @@ final class PanelSizingTests: XCTestCase {
         XCTAssertTrue(model.rings.isEmpty)
         XCTAssertEqual(
             model.panelSize(cellCount: 1).height,
-            model.shapeLength(cellCount: 1) + 2 * NotchLayout.slack(for: .right),
+            model.shapeLength(cellCount: 1) + 2 * model.slack(cellCount: 1),
             accuracy: 0.001
         )
     }
@@ -490,14 +490,14 @@ final class NotchVisibilityTests: XCTestCase {
     /// Hiding removes every other way back into the app, so the option itself
     /// has to say where the door is.
     func testHidingExplainsHowToGetBack() {
-        XCTAssertTrue(NotchVisibility.hidden.explanation.contains("Applications"))
+        XCTAssertTrue(NotchVisibility.hidden.explanation(.english).contains("Applications"))
     }
 
     func testEveryModeIsOfferedAndNamed() {
         XCTAssertEqual(NotchVisibility.allCases.count, 3)
         for mode in NotchVisibility.allCases {
-            XCTAssertFalse(mode.title.isEmpty)
-            XCTAssertFalse(mode.explanation.isEmpty)
+            XCTAssertFalse(mode.title(.english).isEmpty)
+            XCTAssertFalse(mode.explanation(.english).isEmpty)
         }
     }
 }

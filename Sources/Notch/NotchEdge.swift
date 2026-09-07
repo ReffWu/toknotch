@@ -54,49 +54,23 @@ enum NotchEdge: String, CaseIterable, Identifiable {
         isVertical ? CGPoint(x: 0, y: 1) : CGPoint(x: 1, y: 0)
     }
 
-    var title: String {
+    /// The name shown on the control, in the reader's language.
+    func title(_ language: AppLanguage) -> String {
         switch self {
-        case .right:  return "Right"
-        case .left:   return "Left"
-        case .top:    return "Top"
-        case .bottom: return "Bottom"
+        case .right: return language.t("notchEdge.right.title")
+        case .left: return language.t("notchEdge.left.title")
+        case .top: return language.t("notchEdge.top.title")
+        case .bottom: return language.t("notchEdge.bottom.title")
         }
     }
 
-    var chineseTitle: String {
+    /// The line under it that says what choosing this actually does.
+    func explanation(_ language: AppLanguage) -> String {
         switch self {
-        case .top:    return "顶部刘海"
-        case .right:  return "屏幕右侧"
-        case .left:   return "屏幕左侧"
-        case .bottom: return "屏幕底部"
-        }
-    }
-
-    var explanation: String {
-        switch self {
-        case .right:
-            return "Down the right-hand edge, clear of a Dock on that side."
-        case .left:
-            return "Down the left-hand edge, clear of a Dock on that side."
-        case .top:
-            return "A wide bar across the top, readings side by side. On a Mac "
-                 + "with a notch of its own it runs up to meet it, so the two "
-                 + "read as one shape."
-        case .bottom:
-            return "A wide bar resting on top of the Dock, readings side by side."
-        }
-    }
-
-    var chineseExplanation: String {
-        switch self {
-        case .top:
-            return "吸附于 MacBook 顶部原生刘海或屏幕正上方，与系统刘海浑然一体。"
-        case .right:
-            return "吸附于屏幕右侧边缘垂直排列。"
-        case .left:
-            return "吸附于屏幕左侧边缘垂直排列。"
-        case .bottom:
-            return "吸附于屏幕底部边缘水平排列。"
+        case .right: return language.t("notchEdge.right.explanation")
+        case .left: return language.t("notchEdge.left.explanation")
+        case .top: return language.t("notchEdge.top.explanation")
+        case .bottom: return language.t("notchEdge.bottom.explanation")
         }
     }
 }

@@ -3,27 +3,69 @@ import Foundation
 import ServiceManagement
 import os
 
-/// User display language and number unit style.
+/// The language everything is written in.
+///
+/// Chosen in the app rather than followed from the system, because somebody
+/// whose Mac is in English may still want their token counts grouped the way
+/// they actually count — and the other way round. `.system` is there for
+/// everybody who does not care.
 enum AppLanguage: String, CaseIterable, Identifiable {
-    case chinese = "zh_CN"
+    case system
     case english = "en"
+    case simplifiedChinese = "zh-Hans"
+    case traditionalChinese = "zh-Hant"
+    case japanese = "ja"
+    case korean = "ko"
+    case german = "de"
+    case french = "fr"
+    case spanish = "es"
+    case russian = "ru"
 
     var id: String { rawValue }
 
-    var title: String {
+    /// Each language named in itself.
+    ///
+    /// Somebody looking for Japanese is looking for 日本語, not for the word
+    /// "Japanese" in a language they may not read. Only the system option is
+    /// written in the current language, because it is the one entry that is not
+    /// a language.
+    var endonym: String {
         switch self {
-        case .chinese: return "中文 (万 / 亿)"
-        case .english: return "English (k / M / B)"
+        case .system:             return ""      // filled in by the caller
+        case .english:            return "English"
+        case .simplifiedChinese:  return "简体中文"
+        case .traditionalChinese: return "繁體中文"
+        case .japanese:           return "日本語"
+        case .korean:             return "한국어"
+        case .german:             return "Deutsch"
+        case .french:             return "Français"
+        case .spanish:            return "Español"
+        case .russian:            return "Русский"
         }
     }
 
-    var explanation: String {
-        switch self {
-        case .chinese:
-            return "以中文数字（万、亿）显示 Token 规模与用量，更符合中文直觉习惯。"
-        case .english:
-            return "Display token counts using western metric prefixes (k, M, B)."
-        }
+    /// What Foundation formats numbers, money and dates against.
+    ///
+    /// This is where most of the localisation actually happens, and it is worth
+    /// being explicit about how much it carries: the decimal separator, the
+    /// grouping separator, where the currency symbol goes, and — the one that
+    /// matters most here — how a large number is abbreviated. English counts in
+    /// thousands (15.4B); Chinese, Japanese and Korean count in myriads
+    /// (154.3亿 / 154.3億 / 154.3억); German writes 15,4 Mrd. and Russian
+    /// 15,4 млрд. Writing "15.4B" for a Chinese reader forces an arithmetic
+    /// conversion on every single glance, which is exactly what a readout on a
+    /// screen edge must never do.
+    var locale: Locale {
+        self == .system ? .autoupdatingCurrent : Locale(identifier: rawValue)
+    }
+
+    /// The best match among the languages we actually ship, for `.system`.
+    var resolved: AppLanguage {
+        guard self == .system else { return self }
+        let preferred = Bundle.preferredLocalizations(
+            from: AppLanguage.allCases.filter { $0 != .system }.map(\.rawValue)
+        ).first
+        return preferred.flatMap(AppLanguage.init(rawValue:)) ?? .english
     }
 }
 
@@ -190,8 +232,11 @@ final class Preferences: ObservableObject {
         self.autoEnabledVendors = Set((defaults.stringArray(forKey: Keys.autoEnabled) ?? [])
             .compactMap(Vendor.init(rawValue:)))
         self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "rings"
+        // Follows the Mac until somebody says otherwise, which is the right
+        // default for a language: an app that opens in the wrong one is worse
+        // than one that opens in the same language as everything else.
         self.appLanguage = defaults.string(forKey: Keys.language)
-            .flatMap(AppLanguage.init(rawValue:)) ?? .chinese
+            .flatMap(AppLanguage.init(rawValue:)) ?? .system
     }
 
     func showsRing(for vendor: Vendor) -> Bool { enabledVendors.contains(vendor) }

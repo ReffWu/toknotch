@@ -210,7 +210,8 @@ final class NotchWindowController {
     /// sliding the pointer off the notch and onto the card never leaves it.
     private func tooltipRect(index: Int) -> CGRect? {
         guard model.rings.indices.contains(index) else { return nil }
-        let cardHeight = model.rings[index].cardHeight
+        let ring = model.rings[index]
+        let cardHeight = ring.cardHeight(showingModels: model.modelLimit(for: ring))
         // Across the stack the region is the card, its tail, and the gap the
         // pointer has to cross. Along it, the card's own extent.
         let cardAcross = model.edge.isVertical ? NotchLayout.cardWidth : cardHeight
@@ -402,6 +403,12 @@ final class NotchWindowController {
         // it and clicking the gear refetches a provider instead.
         if isOverHandle(local) {
             onOpenSettings?()
+            return
+        }
+        // On the card: open it out, or close it again.
+        if let index = model.hoveredIndex,
+           tooltipRect(index: index)?.contains(local) == true {
+            model.toggleExpansion()
             return
         }
         if notchRect.contains(local),

@@ -215,9 +215,19 @@ struct TooltipCard: View {
     let ring: RingSnapshot
     /// Which way the card sits from the notch, which follows from the edge.
     var direction: NotchEdge.TooltipDirection = .leading
+    /// How many model rows to draw. The collapsed figure until the reader asks
+    /// for more, then as many as this screen can hold.
+    var modelLimit: Int = RingSnapshot.collapsedModels
+    /// Whether asking for more would actually show more — false once the
+    /// screen's limit is what is holding the rest back, so the line stops
+    /// inviting a click that cannot do anything.
+    var canExpand: Bool = false
 
     /// The same figure the hover region and the panel budget use.
-    private var height: CGFloat { ring.cardHeight }
+    private var height: CGFloat { ring.cardHeight(showingModels: modelLimit) }
+
+    private var shownRows: [MetricRow] { ring.rows(showingModels: modelLimit) }
+    private var hidden: Int { ring.hiddenModels(after: modelLimit) }
 
     var body: some View {
         TooltipShell(height: height, direction: direction) {
@@ -245,7 +255,7 @@ struct TooltipCard: View {
                         .padding(.top, NotchLayout.headerToBlock)
                 } else {
                     hero
-                    ForEach(Array(ring.rows.enumerated()), id: \.element.id) { index, row in
+                    ForEach(Array(shownRows.enumerated()), id: \.element.id) { index, row in
                         if row.startsGroup, index > 0 {
                             Rectangle()
                                 .fill(Palette.cardRule)
@@ -257,6 +267,7 @@ struct TooltipCard: View {
                                      : (row.startsGroup ? NotchLayout.groupSpacing
                                                         : NotchLayout.rowSpacing))
                     }
+                    if hidden > 0 { more }
                 }
             }
             // Contents swap wholesale between rings rather than interpolating
@@ -264,6 +275,28 @@ struct TooltipCard: View {
             .id(ring.id)
             .frame(maxWidth: .infinity, alignment: .topLeading)
         }
+    }
+
+    /// The line that says what is not on the card, and whether asking would
+    /// bring it.
+    ///
+    /// Small and quiet: it is an offer, not a reading. When the screen itself
+    /// is what is holding the rest back it stops mentioning the click, because
+    /// there is nothing a click could do.
+    private var more: some View {
+        HStack(spacing: Design.px(10)) {
+            Text(String(format: ring.moreFormat, hidden))
+                .font(Typography.cardBody)
+                .foregroundStyle(Palette.textSecondary)
+                .lineLimit(1)
+            if canExpand {
+                Image(systemName: "chevron.down")
+                    .font(.system(size: Design.px(30), weight: .semibold))
+                    .foregroundStyle(Palette.textSecondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.top, NotchLayout.rowSpacing)
     }
 
     /// The answer, at the size an answer deserves.

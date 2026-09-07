@@ -19,7 +19,7 @@ final class NotchEdgeTests: XCTestCase {
 
     func testEveryEdgeIsOfferedAndNamed() {
         XCTAssertEqual(NotchEdge.allCases.count, 4)
-        let titles = NotchEdge.allCases.map(\.title)
+        let titles = NotchEdge.allCases.map { $0.title(.english) }
         XCTAssertEqual(Set(titles).count, 4, "two edges share a name")
         XCTAssertFalse(titles.contains(where: \.isEmpty))
     }

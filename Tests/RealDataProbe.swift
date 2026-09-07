@@ -18,7 +18,7 @@ final class RealDataProbeTests: XCTestCase {
 
         let digest = UsageDigest.build(graph: graph, lifetime: lifetime)
         let rings = RingBuilder.rings(from: digest, vendors: Set(digest.vendors.map(\.vendor)),
-                                      language: .chinese)
+                                      language: .simplifiedChinese)
 
         print("\n════════ 真实数据 ════════")
         for ring in rings {
@@ -29,7 +29,7 @@ final class RealDataProbeTests: XCTestCase {
                 print("    \(row.label)  ·  \(row.value)\(bar)")
             }
         }
-        print("\n可选服务商: \(digest.vendors.map { "\($0.vendor.title(.chinese))" }.joined(separator: ", "))")
+        print("\n可选服务商: \(digest.vendors.map { "\($0.vendor.title(.simplifiedChinese))" }.joined(separator: ", "))")
         print("════════════════════════\n")
 
         // The lifetime total must match tokscale's own arithmetic exactly.

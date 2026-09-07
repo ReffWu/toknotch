@@ -80,7 +80,13 @@ struct RingSnapshot: Identifiable, Equatable {
     /// ring shows its track alone.
     let fraction: Double?
     let tint: Color
+    /// The standing facts, always shown.
     let rows: [MetricRow]
+    /// Every model this ring covers, busiest first — the whole list, not a
+    /// selection. How many of them a card actually draws is a question about
+    /// the screen and about whether the reader has asked for more, and neither
+    /// of those belongs in the digest.
+    var modelRows: [MetricRow] = []
     /// Set when there is nothing to show — no tokscale, no data yet, a failed
     /// read. Replaces the rows rather than sitting alongside them.
     var note: String? = nil
@@ -92,6 +98,28 @@ struct RingSnapshot: Identifiable, Equatable {
     /// Whether the hero carries a bar under it.
     var hasHeroBar: Bool { heroFraction != nil }
 
+    /// How many models a collapsed card lists before offering the rest.
+    ///
+    /// Three is what fits without the card becoming a table. Everything past it
+    /// is a click away rather than gone — a list that silently stops at three
+    /// makes a fourth model look like it does not exist.
+    static let collapsedModels = 3
+
+    /// The rows a card draws, given how many models it has room for.
+    func rows(showingModels limit: Int) -> [MetricRow] {
+        rows + modelRows.prefix(max(0, limit))
+    }
+
+    /// Models left over after `limit` — what the "more" line counts.
+    func hiddenModels(after limit: Int) -> Int {
+        max(0, modelRows.count - max(0, limit))
+    }
+
+    /// Format for the line offering the models that did not fit, with the count
+    /// left for the card to fill in — how many are hidden depends on the screen,
+    /// which the builder has no business knowing.
+    var moreFormat: String = ""
+
     /// The height this card draws at.
     ///
     /// Defined once, because it is needed in four places — the card itself, the
@@ -99,13 +127,15 @@ struct RingSnapshot: Identifiable, Equatable {
     /// moment two of them spell it out separately they drift. They already did:
     /// a copy that had not learnt about group rules reserved eleven points too
     /// few, which is a card whose bottom row cannot be reached with the mouse.
-    var cardHeight: CGFloat {
-        NotchLayout.cardHeight(
-            rowCount: rows.count,
-            barCount: rows.filter { $0.fraction != nil }.count,
-            ruleCount: rows.dropFirst().filter(\.startsGroup).count,
+    func cardHeight(showingModels limit: Int) -> CGFloat {
+        let shown = rows(showingModels: limit)
+        return NotchLayout.cardHeight(
+            rowCount: shown.count,
+            barCount: shown.filter { $0.fraction != nil }.count,
+            ruleCount: shown.dropFirst().filter(\.startsGroup).count,
             hasHero: note == nil,
             hasHeroBar: hasHeroBar,
+            hasMoreLine: hiddenModels(after: limit) > 0,
             note: note
         )
     }

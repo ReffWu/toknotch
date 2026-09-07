@@ -83,12 +83,14 @@ struct UsageDigest: Equatable {
     /// — so the answer travels with the number instead of living in a comment.
     struct Baseline: Equatable {
         let value: Double
-        /// Shown on the card, in the reader's language.
-        let caption: (AppLanguage) -> String
-
-        static func == (a: Baseline, b: Baseline) -> Bool {
-            a.value == b.value && a.caption(.english) == b.caption(.english)
-        }
+        /// The key for the phrase naming what this is measured against.
+        ///
+        /// A key rather than a finished string: the digest is arithmetic and
+        /// has no business knowing which language anybody reads. Naming the
+        /// phrase and letting the builder look it up also makes the whole
+        /// structure `Equatable` without the closure comparison the old version
+        /// needed.
+        let captionKey: String
     }
 
     struct Period: Equatable {
@@ -130,9 +132,7 @@ struct UsageDigest: Equatable {
             .map { $0.tokenBreakdown.total }
             .max() ?? 0
         let todayBaseline = recentPeak > 0
-            ? Baseline(value: Double(recentPeak)) { lang in
-                lang == .chinese ? "近 30 天最高日" : "your best day in 30"
-              }
+            ? Baseline(value: Double(recentPeak), captionKey: "baseline.recentPeak")
             : nil
 
         // --- This month ------------------------------------------------------
@@ -150,9 +150,7 @@ struct UsageDigest: Equatable {
         } ?? []
         let lastMonthTokens = totals(ofDays: lastMonthToDate).tokens
         let monthBaseline = lastMonthTokens > 0
-            ? Baseline(value: Double(lastMonthTokens)) { lang in
-                lang == .chinese ? "上月同期" : "the same days last month"
-              }
+            ? Baseline(value: Double(lastMonthTokens), captionKey: "baseline.lastMonth")
             : nil
 
         // --- Lifetime --------------------------------------------------------
@@ -169,9 +167,8 @@ struct UsageDigest: Equatable {
             messages: report.messages
         )
         let milestone = nextMilestone(above: lifetimeTotals.tokens)
-        let lifetimeBaseline = Baseline(value: Double(milestone)) { lang in
-            lang == .chinese ? "下一个里程碑" : "the next milestone"
-        }
+        let lifetimeBaseline = Baseline(value: Double(milestone),
+                                        captionKey: "baseline.milestone")
 
         let lifetimeVendors = group(lifetimeModels)
 

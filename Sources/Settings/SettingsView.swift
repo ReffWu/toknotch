@@ -39,45 +39,12 @@ struct SettingsView: View {
             }
         }
 
-        func summary(_ language: AppLanguage) -> String {
-            switch (self, language) {
-            case (.rings, .chinese):
-                return "选择刘海上显示哪些环。三个常驻环之外，你用过的每家服务商都能单独打开。"
-            case (.rings, .english):
-                return "Choose what the notch shows. Beyond the three that are always on, every vendor you've used can have a ring of its own."
-            case (.plans, .chinese):
-                return "填入每家的月费，就能看到这个计费周期里它产生的等效 API 价值是订阅费的多少倍。"
-            case (.plans, .english):
-                return "Enter what each plan costs and see what its usage has been worth against it, over the period the plan has actually paid for."
-            case (.appearance, .chinese):
-                return "刘海贴在哪条边、什么时候露出来，以及 TokNotch 本身出现在哪里。"
-            case (.appearance, .english):
-                return "Which edge the notch lives on, when it shows itself, and where TokNotch itself turns up."
-            case (.general, .chinese):
-                return "语言与数字写法、开机启动，以及用量数据从哪里来。"
-            case (.general, .english):
-                return "Language and number style, opening at login, and where the usage numbers come from."
-            }
-        }
-
         func title(_ language: AppLanguage) -> String {
-            switch (self, language) {
-            case (.rings, .chinese):      return "刘海显示"
-            case (.rings, .english):      return "The notch"
-            case (.plans, .chinese):      return "订阅与回本"
-            case (.plans, .english):      return "Plans & payback"
-            case (.appearance, .chinese): return "外观"
-            case (.appearance, .english): return "Appearance"
-            case (.general, .chinese):    return "通用"
-            case (.general, .english):    return "General"
-            }
+            language.t("settings.page." + rawValue)
         }
     }
 
     private var language: AppLanguage { preferences.appLanguage }
-    private func t(_ chinese: String, _ english: String) -> String {
-        language == .chinese ? chinese : english
-    }
 
     var body: some View {
         // A plain split rather than `NavigationSplitView`. That view insists on
@@ -92,7 +59,11 @@ struct SettingsView: View {
             Divider()
             detail
         }
-        .frame(width: SettingsView.width, height: SettingsView.height)
+        // Fills whatever the window gives it rather than claiming a fixed
+        // size. With `fullSizeContentView` the window's content area includes
+        // the title bar's height, so a hard-coded height leaves a band of bare
+        // window showing along the bottom edge.
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
         .onAppear {
             page = startingPage
@@ -156,15 +127,13 @@ struct RingsPage: View {
     @ObservedObject var store: UsageStore
 
     private var language: AppLanguage { preferences.appLanguage }
-    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
 
     var body: some View {
         SettingsPage {
 
             SettingsGroup(
-                title: t("常驻的三个环", "Always shown"),
-                footnote: t("这三个环始终显示。环的弧代表它跟什么比 — 走满一圈是你超过了自己，不是警告。",
-                            "These three are always on. Each ring's arc is a comparison — a full ring means you beat your own best, not a warning.")
+                title: language.t("settings.alwaysShown"),
+                footnote: language.t("settings.theseThreeAreAlwaysOn")
             ) {
                 ForEach(Array(RingKind.primaries.enumerated()), id: \.element.id) { index, kind in
                     if index > 0 { SettingsDivider() }
@@ -179,14 +148,13 @@ struct RingsPage: View {
             }
 
             SettingsGroup(
-                title: t("按服务商拆分", "By vendor"),
+                title: language.t("settings.byVendor"),
                 footnote: store.availableVendors.isEmpty ? nil
-                    : t("每家一个环，显示它的累计用量与占全部用量的比例，默认全部关闭。列表来自本机实际用量 — 没用过的厂商不会出现。",
-                        "One ring each, showing that vendor's lifetime usage and its share of everything. All off by default; the list comes from what this Mac has actually run.")
+                    : language.t("settings.oneRingEachShowingThat")
             ) {
                 if store.availableVendors.isEmpty {
                     SettingsRow("hourglass", tint: .gray,
-                                title: t("正在扫描本机用量…", "Scanning this Mac's usage…")) { EmptyView() }
+                                title: language.t("settings.scanningThisMacSUsage")) { EmptyView() }
                 } else {
                     ForEach(Array(store.availableVendors.enumerated()), id: \.element.rawValue) { index, vendor in
                         if index > 0 { SettingsDivider() }
@@ -213,7 +181,7 @@ struct RingsPage: View {
 
     private func subtitle(for vendor: Vendor) -> String? {
         guard let totals = store.lifetime(for: vendor) else { return nil }
-        return "\(UsageFormat.tokens(totals.tokens, language)) · \(UsageFormat.money(totals.cost))"
+        return "\(UsageFormat.tokens(totals.tokens, language)) · \(UsageFormat.money(totals.cost, language))"
     }
 
     @ViewBuilder
@@ -237,19 +205,19 @@ struct RingsPage: View {
 
     private func primaryTitle(_ kind: RingKind) -> String {
         switch kind {
-        case .today:    return t("今日", "Today")
-        case .month:    return t("本月", "This month")
-        case .lifetime: return t("累计", "All time")
+        case .today:    return language.t("settings.today")
+        case .month:    return language.t("settings.thisMonth")
+        case .lifetime: return language.t("settings.allTime")
         case .vendor(let v): return v.title(language)
         }
     }
 
     private func primaryNote(_ kind: RingKind) -> String {
         switch kind {
-        case .today:    return t("对比近 30 天最高的一天", "against your best day in 30")
-        case .month:    return t("对比上月同期", "against the same days last month")
-        case .lifetime: return t("距离下一个里程碑", "toward the next milestone")
-        case .vendor:   return t("占全部用量", "share of everything")
+        case .today:    return language.t("settings.againstYourBestDayIn")
+        case .month:    return language.t("settings.againstTheSameDaysLast")
+        case .lifetime: return language.t("settings.towardTheNextMilestone")
+        case .vendor:   return language.t("settings.shareOfEverything")
         }
     }
 }
@@ -261,7 +229,6 @@ struct PlansPage: View {
     @ObservedObject var store: UsageStore
 
     private var language: AppLanguage { preferences.appLanguage }
-    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
 
     /// Vendors you can actually hold a plan with, and that this Mac has used.
     ///
@@ -286,19 +253,18 @@ struct PlansPage: View {
         SettingsPage {
 
             if !configured.isEmpty {
-                SettingsGroup(title: t("本期合计", "This period")) {
+                SettingsGroup(title: language.t("settings.thisPeriod")) {
                     PaybackSummary(paid: totalMonthly, earned: totalEarned, language: language)
                 }
             }
 
             SettingsGroup(
-                title: t("每家的订阅", "Your plans"),
-                footnote: t("套餐会自动认出来：Claude 读自它的配置文件，ChatGPT 读自 Codex 的登录态 — 只取套餐名与计费起始日，绝不读取密钥，也绝不外传。认不出的从菜单里挑一个即可，价格已内置。",
-                            "Plans are recognised for you: Claude from its configuration file, ChatGPT from the Codex sign-in — only the plan name and the billing start date, never the keys beside them, and never off this Mac. Anything left over is one menu away.")
+                title: language.t("settings.yourPlans"),
+                footnote: language.t("settings.plansAreRecognisedForYou")
             ) {
                 if vendors.isEmpty {
                     SettingsRow("hourglass", tint: .gray,
-                                title: t("正在扫描本机用量…", "Scanning this Mac's usage…")) { EmptyView() }
+                                title: language.t("settings.scanningThisMacSUsage")) { EmptyView() }
                 } else {
                     ForEach(Array(vendors.enumerated()), id: \.element.rawValue) { index, vendor in
                         if index > 0 { SettingsDivider(inset: 0) }
@@ -324,9 +290,9 @@ private struct PaybackSummary: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 9) {
             HStack(alignment: .firstTextBaseline) {
-                Text(language == .chinese ? "等效价值" : "Earned")
+                Text(language.t("settings.earned"))
                     .font(.system(size: 12)).foregroundStyle(.secondary)
-                Text(UsageFormat.money(earned))
+                Text(UsageFormat.money(earned, language))
                     .font(.system(size: 22, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                 Spacer()
@@ -356,13 +322,9 @@ private struct PaybackSummary: View {
             }
             .frame(height: 6)
 
-            Text(paidBack
-                 ? (language == .chinese
-                    ? "订阅共 \(UsageFormat.money(paid))/月 · 已超出 \(UsageFormat.money(earned - paid))"
-                    : "\(UsageFormat.money(paid))/mo in plans · \(UsageFormat.money(earned - paid)) beyond break-even")
-                 : (language == .chinese
-                    ? "订阅共 \(UsageFormat.money(paid))/月 · 还差 \(UsageFormat.money(paid - earned))"
-                    : "\(UsageFormat.money(paid))/mo in plans · \(UsageFormat.money(paid - earned)) to go"))
+            Text(language.t(paidBack ? "settings.plansTotalOver" : "settings.plansTotalToGo",
+                            UsageFormat.money(paid, language),
+                            UsageFormat.money(abs(earned - paid), language)))
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
         }
@@ -390,7 +352,6 @@ private struct PlanRow: View {
     @State private var draft: String = ""
     @FocusState private var editing: Bool
 
-    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
 
     private var detected: DetectedPlan? { store.detectedPlans[vendor] }
     private var plan: Subscription? { store.plan(for: vendor) }
@@ -474,14 +435,14 @@ private struct PlanRow: View {
 
                 Picker("", selection: renewalDay) {
                     ForEach(1...31, id: \.self) { day in
-                        Text(language == .chinese ? "\(day) 号" : ordinal(day)).tag(day)
+                        Text(language.t("settings.dayOfMonth", day)).tag(day)
                     }
                 }
                 .labelsHidden()
                 .frame(width: 68)
                 .disabled(plan == nil)
 
-                verdict.frame(width: 66, alignment: .trailing)
+                verdict.frame(width: 86, alignment: .trailing)
             }
 
             if isCustom || provenance != nil {
@@ -496,7 +457,7 @@ private struct PlanRow: View {
                             .focused($editing)
                             .onSubmit(commit)
                             .onChange(of: editing) { _, focused in if !focused { commit() } }
-                        Text(language == .chinese ? "/ 月" : "/ mo")
+                        Text(language.t("settings.perMonth"))
                             .font(.system(size: 11)).foregroundStyle(.secondary)
                     }
                     if let note = provenance {
@@ -517,15 +478,15 @@ private struct PlanRow: View {
     /// Wide enough for the longest plan name and its price together —
     /// "ChatGPT Plus · $20" truncated to "ChatGPT Plus ·…", which reads as
     /// though something is missing.
-    private var menuWidth: CGFloat { PlanCatalog.plans(for: vendor).isEmpty ? 84 : 162 }
+    private var menuWidth: CGFloat { PlanCatalog.plans(for: vendor).isEmpty ? 84 : 156 }
 
     private func caption(for option: PlanCatalog.Plan) -> String {
         switch option.id {
-        case "none":   return t("无订阅", "No plan")
-        case "custom": return t("自定义…", "Custom…")
+        case "none":   return language.t("settings.noPlan")
+        case "custom": return language.t("settings.custom")
         default:
             return option.monthlyUSD > 0
-                ? "\(option.name) · \(UsageFormat.moneyShort(option.monthlyUSD))"
+                ? "\(option.name) · \(UsageFormat.moneyShort(option.monthlyUSD, language))"
                 : option.name
         }
     }
@@ -535,12 +496,10 @@ private struct PlanRow: View {
     /// for itself.
     private var provenance: String? {
         if isDetected, let detected {
-            return t("自动识别：\(detected.name) · 读自 \(detected.source)",
-                     "Detected: \(detected.name) · from \(detected.source)")
+            return language.t("settings.detected", detected.name, detected.source)
         }
         if let detected, detected.subscription != nil, !isDetected {
-            return t("已手动覆盖（识别到 \(detected.name)）",
-                     "Overridden (detected \(detected.name))")
+            return language.t("settings.overridden", detected.name)
         }
         return nil
     }
@@ -580,7 +539,7 @@ private struct PlanRow: View {
                 Text(String(format: "%.1f×", payback.multiple))
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .monospacedDigit()
-                Text(payback.hasPaidBack ? t("已回本", "paid back") : t("回本中", "on the way"))
+                Text(payback.hasPaidBack ? language.t("settings.paidBack") : language.t("settings.onTheWay"))
                     .font(.system(size: 10))
             }
             .foregroundStyle(payback.hasPaidBack ? Color.green : Color.orange)
@@ -596,44 +555,37 @@ struct AppearancePage: View {
     @ObservedObject var preferences: Preferences
 
     private var language: AppLanguage { preferences.appLanguage }
-    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
 
     var body: some View {
         SettingsPage {
 
-            SettingsGroup(title: t("刘海", "The notch")) {
+            SettingsGroup(title: language.t("settings.theNotch")) {
                 SettingsPictureRow(
-                    title: t("显示模式", "Show"),
-                    subtitle: language == .chinese
-                        ? preferences.notchVisibility.chineseExplanation
-                        : preferences.notchVisibility.explanation,
+                    title: language.t("settings.show"),
+                    subtitle: preferences.notchVisibility.explanation(language),
                     selection: $preferences.notchVisibility,
                     options: NotchVisibility.allCases,
-                    caption: { language == .chinese ? $0.chineseTitle : $0.title },
+                    caption: { $0.title(language) },
                     preview: { NotchVisibilityPreview(visibility: $0) }
                 )
                 SettingsDivider(inset: 0)
                 SettingsPictureRow(
-                    title: t("贴在哪条边", "Edge"),
-                    subtitle: language == .chinese
-                        ? preferences.notchEdge.chineseExplanation
-                        : preferences.notchEdge.explanation,
+                    title: language.t("settings.edge"),
+                    subtitle: preferences.notchEdge.explanation(language),
                     selection: $preferences.notchEdge,
                     options: NotchEdge.allCases,
-                    caption: { language == .chinese ? $0.chineseTitle : $0.title },
+                    caption: { $0.title(language) },
                     preview: { NotchEdgePreview(edge: $0) }
                 )
             }
 
-            SettingsGroup(title: t("应用本身", "The app itself"),
-                          footnote: language == .chinese
-                            ? preferences.appPresence.chineseExplanation
-                            : preferences.appPresence.explanation) {
+            SettingsGroup(title: language.t("settings.theAppItself"),
+                          footnote: preferences.appPresence.explanation(language)) {
                 SettingsMenuRow(
-                    title: t("在哪里能找到它", "Where it shows up"),
+                    title: language.t("settings.whereItShowsUp"),
                     selection: $preferences.appPresence,
                     options: AppPresence.allCases,
-                    label: { language == .chinese ? $0.chineseTitle : $0.title },
+                    label: { $0.title(language) },
                     symbol: "macwindow", tint: .indigo
                 )
             }
@@ -649,25 +601,26 @@ struct GeneralPage: View {
     @ObservedObject var updater: Updater
 
     private var language: AppLanguage { preferences.appLanguage }
-    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
 
     var body: some View {
         SettingsPage {
 
-            SettingsGroup(title: t("语言与单位", "Language & units"),
-                          footnote: preferences.appLanguage.explanation) {
+            SettingsGroup(title: language.t("settings.language"),
+                          footnote: language.t("settings.languageNote")) {
                 SettingsMenuRow(
-                    title: t("数字怎么写", "How numbers are written"),
+                    title: language.t("settings.language"),
                     selection: $preferences.appLanguage,
-                    options: AppLanguage.allCases,
-                    label: { $0.title },
-                    symbol: "textformat.123", tint: .teal
+                    options: AppLanguage.available,
+                    // Each language named in itself; only "system" is written
+                    // in whatever the reader is currently using.
+                    label: { $0 == .system ? language.t("settings.systemLanguage") : $0.endonym },
+                    symbol: "globe", tint: .teal
                 )
             }
 
-            SettingsGroup(title: t("启动", "Startup")) {
+            SettingsGroup(title: language.t("settings.startup")) {
                 SettingsRow("power", tint: .blue,
-                            title: t("开机时自动启动", "Open at login"),
+                            title: language.t("settings.openAtLogin"),
                             subtitle: preferences.launchAtLoginProblem) {
                     Toggle("", isOn: $preferences.launchAtLogin)
                         .toggleStyle(.switch).controlSize(.small).labelsHidden()
@@ -675,27 +628,25 @@ struct GeneralPage: View {
             }
 
             SettingsGroup(
-                title: t("数据来源", "Where the numbers come from"),
-                footnote: t("用量由 tokscale 在本机扫描各个 AI 工具的会话记录得出；套餐则读自各工具的登录信息，只取套餐名与计费日。全程本地：不碰钥匙串、不弹密码框、不上传任何数据。",
-                            "Usage comes from tokscale reading each tool's own session logs on this Mac; plans come from each tool's sign-in, and only the plan name and billing date are read. Entirely local: no keychain, no password prompts, nothing leaves the machine.")
+                title: language.t("settings.whereTheNumbersComeFrom"),
+                footnote: language.t("settings.usageComesFromTokscaleReading")
             ) {
                 SettingsRow(store.problem == nil ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
                             tint: store.problem == nil ? .green : .orange,
                             title: status, subtitle: source) {
-                    Button(t("刷新", "Refresh")) { store.refreshNow() }
+                    Button(language.t("settings.refresh")) { store.refreshNow() }
                         .controlSize(.small)
                         .disabled(store.isRefreshing)
                 }
             }
 
             SettingsGroup(
-                title: t("更新", "Updates"),
+                title: language.t("settings.updates"),
                 footnote: Updater.isConfigured ? nil
-                    : t("这份是本地构建，没有更新源 — 不是出错，只是它不是从发布渠道装的。",
-                        "This is a local build with no update feed — not a fault, just a copy that did not come from a release.")
+                    : language.t("settings.thisIsALocalBuild")
             ) {
                 SettingsRow("arrow.triangle.2.circlepath", tint: .blue,
-                            title: t("自动检查更新", "Check automatically"),
+                            title: language.t("settings.checkAutomatically"),
                             subtitle: updateStatus) {
                     Toggle("", isOn: $updater.automatic)
                         .toggleStyle(.switch).controlSize(.small).labelsHidden()
@@ -703,17 +654,17 @@ struct GeneralPage: View {
                 }
                 SettingsDivider()
                 SettingsRow("square.and.arrow.down", tint: .cyan,
-                            title: t("现在检查", "Check now")) {
-                    Button(t("检查", "Check")) { updater.checkForUpdates() }
+                            title: language.t("settings.checkNow")) {
+                    Button(language.t("settings.check")) { updater.checkForUpdates() }
                         .controlSize(.small)
                         .disabled(!Updater.isConfigured || updater.outcome == .checking)
                 }
             }
 
-            SettingsGroup(title: t("关于", "About")) {
+            SettingsGroup(title: language.t("settings.about")) {
                 SettingsRow("app.badge", tint: .indigo,
                             title: "TokNotch \(updater.currentVersion)",
-                            subtitle: t("刘海里的 Token 用量", "token usage, in the notch")) {
+                            subtitle: language.t("settings.tokenUsageInTheNotch")) {
                     EmptyView()
                 }
             }
@@ -725,34 +676,35 @@ struct GeneralPage: View {
         switch updater.outcome {
         case .unconfigured: return nil
         case .idle:
-            return updater.lastChecked.map {
-                let f = DateFormatter(); f.dateStyle = .medium; f.timeStyle = .short
-                return t("上次检查 \(f.string(from: $0))", "Last checked \(f.string(from: $0))")
+            return updater.lastChecked.map { checked in
+                let f = DateFormatter()
+                f.locale = language.locale
+                f.dateStyle = .medium
+                f.timeStyle = .short
+                return language.t("settings.lastChecked", f.string(from: checked))
             }
-        case .checking:            return t("正在检查…", "Checking…")
-        case .upToDate:            return t("已是最新版本", "Up to date")
-        case .found(let version):  return t("有新版本 \(version)", "Version \(version) is available")
-        case .unreachable:         return t("暂时连不上更新源", "Couldn't reach the update feed")
-        case .failed(let why):     return t("检查失败：\(why)", "Check failed — \(why)")
+        case .checking:            return language.t("settings.checking")
+        case .upToDate:            return language.t("settings.upToDate")
+        case .found(let version):  return language.t("settings.updateAvailable", version)
+        case .unreachable:         return language.t("settings.couldnTReachTheUpdate")
+        case .failed(let why):     return language.t("settings.checkFailed", why)
         }
     }
 
     private var status: String {
         if let problem = store.problem { return problem }
-        guard let updated = store.lastUpdated else { return t("正在读取…", "Reading…") }
+        guard let updated = store.lastUpdated else { return language.t("settings.reading") }
         let formatter = DateFormatter()
         formatter.timeStyle = .medium
         formatter.dateStyle = .none
-        return t("读取正常 · 更新于 \(formatter.string(from: updated))",
-                 "Reading fine · updated \(formatter.string(from: updated))")
+        return language.t("settings.readingFine", formatter.string(from: updated))
     }
 
     /// Says which copy of tokscale is answering, because "it is built in" is
     /// the whole reason this app needs no setup.
     private var source: String {
         TokscaleCLI.isUsingBundledBinary
-            ? t("内置 tokscale \(TokscaleCLI.bundledVersion ?? "") — 无需另行安装",
-                "Built-in tokscale \(TokscaleCLI.bundledVersion ?? "") — nothing to install")
-            : t("使用本机安装的 tokscale", "Using the tokscale installed on this Mac")
+            ? language.t("settings.builtInTokscale", TokscaleCLI.bundledVersion ?? "")
+            : language.t("settings.usingTheTokscaleInstalledOn")
     }
 }

@@ -14,7 +14,7 @@ final class TooltipRenderTests: XCTestCase {
         XCTAssertFalse(rings.isEmpty)
 
         for ring in rings {
-            let budget = ring.cardHeight
+            let budget = ring.cardHeight(showingModels: RingSnapshot.collapsedModels)
             let renderer = ImageRenderer(
                 content: TooltipCard(ring: ring).padding(20).background(Color(white: 0.26))
             )
@@ -35,6 +35,28 @@ final class TooltipRenderTests: XCTestCase {
                 try png.write(to: URL(fileURLWithPath: directory)
                     .appendingPathComponent("\(ring.id).png"))
             }
+        }
+    }
+
+    /// A card with more models than it shows, collapsed and opened out.
+    func testTheMoreLineAndTheExpandedCard() throws {
+        guard let directory = ProcessInfo.processInfo.environment["TOOLTIP_RENDER_PATH"] else {
+            throw XCTSkip("set TOOLTIP_RENDER_PATH to write the shots")
+        }
+        let ring = try XCTUnwrap(Fixtures.rings().first { $0.modelRows.count > 3 })
+        for (name, limit) in [("collapsed", RingSnapshot.collapsedModels), ("expanded", 8)] {
+            let renderer = ImageRenderer(
+                content: TooltipCard(ring: ring, modelLimit: limit,
+                                     canExpand: limit == RingSnapshot.collapsedModels)
+                    .padding(20).background(Color(white: 0.26))
+            )
+            renderer.scale = 2
+            let image = try XCTUnwrap(renderer.nsImage)
+            let tiff = try XCTUnwrap(image.tiffRepresentation)
+            let png = try XCTUnwrap(NSBitmapImageRep(data: tiff)?
+                .representation(using: .png, properties: [:]))
+            try png.write(to: URL(fileURLWithPath: directory)
+                .appendingPathComponent("more-\(name).png"))
         }
     }
 
@@ -62,14 +84,14 @@ final class TooltipRenderTests: XCTestCase {
     /// A ring that could not be read says so instead of showing rows, and the
     /// card still has to hold that sentence.
     func testANoteCardHoldsItsMessage() throws {
-        let ring = RingBuilder.placeholder(.today, language: .chinese,
+        let ring = RingBuilder.placeholder(.today, language: .simplifiedChinese,
                                            note: "未找到 tokscale。用 Homebrew 安装后即可读取用量：brew install tokscale")
         let renderer = ImageRenderer(
             content: TooltipCard(ring: ring).padding(20).background(Color(white: 0.26))
         )
         renderer.scale = 2
         let image = try XCTUnwrap(renderer.nsImage)
-        let budget = ring.cardHeight
+        let budget = ring.cardHeight(showingModels: RingSnapshot.collapsedModels)
         XCTAssertEqual(image.size.height, budget + 40, accuracy: 1.5)
     }
 }

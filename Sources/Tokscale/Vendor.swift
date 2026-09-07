@@ -49,27 +49,28 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         return .other
     }
 
+    /// What to call this vendor.
+    ///
+    /// Most of these are brand names and stay as they are in every language —
+    /// nobody translates "Anthropic". The ones that go through the strings file
+    /// are those with a genuine local name a reader would expect: 通义千问 in
+    /// Chinese where the rest of the world writes Qwen.
     func title(_ language: AppLanguage) -> String {
-        switch (self, language) {
-        case (.anthropic, _):        return "Anthropic"
-        case (.openai, _):           return "OpenAI"
-        case (.google, _):           return "Google"
-        case (.deepseek, _):         return "DeepSeek"
-        case (.alibaba, .chinese):   return "通义千问"
-        case (.alibaba, .english):   return "Qwen"
-        case (.zhipu, .chinese):     return "智谱 GLM"
-        case (.zhipu, .english):     return "Zhipu GLM"
-        case (.moonshot, .chinese):  return "月之暗面 Kimi"
-        case (.moonshot, .english):  return "Moonshot Kimi"
-        case (.minimax, _):          return "MiniMax"
-        case (.xai, _):              return "xAI"
-        case (.xiaomi, .chinese):    return "小米 MiMo"
-        case (.xiaomi, .english):    return "Xiaomi MiMo"
-        case (.nvidia, _):           return "NVIDIA"
-        case (.meta, _):             return "Meta"
-        case (.mistral, _):          return "Mistral"
-        case (.other, .chinese):     return "其他"
-        case (.other, .english):     return "Other"
+        switch self {
+        case .anthropic: return "Anthropic"
+        case .openai:    return "OpenAI"
+        case .google:    return "Google"
+        case .deepseek:  return "DeepSeek"
+        case .minimax:   return "MiniMax"
+        case .xai:       return "xAI"
+        case .nvidia:    return "NVIDIA"
+        case .meta:      return "Meta"
+        case .mistral:   return "Mistral"
+        case .alibaba:   return language.t("vendor.name.alibaba")
+        case .zhipu:     return language.t("vendor.name.zhipu")
+        case .moonshot:  return language.t("vendor.name.moonshot")
+        case .xiaomi:    return language.t("vendor.name.xiaomi")
+        case .other:     return language.t("vendor.name.other")
         }
     }
 

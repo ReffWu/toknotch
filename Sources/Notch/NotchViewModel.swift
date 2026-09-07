@@ -5,11 +5,62 @@ import Combine
 final class NotchViewModel: ObservableObject {
     @Published var rings: [RingSnapshot] = []
 
+    /// The ring whose card has been opened out to show every model it can.
+    ///
+    /// Cleared when the pointer moves to another ring: an expansion is a thing
+    /// you did to *this* card, and carrying it to the next one would make cards
+    /// open at different sizes for no reason the reader can see.
+    @Published var expandedRing: String?
+
+    /// How many model rows the hovered card is showing.
+    func modelLimit(for ring: RingSnapshot) -> Int {
+        expandedRing == ring.id ? modelCeiling : RingSnapshot.collapsedModels
+    }
+
+    /// Whether asking for more would show more — false once the screen is what
+    /// is holding the rest back.
+    func canExpand(_ ring: RingSnapshot) -> Bool {
+        expandedRing != ring.id && ring.modelRows.count > RingSnapshot.collapsedModels
+    }
+
+    /// The most model rows this screen has room for.
+    var modelCeiling: Int {
+        guard screenSize != .zero else { return RingSnapshot.collapsedModels }
+        return NotchLayout.modelsFitting(cardBudget: cardBudget(cellCount: rings.count),
+                                         standingRows: 2)
+    }
+
+    /// How tall a card may be before the panel runs off the screen.
+    ///
+    /// Which way it runs out differs by orientation: along a side edge the
+    /// card's height is spent *along* the stack, half of it past each end, so
+    /// the stack takes its share first. Along a horizontal edge the card hangs
+    /// inward instead, and what it competes with is the depth already spent on
+    /// the notch body and its tail.
+    private func cardBudget(cellCount: Int) -> CGFloat {
+        if edge.isVertical {
+            return screenSize.height
+                - shapeLength(cellCount: cellCount)
+                - 2 * NotchLayout.cardCorner
+        }
+        return screenUsableSize.height
+            - contentInset
+            - NotchLayout.bodyDepth(for: edge)
+            - NotchLayout.tailLength
+            - NotchLayout.tailGap
+    }
+
     /// Which cell the cursor is over, if any. Driven from the window controller
     /// rather than SwiftUI's `.onHover`: the panel ignores mouse events until
     /// the cursor is over it, so SwiftUI cannot see the crossing that turns
     /// event handling on in the first place.
-    @Published var hoveredIndex: Int?
+    @Published var hoveredIndex: Int? {
+        didSet {
+            // An expansion belongs to the card it was made on.
+            guard hoveredIndex != oldValue else { return }
+            expandedRing = nil
+        }
+    }
     /// Ticked on refresh, so anything dated on a card stays honest.
     @Published var now: Date = Date()
 
@@ -245,6 +296,13 @@ final class NotchViewModel: ObservableObject {
         NotchLayout.ringCenter(index: index, edge: edge, flare: flare) + endSpread
     }
 
+    /// Open or close the hovered card.
+    func toggleExpansion() {
+        guard let ring = hoveredRing, ring.modelRows.count > RingSnapshot.collapsedModels
+        else { return }
+        expandedRing = expandedRing == ring.id ? nil : ring.id
+    }
+
     var hoveredRing: RingSnapshot? {
         guard let hoveredIndex, rings.indices.contains(hoveredIndex) else { return nil }
         return rings[hoveredIndex]
@@ -264,11 +322,19 @@ final class NotchViewModel: ObservableObject {
         NotchLayout.slack(for: edge, maxCardHeight: maxCardHeight(cellCount: cellCount))
     }
 
-    /// The tallest card that can occur here. Fixed rather than solved for the
-    /// screen: a card is now three standing rows plus at most three model rows,
-    /// so there is no longer a list whose length has to be traded against the
-    /// display's height.
-    func maxCardHeight(cellCount: Int) -> CGFloat { NotchLayout.defaultMaxCardHeight }
+    /// The tallest card the panel must be able to hold: a fully opened one, on
+    /// this screen. The panel is transparent and passes clicks through
+    /// everywhere it draws nothing, so reserving the room costs nothing — and
+    /// not reserving it clips the card that was opened on purpose.
+    func maxCardHeight(cellCount: Int) -> CGFloat {
+        let models = screenSize == .zero
+            ? RingSnapshot.collapsedModels
+            : NotchLayout.modelsFitting(cardBudget: cardBudget(cellCount: cellCount),
+                                        standingRows: 2)
+        return NotchLayout.cardHeight(rowCount: 2 + models, barCount: models + 1,
+                                      ruleCount: 1, hasHero: true, hasHeroBar: true,
+                                      hasMoreLine: true)
+    }
 
     /// The drawn extent of the notch body right now, along the stack.
     ///

@@ -297,6 +297,7 @@ enum NotchLayout {
     /// region and the panel can both be sized before the card is ever laid out.
     static func cardHeight(rowCount: Int, barCount: Int = 0, ruleCount: Int = 0,
                            hasHero: Bool = false, hasHeroBar: Bool = false,
+                           hasMoreLine: Bool = false,
                            note: String? = nil) -> CGFloat {
         var height = 2 * cardPadding
         height += max(glyphSize, cardTitleLineHeight)
@@ -314,12 +315,39 @@ enum NotchLayout {
         guard rowCount > 0 else { return height }
 
         let gaps = rowCount - 1
-        return height + headerToBlock
+        height += headerToBlock
             + CGFloat(rowCount) * cardBodyLineHeight
             + CGFloat(barCount) * (labelToBar + barHeight)
             + CGFloat(max(0, gaps - ruleCount)) * rowSpacing
             + CGFloat(ruleCount) * (2 * groupSpacing + hairline)
+        // The line offering the models that did not fit.
+        if hasMoreLine { height += rowSpacing + cardBodyLineHeight }
+        return height
     }
+
+    /// How many model rows a card can show before it runs off the screen.
+    ///
+    /// Solved by walking up rather than by inverting `cardHeight`: that figure
+    /// is a sum of a dozen named parts, and an inverted copy of it would have to
+    /// be kept in step by hand. The range is short enough that the search costs
+    /// nothing.
+    static func modelsFitting(cardBudget: CGFloat, standingRows: Int) -> Int {
+        var fits = 0
+        for n in 1...modelCeiling {
+            // Costed as though one were still hidden, so admitting the nth row
+            // can never be what pushes the "more" line off the bottom.
+            let height = cardHeight(rowCount: standingRows + n, barCount: n + 1,
+                                    ruleCount: 1, hasHero: true, hasHeroBar: true,
+                                    hasMoreLine: true)
+            guard height <= cardBudget else { break }
+            fits = n
+        }
+        return max(RingSnapshot.collapsedModels, fits)
+    }
+
+    /// Past this many rows the card has stopped being glanceable, and counting
+    /// the rest is the kinder answer however much room the screen has.
+    static let modelCeiling = 12
 
     /// The fullest card that can occur: a vendor with a subscription, which
     /// carries the payback group, the rule under it, the standing facts and the
@@ -330,9 +358,11 @@ enum NotchLayout {
     static let maxRuleCount = 1
 
 
+    /// Costed with the "more" line present, because the fullest card a
+    /// collapsed stack can produce is one that still has models to offer.
     static let defaultMaxCardHeight = cardHeight(
         rowCount: maxRowCount, barCount: maxBarCount, ruleCount: maxRuleCount,
-        hasHero: true, hasHeroBar: true
+        hasHero: true, hasHeroBar: true, hasMoreLine: true
     )
 
     /// Room at each end of the stack: enough for the settings orb to hang past

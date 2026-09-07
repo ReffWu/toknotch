@@ -49,9 +49,9 @@ enum RingBuilder {
                             note: String? = nil) -> RingSnapshot {
         let (title, glyph): (String, RingGlyph)
         switch kind {
-        case .today:    (title, glyph) = (zh(language, "今日", "Today"), .today)
-        case .month:    (title, glyph) = (zh(language, "本月", "This month"), .month)
-        case .lifetime: (title, glyph) = (zh(language, "累计", "All time"), .lifetime)
+        case .today:    (title, glyph) = (language.t("ring.today.title"), .today)
+        case .month:    (title, glyph) = (language.t("ring.month.title"), .month)
+        case .lifetime: (title, glyph) = (language.t("ring.lifetime.title"), .lifetime)
         case .vendor(let v): (title, glyph) = (v.title(language), .vendor(v))
         }
         return RingSnapshot(
@@ -59,7 +59,7 @@ enum RingBuilder {
             glyph: glyph, headline: "—",
             hero: "—", heroCaption: "", heroTint: Palette.textSecondary,
             fraction: nil, tint: Palette.textSecondary, rows: [],
-            note: note ?? zh(language, "正在读取 tokscale 数据…", "Reading tokscale data…")
+            note: note ?? language.t("status.reading")
         )
     }
 
@@ -75,25 +75,27 @@ enum RingBuilder {
         let (title, glyph, caption, measure): (String, RingGlyph, String, String)
         switch kind {
         case .today:
-            title = zh(language, "今日", "Today")
+            title = language.t("ring.today.title")
             glyph = .today
-            caption = date(now, language, calendar)
+            caption = UsageFormat.day(now, language, calendar: calendar)
             measure = against(period, language)
         case .month:
-            let day = calendar.component(.day, from: now)
-            title = zh(language, "本月", "This month")
+            title = language.t("ring.month.title")
             glyph = .month
-            caption = zh(language, "\(calendar.component(.month, from: now)) 月 1–\(day) 日",
-                                   "1–\(day) \(monthName(now, language, calendar))")
+            // Month name and day count as separate values: they go in opposite
+            // orders — "9月1–7日" against "1–7 Sep".
+            caption = language.t("ring.month.caption",
+                                 monthName(now, language, calendar),
+                                 calendar.component(.day, from: now))
             measure = against(period, language)
         default:
             let milestone = period.baseline.map { Int64($0.value) } ?? 0
-            title = zh(language, "累计", "All time")
+            title = language.t("ring.lifetime.title")
             glyph = .lifetime
-            caption = zh(language, "全部时间", "everything")
-            measure = zh(language,
-                "距 \(UsageFormat.tokens(milestone, language)) 里程碑 \(percent(period.fraction))",
-                "\(percent(period.fraction)) of the way to \(UsageFormat.tokens(milestone, language))")
+            caption = language.t("ring.lifetime.caption")
+            measure = language.t("ring.lifetime.measure",
+                                 UsageFormat.tokens(milestone, language),
+                                 percent(period.fraction, language))
         }
 
         return RingSnapshot(
@@ -102,7 +104,9 @@ enum RingBuilder {
             hero: tokens, heroCaption: measure, heroTint: band.color,
             heroFraction: period.fraction,
             fraction: period.fraction, tint: band.color,
-            rows: supporting(period, language)
+            rows: standing(period, language),
+            modelRows: modelRows(period.models, of: period.totals.tokens, language),
+            moreFormat: language.t("card.moreModels")
         )
     }
 
@@ -110,10 +114,11 @@ enum RingBuilder {
     private static func against(_ period: UsageDigest.Period,
                                 _ language: AppLanguage) -> String {
         guard let baseline = period.baseline else {
-            return zh(language, "暂无可比的历史", "nothing to compare yet")
+            return language.t("baseline.none")
         }
-        return zh(language, "\(baseline.caption(language))的 \(percent(period.fraction))",
-                            "\(percent(period.fraction)) of \(baseline.caption(language))")
+        return language.t("baseline.against",
+                          language.t(baseline.captionKey),
+                          percent(period.fraction, language))
     }
 
     // MARK: - Vendor rings
@@ -143,63 +148,59 @@ enum RingBuilder {
         if let payback {
             var rows: [MetricRow] = [
                 MetricRow(id: "lifetime",
-                          label: zh(language, "累计用量", "All-time usage"),
-                          value: "\(tokens) · \(UsageFormat.money(usage.totals.cost))",
+                          label: language.t("row.lifetimeUsage"),
+                          value: "\(tokens) · \(UsageFormat.money(usage.totals.cost, language))",
                           startsGroup: true)
             ]
-            rows += modelRows(usage.models, of: usage.totals.tokens, language,
-                              tint: usage.vendor.ringTint)
-
-            let verdict = payback.hasPaidBack
-                ? zh(language, "已回本", "paid back")
-                : zh(language, "回本进行中", "on the way back")
+                let verdict = language.t(payback.hasPaidBack ? "payback.paidBack"
+                                                          : "payback.onTheWay")
             return RingSnapshot(
                 kind: .vendor(usage.vendor), title: usage.vendor.title(language),
                 caption: periodLabel(payback, language, calendar),
                 glyph: .vendor(usage.vendor),
                 headline: tokens,
-                hero: String(format: "%.1f×", payback.multiple),
-                heroCaption: zh(language,
-                    "\(verdict) · 本期 \(UsageFormat.money(payback.earned)) / 订阅 \(UsageFormat.money(payback.subscription.monthlyUSD))",
-                    "\(verdict) · \(UsageFormat.money(payback.earned)) earned on \(UsageFormat.money(payback.subscription.monthlyUSD))"),
+                hero: UsageFormat.multiple(payback.multiple, language),
+                heroCaption: language.t("payback.hero",
+                                        verdict,
+                                        UsageFormat.money(payback.earned, language),
+                                        UsageFormat.money(payback.subscription.monthlyUSD, language)),
                 heroTint: payback.hasPaidBack ? IntensityBand.record.color : IntensityBand.strong.color,
                 heroFraction: payback.scale.fill(payback.multiple),
                 heroMarker: payback.scale.breakEven,
                 fraction: share, tint: usage.vendor.ringTint,
-                rows: rows
+                rows: rows,
+                modelRows: modelRows(usage.models, of: usage.totals.tokens, language,
+                                     tint: usage.vendor.ringTint),
+                moreFormat: language.t("card.moreModels")
             )
         }
 
         var rows: [MetricRow] = [
             MetricRow(id: "cost",
-                      label: zh(language, "等效商业价值", "Equivalent API cost"),
-                      value: UsageFormat.money(usage.totals.cost))
+                      label: language.t("row.equivalentCost"),
+                      value: UsageFormat.money(usage.totals.cost, language))
         ]
-        rows += modelRows(usage.models, of: usage.totals.tokens, language,
-                          tint: usage.vendor.ringTint)
-
         return RingSnapshot(
             kind: .vendor(usage.vendor), title: usage.vendor.title(language),
-            caption: zh(language, "累计", "All time"),
+            caption: language.t("vendor.allTime"),
             glyph: .vendor(usage.vendor),
             headline: tokens,
             hero: tokens,
-            heroCaption: zh(language, "占全部用量 \(UsageFormat.share(share))",
-                                      "\(UsageFormat.share(share)) of everything"),
+            heroCaption: language.t("vendor.share", UsageFormat.share(share, language)),
             heroTint: usage.vendor.ringTint,
             heroFraction: share,
             fraction: share, tint: usage.vendor.ringTint,
-            rows: rows
+            rows: rows,
+            modelRows: modelRows(usage.models, of: usage.totals.tokens, language,
+                                 tint: usage.vendor.ringTint),
+            moreFormat: language.t("card.moreModels")
         )
     }
 
     private static func periodLabel(_ payback: Payback, _ language: AppLanguage,
                                     _ calendar: Calendar) -> String {
-        let start = payback.period.start
-        let month = calendar.component(.month, from: start)
-        let day = calendar.component(.day, from: start)
-        return zh(language, "本期 \(month) 月 \(day) 日起",
-                            "since \(day) \(monthName(start, language, calendar))")
+        language.t("payback.period",
+                   UsageFormat.day(payback.period.start, language, calendar: calendar))
     }
 
     // MARK: - Supporting rows
@@ -210,35 +211,38 @@ enum RingBuilder {
     /// dropped: it is the most technical line on the card and the least likely
     /// to be the reason anybody opened it. Money and volume stay, because those
     /// are the two things the hero is usually being weighed against.
-    private static func supporting(_ period: UsageDigest.Period,
-                                   _ language: AppLanguage) -> [MetricRow] {
-        var rows: [MetricRow] = [
+    private static func standing(_ period: UsageDigest.Period,
+                                 _ language: AppLanguage) -> [MetricRow] {
+        [
             MetricRow(id: "cost",
-                      label: zh(language, "等效商业价值", "Equivalent API cost"),
-                      value: UsageFormat.money(period.totals.cost)),
+                      label: language.t("row.equivalentCost"),
+                      value: UsageFormat.money(period.totals.cost, language)),
             MetricRow(id: "messages",
-                      label: zh(language, "请求次数", "Requests"),
-                      value: UsageFormat.count(period.totals.messages))
+                      label: language.t("row.requests"),
+                      value: UsageFormat.count(period.totals.messages, language))
         ]
-        rows += modelRows(period.models, of: period.totals.tokens, language)
-        return rows
     }
 
-    /// The busiest models, each with the share of this period it accounts for.
+    /// Every model, busiest first, each with the share of this period it
+    /// accounts for.
+    ///
+    /// Not trimmed to what a card shows: the card decides that, and it depends
+    /// on the screen and on whether the reader has asked for more. Capped only
+    /// at the point where a list has stopped being a list.
     private static func modelRows(_ models: [UsageDigest.ModelUsage],
                                   of total: Int64,
                                   _ language: AppLanguage,
                                   tint: Color? = nil) -> [MetricRow] {
         guard total > 0 else { return [] }
-        return models.prefix(modelsPerCard).enumerated().map { index, model in
+        return models.prefix(NotchLayout.modelCeiling).enumerated().map { index, model in
             let share = Double(model.totals.tokens) / Double(total)
             return MetricRow(
                 id: "model.\(index)",
                 label: UsageFormat.modelName(model.model),
-                value: "\(UsageFormat.tokens(model.totals.tokens, language)) · \(UsageFormat.moneyShort(model.totals.cost))",
+                value: "\(UsageFormat.tokens(model.totals.tokens, language)) · \(UsageFormat.moneyShort(model.totals.cost, language))",
                 fraction: share,
                 tint: tint ?? model.vendor.ringTint,
-                startsGroup: index == 0 && tint == nil
+                startsGroup: index == 0
             )
         }
     }
@@ -252,38 +256,17 @@ enum RingBuilder {
             .joined(separator: " · ")
     }
 
-    /// A comparison ring explains itself by naming what it is compared against.
-    private static func detail(for period: UsageDigest.Period,
-                               _ language: AppLanguage) -> String {
-        guard let baseline = period.baseline else {
-            return zh(language, "暂无可比的历史", "nothing to compare yet")
-        }
-        return zh(language,
-                  "\(baseline.caption(language))的 \(percent(period.fraction))",
-                  "\(percent(period.fraction)) of \(baseline.caption(language))")
+    private static func percent(_ fraction: Double?, _ language: AppLanguage) -> String {
+        fraction.map { UsageFormat.percent($0, language) } ?? "—"
     }
 
-    private static func percent(_ fraction: Double?) -> String {
-        fraction.map(UsageFormat.percent) ?? "—"
-    }
-
-    private static func date(_ date: Date, _ language: AppLanguage,
-                             _ calendar: Calendar) -> String {
-        let month = calendar.component(.month, from: date)
-        let day = calendar.component(.day, from: date)
-        return language == .chinese ? "\(month) 月 \(day) 日" : "\(day) \(monthName(date, language, calendar))"
-    }
-
+    /// Just the month, named the way this language names it.
     private static func monthName(_ date: Date, _ language: AppLanguage,
                                   _ calendar: Calendar) -> String {
         let formatter = DateFormatter()
         formatter.calendar = calendar
-        formatter.locale = Locale(identifier: language == .chinese ? "zh_CN" : "en_US")
-        formatter.dateFormat = language == .chinese ? "M月" : "MMM"
+        formatter.locale = language.locale
+        formatter.setLocalizedDateFormatFromTemplate("MMM")
         return formatter.string(from: date)
-    }
-
-    private static func zh(_ language: AppLanguage, _ chinese: String, _ english: String) -> String {
-        language == .chinese ? chinese : english
     }
 }

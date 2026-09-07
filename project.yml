@@ -35,6 +35,8 @@ targets:
       # a user has to do — no Homebrew, no npm, no node. A folder reference
       # rather than individual files: Xcode copies the tree with `ditto`, which
       # is what preserves the executable bit.
+      - path: Sources/Resources
+        buildPhase: resources
       - path: Vendor/tokscale
         type: folder
         buildPhase: resources

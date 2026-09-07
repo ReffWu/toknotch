@@ -1,79 +1,77 @@
 import Foundation
 
-/// How token counts and money are written on the notch.
+/// How token counts, money and proportions are written.
 ///
-/// The notch is read at a glance and out of the corner of an eye, so every
-/// figure here is rounded to something a person can hold in their head. Exact
-/// digits belong in the card, and even there only where they earn their place.
+/// Everything here goes through Foundation with an explicit `Locale`, rather
+/// than through units written out by hand. That is not laziness — it is the
+/// only way to be right. Each language groups large numbers its own way, and
+/// the differences are not cosmetic:
+///
+///     15,434,419,444   en  15.4B      zh-Hans  154.3亿
+///                      ja  154.3億    ko       154.3억
+///                      de  15,4 Mrd.  fr       15,4 Md
+///                      es  15,4 mil M ru       15,4 млрд
+///
+/// English counts in thousands, Chinese and Japanese and Korean in myriads
+/// (10⁴), and the separators move too — German writes 15,4 where English
+/// writes 15.4. Showing "15.4B" to somebody who counts in 亿 makes them do
+/// arithmetic on every glance, which is the one thing a readout on a screen
+/// edge must never ask for.
 enum UsageFormat {
-    /// `1.5万` / `16.1亿`, or `15.4k` / `1.61B`, following the reader's setting.
-    ///
-    /// Chinese groups by 万 (10⁴) and 亿 (10⁸), not by thousands — writing
-    /// `1.61B` for a Chinese reader forces a mental conversion every single
-    /// glance, which is exactly what a glanceable readout must not do.
+    /// `154.3亿` / `15.4B` / `15,4 Mrd.` — a token count, abbreviated the way
+    /// this language abbreviates.
     static func tokens(_ count: Int64, _ language: AppLanguage) -> String {
-        let magnitude = abs(count)
-        let sign = count < 0 ? "-" : ""
-
-        switch language {
-        case .chinese:
-            if magnitude >= 100_000_000 {
-                return sign + trimmed(Double(magnitude) / 100_000_000, "亿")
-            } else if magnitude >= 10_000 {
-                return sign + trimmed(Double(magnitude) / 10_000, "万")
-            }
-            return "\(count)"
-        case .english:
-            if magnitude >= 1_000_000_000 {
-                return sign + trimmed(Double(magnitude) / 1_000_000_000, "B")
-            } else if magnitude >= 1_000_000 {
-                return sign + trimmed(Double(magnitude) / 1_000_000, "M")
-            } else if magnitude >= 1_000 {
-                return sign + trimmed(Double(magnitude) / 1_000, "k")
-            }
-            return "\(count)"
-        }
+        count.formatted(
+            .number
+                .notation(.compactName)
+                .precision(.fractionLength(0...1))
+                .locale(language.locale)
+        )
     }
 
-    /// One decimal below 100, none above it: `9.4亿` keeps its precision while
-    /// `154亿` does not carry a digit nobody reads.
-    private static func trimmed(_ value: Double, _ unit: String) -> String {
-        value >= 100
-            ? String(format: "%.0f%@", value, unit)
-            : String(format: "%.1f%@", value, unit)
+    /// `$43.43` / `4.929,28 $` — the exact figure, with the currency where this
+    /// language puts it.
+    static func money(_ amount: Double, _ language: AppLanguage) -> String {
+        amount.formatted(.currency(code: "USD").locale(language.locale))
     }
 
-    /// `$43.43` — the headline figure for money, always to the cent.
-    static func money(_ amount: Double) -> String {
-        String(format: "$%.2f", amount)
+    /// The shorter form, for places where the cents would only be noise.
+    ///
+    /// Whole units rather than an abbreviation. Compact *currency* needs macOS
+    /// 15, and composing one by hand would put the symbol on the wrong side in
+    /// half the languages here — $744 is shorter than the cents-bearing form
+    /// and clearer than $0.7k either way.
+    static func moneyShort(_ amount: Double, _ language: AppLanguage) -> String {
+        amount.formatted(
+            .currency(code: "USD").precision(.fractionLength(0)).locale(language.locale)
+        )
     }
 
-    /// `$4.9k` for the shorter form, where the cents would only be noise.
-    static func moneyShort(_ amount: Double) -> String {
-        abs(amount) >= 1_000
-            ? String(format: "$%.1fk", amount / 1_000)
-            : String(format: "$%.0f", amount)
+    /// `78,264` / `78.264` — a plain count, grouped this language's way.
+    static func count(_ value: Int, _ language: AppLanguage) -> String {
+        value.formatted(.number.locale(language.locale))
     }
 
-    /// `2,869` — thread-safe because a formatter is built per call; these are
-    /// made a handful of times per refresh, not per frame.
-    static func count(_ value: Int) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
+    static func percent(_ fraction: Double, _ language: AppLanguage) -> String {
+        fraction.formatted(.percent.precision(.fractionLength(0)).locale(language.locale))
     }
 
-    static func percent(_ fraction: Double) -> String {
-        String(format: "%.0f%%", (fraction * 100).rounded())
+    /// A share that keeps one decimal while it is small, because a model with a
+    /// real 0.4% share reading as 0% looks like a bug rather than a small
+    /// number.
+    static func share(_ fraction: Double, _ language: AppLanguage) -> String {
+        let digits = (fraction > 0 && fraction < 0.1) ? 1 : 0
+        return fraction.formatted(
+            .percent.precision(.fractionLength(digits)).locale(language.locale)
+        )
     }
 
-    /// A percentage that keeps one decimal while it is small, because a
-    /// 0.4%-share model reading `0%` looks like a bug.
-    static func share(_ fraction: Double) -> String {
-        let value = fraction * 100
-        return value < 10 && value > 0
-            ? String(format: "%.1f%%", value)
-            : String(format: "%.0f%%", value)
+    /// A multiple of a subscription's cost — `18.7×`.
+    ///
+    /// The multiplication sign is U+00D7, not the letter x: at 32pt the letter
+    /// is unmistakably a letter, and this is a unit.
+    static func multiple(_ value: Double, _ language: AppLanguage) -> String {
+        value.formatted(.number.precision(.fractionLength(1)).locale(language.locale)) + "×"
     }
 
     /// A model id cleaned up, but never shortened past recognition.
@@ -94,5 +92,21 @@ enum UsageFormat {
             name = String(name[..<note.lowerBound])
         }
         return name.isEmpty ? id : name
+    }
+
+    /// A date written the way this language writes a day of the year —
+    /// `Sep 7` / `9月7日` / `7. Sept.` / `7 сент.`
+    static func day(_ date: Date, _ language: AppLanguage,
+                    calendar: Calendar = .current) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = language.locale
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+        return formatter.string(from: date)
+    }
+
+    /// A date and time, for "last updated at".
+    static func moment(_ date: Date, _ language: AppLanguage) -> String {
+        date.formatted(.dateTime.hour().minute().second().locale(language.locale))
     }
 }
