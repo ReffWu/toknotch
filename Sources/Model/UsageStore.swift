@@ -2,128 +2,77 @@ import AppKit
 import Combine
 import os
 
-/// Fetches every provider on a timer and keeps the last good answer around, so
-/// a dropped network shows yesterday's number dimmed rather than a blank ring.
+/// Reads tokscale on a timer and publishes the rings.
+///
+/// There is deliberately no archive here. The old store kept the last good
+/// reading on disk because its numbers came from vendor APIs that could be
+/// down, rate-limited or signed out; these come from a local command that
+/// answers in under a second, so a cache would buy nothing and could only ever
+/// show something staler than simply asking again.
 @MainActor
 final class UsageStore: ObservableObject {
-    @Published private(set) var snapshots: [ProviderSnapshot] = []
-    /// Providers with a fetch in flight, so the cell can show it happening.
-    @Published private(set) var refreshing: Set<String> = []
-    /// Providers whose last fetch was refused by macOS, cleared as soon as one
-    /// succeeds. The settings row's only honest basis for offering to ask again.
-    @Published private(set) var refusedAccess: Set<String> = []
+    @Published private(set) var rings: [RingSnapshot] = []
+    /// A read in flight, so the rings can show it happening.
+    @Published private(set) var isRefreshing = false
+    /// Vendors this machine has actually used, busiest first — the settings
+    /// list is built from this, so a ring is only offered for a company whose
+    /// models have really been run.
+    @Published private(set) var availableVendors: [Vendor] = []
+    /// When the numbers on screen were read. Nil until the first read lands.
+    @Published private(set) var lastUpdated: Date?
+    /// What went wrong with the most recent read, in the reader's language.
+    /// Cleared as soon as one succeeds.
+    @Published private(set) var problem: String?
+    /// Plans found in the tools' own configuration files. Nothing here was
+    /// typed by anybody, and nothing here came from a credential store.
+    @Published private(set) var detectedPlans: [Vendor: DetectedPlan] = [:]
 
-    private let providers: [UsageProvider]
-    /// Providers the user has switched off. They are not fetched at all — their
-    /// credential is never read, which is the whole point of switching one off.
-    /// Filtering the results afterwards would still touch the keychain.
-    @Published var disconnected: Set<String> = [] {
-        didSet {
-            guard disconnected != oldValue else { return }
-            snapshots.removeAll { disconnected.contains($0.id) }
-            // The remembered reading has to go as well. Dropping it from
-            // `snapshots` alone left it in `lastGood`, which is written to the
-            // archive wholesale on every fetch — so a switched-off provider was
-            // remembered forever and rebuilt from the archive at the next
-            // launch, ring and all.
-            for id in disconnected { lastGood.removeValue(forKey: id) }
-            archive.save(lastGood)
-            refreshNow()
-        }
+    /// Presentation, not data. Changing either re-renders from the digest we
+    /// already have rather than shelling out again.
+    var language: AppLanguage = .chinese { didSet { guard language != oldValue else { return }; render() } }
+    var enabledVendors: Set<Vendor> = [] { didSet { guard enabledVendors != oldValue else { return }; render() } }
+    /// The user's own answers, which override anything detected. A vendor with
+    /// an entry of zero here is somebody saying "no plan", which is different
+    /// from having said nothing.
+    var subscriptions: [Vendor: Subscription] = [:] { didSet { guard subscriptions != oldValue else { return }; render() } }
+
+    /// What the payback figures actually use: what was found, with whatever the
+    /// user has said about it laid over the top.
+    var effectivePlans: [Vendor: Subscription] {
+        var merged = detectedPlans.compactMapValues(\.subscription)
+        merged.merge(subscriptions) { _, override in override }
+        return merged.filter { $0.value.isActive }
     }
 
-    /// Whether any provider is actively being used right now. Your usage cannot
-    /// move while nothing is running, so polling hard through a quiet afternoon
-    /// spends rate-limit budget to re-read a number that has not changed.
-    var isBusy: () -> Bool = { false }
+    /// Whether this vendor's figures came from its own configuration rather
+    /// than from the user.
+    func isDetected(_ vendor: Vendor) -> Bool {
+        subscriptions[vendor] == nil && detectedPlans[vendor]?.subscription != nil
+    }
 
-    private let refreshInterval: TimeInterval
-    /// How long a snapshot stays believable after its last successful fetch.
-    ///
-    /// Comfortably above `idleRefreshInterval`, on purpose. With the two equal,
-    /// a ring dimmed the instant the *first* idle refresh attempt failed —
-    /// which reads as "nothing is being read any more" when what actually
-    /// happened is one attempt, five minutes ago, out of what will keep being
-    /// tried every five minutes after. The margin buys room for a couple of
-    /// those attempts to have genuinely failed before the ring says so; it
-    /// must never fire merely because the idle schedule hasn't come round yet.
-    private let staleAfter: TimeInterval
-    /// How often to look when nothing is running.
-    private let idleRefreshInterval: TimeInterval
-    private var lastAttempt: Date?
-
-    private let archive: UsageArchive
-    private var lastGood: [String: (snapshot: ProviderSnapshot, fetchedAt: Date)] = [:]
+    private var digest: UsageDigest?
+    private var failure: String?
+    private let interval: TimeInterval
     private var timer: Timer?
-    private var refreshTask: Task<Void, Never>?
-    /// Set synchronously before the task exists, so "is one already running"
-    /// never depends on when the task body happens to start.
-    private var isRefreshing = false
+    private var task: Task<Void, Never>?
     private var wakeObserver: NSObjectProtocol?
 
-    init(
-        providers: [UsageProvider],
-        refreshInterval: TimeInterval = 60,
-        idleRefreshInterval: TimeInterval = 5 * 60,
-        staleAfter: TimeInterval = 15 * 60,
-        archive: UsageArchive = UsageArchive(),
-        disconnected: Set<String> = []
-    ) {
-        self.providers = providers
-        self.refreshInterval = refreshInterval
-        self.idleRefreshInterval = idleRefreshInterval
-        self.staleAfter = staleAfter
-        self.archive = archive
-
-        // Open on what we knew last time rather than on an empty ring; the
-        // first fetch will either confirm it or replace it.
-        // Set through the wrapper's storage, not `self.disconnected = …`.
-        // `disconnected` is `@Published`, so a plain assignment here runs its
-        // `didSet` — which saves `lastGood` to the archive. At this point
-        // `lastGood` is still empty, so it wrote an empty archive and destroyed
-        // every remembered reading on any launch with a provider switched off.
-        _disconnected = Published(initialValue: disconnected)
-        lastGood = archive.load()
-        // Pruned here as well as in `didSet`, because `didSet` cannot be relied
-        // on to run: it guards against a no-op change, and the value the
-        // preference binding delivers a moment later is usually identical to
-        // the one passed in here. A provider switched off in a previous session
-        // would then keep its archived reading indefinitely.
-        if lastGood.keys.contains(where: disconnected.contains) {
-            for id in disconnected { lastGood.removeValue(forKey: id) }
-            archive.save(lastGood)
-        }
-        // Filtered here, not only in `didSet`. The store is built before the
-        // preference reaches it, so an unfiltered first pass draws every
-        // switched-off provider for as long as it takes the binding to arrive.
-        snapshots = providers.filter { !disconnected.contains($0.id) }.map { provider in
-            guard let remembered = lastGood[provider.id] else { return Self.placeholder(provider) }
-            var snapshot = remembered.snapshot
-            snapshot.status = .stale(since: remembered.fetchedAt)
-            return snapshot
-        }
-    }
-
-    /// Enough to list the providers in settings without exposing them.
-    var providerSummaries: [ProviderSummary] {
-        providers.map { provider in
-            ProviderSummary(id: provider.id, name: provider.displayName,
-                            glyph: provider.glyph, account: provider.account(),
-                            signIn: provider.signInRoute,
-                            wasRefusedAccess: refusedAccess.contains(provider.id))
-        }
+    init(interval: TimeInterval = 60) {
+        self.interval = interval
+        detectedPlans = PlanDetector.detect()
+        render()
     }
 
     func start() {
         refreshNow()
-
-        let timer = Timer(timeInterval: refreshInterval, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.tick() }
+        let timer = Timer(timeInterval: interval, repeats: true) { [weak self] _ in
+            MainActor.assumeIsolated { self?.refreshNow() }
         }
         RunLoop.main.add(timer, forMode: .common)
         self.timer = timer
 
-        // Waking up is the one moment the numbers are guaranteed to be wrong.
+        // Waking is the one moment the numbers are guaranteed to have moved on
+        // without us.
         wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.didWakeNotification, object: nil, queue: .main
         ) { [weak self] _ in
@@ -134,281 +83,127 @@ final class UsageStore: ObservableObject {
     func stop() {
         timer?.invalidate()
         timer = nil
-        refreshTask?.cancel()
-        isRefreshing = false
-        // Block-based observers are not removed by `removeObserver(self)`.
+        task?.cancel()
+        task = nil
         if let wakeObserver {
+            // Block-based observers are not removed by `removeObserver(self)`.
             NSWorkspace.shared.notificationCenter.removeObserver(wakeObserver)
             self.wakeObserver = nil
         }
     }
 
-    /// Decides whether this tick is worth a request at all.
-    private func tick() {
-        let waited = lastAttempt.map { Date().timeIntervalSince($0) } ?? .greatestFiniteMagnitude
-        guard Self.shouldRefresh(
-            isBusy: isBusy(),
-            sinceLastAttempt: waited,
-            idleInterval: idleRefreshInterval
-        ) else { return }
-        refreshNow()
-    }
-
-    /// Poll at full rate while something is running; otherwise wait out the
-    /// idle interval. Pure, so the schedule can be tested without a clock.
-    static func shouldRefresh(
-        isBusy: Bool,
-        sinceLastAttempt: TimeInterval,
-        idleInterval: TimeInterval
-    ) -> Bool {
-        isBusy || sinceLastAttempt >= idleInterval
+    /// Seed a digest without shelling out, for tests and previews.
+    func loadForTesting(_ digest: UsageDigest) {
+        self.digest = digest
+        self.availableVendors = digest.vendors.map(\.vendor)
+        self.lastUpdated = digest.generatedAt
+        render()
     }
 
     func refreshNow() {
-        guard !isRefreshing else {
-            Log.usage.notice("refresh skipped: one already in flight")
-            return
-        }
+        guard task == nil else { return }
         isRefreshing = true
-        lastAttempt = Date()
-        refreshTask = Task { [weak self] in
+        task = Task { [weak self] in
             await self?.refresh()
+            self?.task = nil
             self?.isRefreshing = false
         }
     }
 
-    func refresh() async {
-        let live = providers.filter { !disconnected.contains($0.id) }
-        refreshing = Set(live.map(\.id))
-        defer { refreshing = [] }
-        var next: [ProviderSnapshot] = []
-        for provider in live {
-            next.append(await snapshot(from: provider))
-        }
-        snapshots = next
-    }
-
-    /// Refetch one provider, leaving the others alone.
-    ///
-    /// Deliberately not routed through `refreshNow`: asking one cell for a fresh
-    /// reading should not spend every other provider's rate-limit budget, and
-    /// Claude's in particular is easy to exhaust.
-    func refresh(providerID: String) {
-        guard let provider = providers.first(where: { $0.id == providerID }),
-              !disconnected.contains(providerID),
-              !refreshing.contains(providerID) else { return }
-
-        refreshing.insert(providerID)
-        Task { [weak self] in
-            let fresh = await self?.snapshot(from: provider)
-            guard let self, let fresh else { return }
-            if let index = self.snapshots.firstIndex(where: { $0.id == providerID }) {
-                self.snapshots[index] = fresh
-            }
-            self.lastAttempt = Date()
-            // A beat of visible work even when the answer was instant: a spinner
-            // that flashes for one frame reads as a glitch, not as a refresh.
-            try? await Task.sleep(nanoseconds: 380_000_000)
-            self.refreshing.remove(providerID)
-        }
-    }
-
-    /// Sign out of one provider: discard anything of its account that this app
-    /// is holding, and stop reading it.
-    ///
-    /// Deliberately more than `disconnected` alone. Switching a provider off
-    /// stops the *next* read; it leaves the last one archived, so the numbers
-    /// come back on the next launch. Someone who presses Sign out means those
-    /// numbers to be gone.
-    ///
-    /// What it cannot do is end the session at the vendor: for every provider
-    /// shipping today the credential belongs to Claude Code, Cursor or Codex,
-    /// and deleting their keychain item would sign the user out of an app they
-    /// did not ask us to touch. `SignInRoute.signOutCaveat` says so on the row.
-    func signOut(providerID: String) {
-        guard let provider = providers.first(where: { $0.id == providerID }) else { return }
-
-        snapshots.removeAll { $0.id == providerID }
-        lastGood.removeValue(forKey: providerID)
-        archive.forget(providerID)
-
-        Task { await provider.signOut() }
-    }
-
-    /// Take the user to wherever this provider's account is signed into.
-    ///
-    /// Three different places, because the providers differ in what they own: a
-    /// `WebSessionProvider` presents its own modal, Cursor and Codex hold the
-    /// credential in their app so the app is launched, and Claude Code is a
-    /// command with nothing to open — the row's guidance is all there is.
-    /// Returns whether anything was actually opened, so the sheet can say so
-    /// when nothing was.
-    @discardableResult
-    func signIn(providerID: String) -> Bool {
-        guard let provider = providers.first(where: { $0.id == providerID }) else { return false }
-
-        // Already holding a usable credential: connecting is the whole job, and
-        // throwing up a sign-in window over a signed-in account is just noise.
-        if provider.account() != nil {
-            refresh(providerID: providerID)
-            return true
-        }
-
-        return openAccountSource(providerID: providerID)
-    }
-
-    /// Ask macOS for this provider's credential again.
-    ///
-    /// The remedy for a declined keychain prompt. Dropping the in-memory copy
-    /// first is the part that matters: a plain refresh is served from the cache
-    /// whenever the token is still valid, so the keychain is never touched and
-    /// the prompt never returns — the button would appear to do nothing.
-    func reauthorize(providerID: String) {
-        providers.first { $0.id == providerID }?.forgetCachedCredential()
-        refresh(providerID: providerID)
-    }
-
-    /// Take the user to where this provider's account is *changed*.
-    ///
-    /// Same destination as signing in, but unconditional: switching accounts is
-    /// something you do while already signed in, so the shortcut `signIn` takes
-    /// when a credential exists is exactly wrong here.
-    ///
-    /// Codenotch cannot switch the account itself. The credential belongs to
-    /// Claude Code, Cursor or Codex, and the most this can honestly do is open
-    /// the thing that owns it.
-    @discardableResult
-    func openAccountSource(providerID: String) -> Bool {
-        guard let provider = providers.first(where: { $0.id == providerID }) else { return false }
-
-        switch provider.signInRoute {
-        case .modal:
-            provider.presentSignIn()
-            return true
-        case .openApp(let bundleID, _):
-            guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
-            else { return false }
-            NSWorkspace.shared.openApplication(at: url, configuration: .init())
-            return true
-        case .guidance:
-            // Claude Code: nothing to open. The row's guidance is the whole
-            // answer, so the sheet has to show it rather than pretend.
-            return false
-        }
-    }
-
-    private func snapshot(from provider: UsageProvider) async -> ProviderSnapshot {
+    private func refresh() async {
         do {
-            let fresh = try await provider.fetchSnapshot()
-            lastGood[provider.id] = (fresh, Date())
-            archive.save(lastGood)
-            refusedAccess.remove(provider.id)
-            Log.usage.debug("\(provider.id, privacy: .public): \(fresh.windows.count) window(s)")
-            return fresh
+            // Two independent commands; run together they cost about as long as
+            // the slower one.
+            async let graph = TokscaleCLI.graph()
+            async let lifetime = TokscaleCLI.lifetime()
+            let digest = UsageDigest.build(graph: try await graph, lifetime: try await lifetime)
+
+            self.digest = digest
+            self.failure = nil
+            self.problem = nil
+            self.lastUpdated = digest.generatedAt
+            self.availableVendors = digest.vendors.map(\.vendor)
+            // Re-read on each refresh: a plan changed in another app should
+            // show up here without restarting.
+            self.detectedPlans = PlanDetector.detect()
+            // Notice rather than debug: this is the app's health signal, and
+            // debug records are not kept, so the one line worth having when
+            // somebody asks why the rings are empty was never there to read.
+            Log.usage.notice("""
+                read ok — lifetime \(digest.lifetime.totals.tokens, privacy: .public),                 today \(digest.today.totals.tokens, privacy: .public),                 \(digest.vendors.count, privacy: .public) vendor(s)
+                """)
         } catch {
-            Log.usage.error("\(provider.id, privacy: .public) failed: \(String(describing: error), privacy: .public)")
-            return degraded(provider: provider, error: error)
+            // The last good digest stays on screen. A failed read is a fact
+            // about this attempt, not about the numbers already shown.
+            self.failure = Self.explain(error, language: language)
+            self.problem = self.failure
+            Log.usage.error("tokscale read failed: \(String(describing: error), privacy: .public)")
         }
+        render()
     }
 
-    /// A failed fetch never invents a number: it either re-shows the last good
-    /// one marked stale, or shows the cell with no reading at all.
-    private func degraded(provider: UsageProvider, error: Error) -> ProviderSnapshot {
-        let status = Self.status(for: error)
+    /// What a plan is currently returning, so the settings screen can show the
+    /// answer while the figures are still being typed rather than making
+    /// somebody close it and hover a ring to find out.
+    /// The plan in force for a vendor, detected or overridden.
+    func plan(for vendor: Vendor) -> Subscription? { effectivePlans[vendor] }
 
-        // Remembered apart from the snapshot on purpose. The snapshot answers
-        // "how good are the numbers I am showing", and for a refusal the honest
-        // answer is "still fine, just ageing" — which is why `supersedesHistory`
-        // keeps the old reading and its status. That deliberately loses the one
-        // fact the settings row needs: whether macOS let us in last time. Two
-        // different questions, so two different places to keep the answer.
-        if case .accessDenied = status {
-            refusedAccess.insert(provider.id)
-        } else {
-            refusedAccess.remove(provider.id)
-        }
-
-        // Some failures are statements about the account rather than a hiccup:
-        // signed out, or a plan that meters nothing. Re-showing an old reading
-        // through one of those would present a number that is no longer true —
-        // and, after an endpoint change, one that came from somewhere we no
-        // longer read. So the remembered reading is dropped, not dimmed.
-        if Self.supersedesHistory(status) {
-            lastGood[provider.id] = nil
-            archive.save(lastGood)
-            var empty = Self.placeholder(provider)
-            empty.status = status
-            return empty
-        }
-
-        guard let previous = lastGood[provider.id] else {
-            var empty = Self.placeholder(provider)
-            empty.status = status
-            return empty
-        }
-
-        // A stale-but-recent reading is still worth showing undimmed; past the
-        // window it gets marked, and the ring dims.
-        let age = Date().timeIntervalSince(previous.fetchedAt)
-        var snapshot = previous.snapshot
-        snapshot.status = age > staleAfter ? .stale(since: previous.fetchedAt) : previous.snapshot.status
-        return snapshot
+    func payback(for vendor: Vendor, plan: Subscription,
+                 now: Date = Date(), calendar: Calendar = .current) -> Payback? {
+        guard let digest, plan.isActive else { return nil }
+        let period = BillingPeriod.current(renewalDay: plan.renewalDay,
+                                           now: now, calendar: calendar)
+        return Payback(subscription: plan, period: period,
+                       earned: digest.totals(for: vendor, in: period, calendar: calendar).cost)
     }
 
-    /// True when the new status makes any remembered reading untrue rather than
-    /// merely old.
-    static func supersedesHistory(_ status: ProviderStatus) -> Bool {
-        switch status {
-        case .needsAuth, .unsupported: return true
-        // A refusal says nothing about the reading — the credential is there
-        // and still valid, we were simply not let in to re-read it. Discarding
-        // the last number would punish someone for pressing the wrong button.
-        case .accessDenied:            return false
-        case .ok, .stale, .error:      return false
-        }
+    /// One vendor's lifetime totals, for the settings list to show what each
+    /// row is actually about.
+    func lifetime(for vendor: Vendor) -> UsageDigest.Totals? {
+        digest?.vendors.first { $0.vendor == vendor }?.totals
     }
 
-    /// Exposed for the tests: the store never invents a reading, so what a
-    /// failure looks like is worth pinning down.
-    static func statusForTesting(_ error: Error) -> ProviderStatus { status(for: error) }
-
-    /// Exposed so a test can hold the shipped defaults to the margin they are
-    /// supposed to keep, without re-typing the numbers on both sides.
-    var staleAfterForTesting: TimeInterval { staleAfter }
-    var idleRefreshIntervalForTesting: TimeInterval { idleRefreshInterval }
-
-    private static func status(for error: Error) -> ProviderStatus {
-        switch error {
-        case UsageProviderError.needsAuth:
-            return .needsAuth
-        case UsageProviderError.credentialExpired:
-            // Ages the reading rather than discarding it: the number was true
-            // when it was taken, and the token will refresh itself in the
-            // ordinary course of using the app that owns it.
-            return .stale(since: Date())
-        case UsageProviderError.rateLimited:
-            // Not an error the user can do anything about, and the last good
-            // reading is still roughly true, so it reads as staleness.
-            return .stale(since: Date())
-        case UsageProviderError.accessDenied:
-            return .accessDenied
-        case UsageProviderError.nothingMetered(let why):
-            return .unsupported(why)
-        case UsageProviderError.badResponse(let code):
-            return .error("HTTP \(code)")
-        default:
-            return .error((error as NSError).localizedDescription)
+    /// Rebuild the rings from whatever we know. Cheap, and the only place
+    /// `rings` is written.
+    private func render() {
+        guard let digest else {
+            let note = failure
+            rings = RingKind.primaries.map {
+                RingBuilder.placeholder($0, language: language, note: note)
+            }
+            return
         }
+        rings = RingBuilder.rings(from: digest, vendors: enabledVendors,
+                                  subscriptions: effectivePlans, language: language)
     }
 
-    private static func placeholder(_ provider: UsageProvider) -> ProviderSnapshot {
-        ProviderSnapshot(
-            id: provider.id,
-            displayName: provider.displayName,
-            glyph: provider.glyph,
-            fidelity: .official,
-            status: .stale(since: .distantPast),
-            windows: []
-        )
+    /// Says what went wrong *and* what fixes it. "HTTP 500" for a local command
+    /// that is simply not installed sends people to look in the wrong place.
+    private static func explain(_ error: Error, language: AppLanguage) -> String {
+        guard let failure = error as? TokscaleCLI.Failure else {
+            return language == .chinese
+                ? "读取失败：\((error as NSError).localizedDescription)"
+                : "Couldn't read usage — \((error as NSError).localizedDescription)"
+        }
+        switch failure {
+        case .notInstalled:
+            return language == .chinese
+                ? "未找到 tokscale。用 Homebrew 安装后即可读取用量：brew install tokscale"
+                : "tokscale isn't installed. Install it with: brew install tokscale"
+        case .exited(127):
+            // tokscale is a `#!/usr/bin/env node` script, so this means node is
+            // somewhere we did not look — not that tokscale is missing.
+            return language == .chinese
+                ? "tokscale 无法启动：找不到 node。若用 nvm/fnm 管理 node，请确保它装在常规位置。"
+                : "tokscale couldn't start — node wasn't found. If you manage node with nvm or fnm, make sure it's in a standard location."
+        case .exited(let code):
+            return language == .chinese
+                ? "tokscale 退出（代码 \(code)）。在终端运行 tokscale 看看它说了什么。"
+                : "tokscale exited with code \(code). Run it in a terminal to see why."
+        case .undecodable:
+            return language == .chinese
+                ? "无法解析 tokscale 的输出，可能是版本不兼容。试试升级：brew upgrade tokscale"
+                : "Couldn't parse tokscale's output — try: brew upgrade tokscale"
+        }
     }
 }

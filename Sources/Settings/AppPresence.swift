@@ -1,6 +1,6 @@
 import AppKit
 
-/// Where Codenotch shows itself, apart from the notch.
+/// Where TokNotch shows itself, apart from the notch.
 ///
 /// The notch is the product; this is only about how the *app* is reached — to
 /// open settings, or to quit it. Three states because the two obvious ones
@@ -24,17 +24,36 @@ enum AppPresence: String, CaseIterable, Identifiable {
         }
     }
 
+    var chineseTitle: String {
+        switch self {
+        case .dock:    return "仅 Dock 栏"
+        case .menuBar: return "仅菜单栏"
+        case .hidden:  return "无图标"
+        }
+    }
+
     var explanation: String {
         switch self {
         case .dock:
-            return "A normal app icon in the Dock while Codenotch is running."
+            return "A normal app icon in the Dock while TokNotch is running."
         case .menuBar:
             return "A small icon in the menu bar instead, and nothing in the Dock."
         case .hidden:
             // Said here because choosing this removes every visible way back to
             // these settings, and finding that out afterwards is too late.
-            return "No icon anywhere. Open Codenotch again from Applications to "
+            return "No icon anywhere. Open TokNotch again from Applications to "
                  + "bring these settings back."
+        }
+    }
+
+    var chineseExplanation: String {
+        switch self {
+        case .dock:
+            return "在程序坞（Dock）显示标准应用图标。"
+        case .menuBar:
+            return "仅在顶部菜单栏显示状态图标，不在 Dock 占用空间。"
+        case .hidden:
+            return "不在任何地方显示图标，仅保留刘海。可在应用程序中再次打开唤出设置。"
         }
     }
 

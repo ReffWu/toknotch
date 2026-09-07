@@ -1,0 +1,85 @@
+import SwiftUI
+
+/// The little pictures on the Appearance page.
+///
+/// Both settings there are about *where a thing sits on your screen*, which is
+/// the one kind of choice a word cannot make obvious — "屏幕右侧" and "顶部刘海"
+/// are equally short and equally unhelpful until you see them. So each option
+/// draws a tiny screen with the notch on it, the way System Settings draws a
+/// tiny window for Light and Dark.
+struct ScreenPreview<Content: View>: View {
+    @ViewBuilder let notch: Content
+
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: [Color(hex: 0x4A5B7A), Color(hex: 0x2D3A50)],
+                           startPoint: .topLeading, endPoint: .bottomTrailing)
+            // The menu bar, so "top" reads as the top of a Mac rather than the
+            // top of a rectangle.
+            VStack(spacing: 0) {
+                Rectangle().fill(.white.opacity(0.22)).frame(height: 3.5)
+                Spacer(minLength: 0)
+            }
+            notch
+        }
+    }
+}
+
+/// Where the notch is welded.
+struct NotchEdgePreview: View {
+    let edge: NotchEdge
+
+    var body: some View {
+        ScreenPreview {
+            GeometryReader { proxy in
+                let long = min(proxy.size.height, proxy.size.width) * 0.52
+                let thick: CGFloat = 5
+                let size = edge.isVertical
+                    ? CGSize(width: thick, height: long)
+                    : CGSize(width: long, height: thick)
+                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                    .fill(.black)
+                    .frame(width: size.width, height: size.height)
+                    .position(centre(in: proxy.size, size: size))
+            }
+        }
+    }
+
+    private func centre(in bounds: CGSize, size: CGSize) -> CGPoint {
+        switch edge {
+        case .right:  return CGPoint(x: bounds.width - size.width / 2, y: bounds.height / 2)
+        case .left:   return CGPoint(x: size.width / 2, y: bounds.height / 2)
+        case .top:    return CGPoint(x: bounds.width / 2, y: size.height / 2)
+        case .bottom: return CGPoint(x: bounds.width / 2, y: bounds.height - size.height / 2)
+        }
+    }
+}
+
+/// How much of itself the notch shows at rest.
+struct NotchVisibilityPreview: View {
+    let visibility: NotchVisibility
+
+    var body: some View {
+        ScreenPreview {
+            GeometryReader { proxy in
+                let full = proxy.size.height * 0.52
+                switch visibility {
+                case .alwaysShow:
+                    bar(height: full, in: proxy.size)
+                case .onHover:
+                    // The resting pill: the same object, most of it folded away.
+                    bar(height: full * 0.42, in: proxy.size)
+                case .hidden:
+                    EmptyView()
+                }
+            }
+        }
+    }
+
+    private func bar(height: CGFloat, in bounds: CGSize) -> some View {
+        RoundedRectangle(cornerRadius: 2, style: .continuous)
+            .fill(.black)
+            .frame(width: 5, height: height)
+            .position(x: bounds.width - 2.5, y: bounds.height / 2)
+    }
+}

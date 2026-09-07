@@ -1,6 +1,6 @@
 import SwiftUI
 import XCTest
-@testable import Codenotch
+@testable import TokNotch
 
 /// A MacBook's own notch, as this machine reports it.
 private let realNotch = HardwareNotch(width: 220, height: 38)
@@ -68,9 +68,8 @@ final class MergedTopNotchTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = edge
         model.isExpanded = true
-        model.snapshots = (0..<cells).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<cells).map { index in
+            TestRing.make(index, rows: 0)
         }
         model.adopt(screen: screen)
         return model
@@ -201,9 +200,8 @@ final class MergedShapeTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = .top
         model.isExpanded = true
-        model.snapshots = (0..<cells).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<cells).map { index in
+            TestRing.make(index, rows: 0)
         }
         model.adopt(screen: notched)
         return model
@@ -340,9 +338,8 @@ final class OrbOnAFlushBarTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = .top
         model.isExpanded = true
-        model.snapshots = (0..<4).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<4).map { index in
+            TestRing.make(index, rows: 0)
         }
         model.adopt(screen: flush ? notched : plain)
         return model
@@ -451,11 +448,8 @@ final class HardwareClearanceTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = .top
         model.isExpanded = true
-        model.snapshots = (0..<cells).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok,
-                             windows: [LimitWindow(id: "w", label: "S", usedFraction: 0.4)],
-                             headlineID: "w")
+        model.rings = (0..<cells).map { index in
+            TestRing.make(index, rows: 1)
         }
         model.adopt(screen: notched)
         return model
@@ -550,9 +544,8 @@ final class BarEndMarginTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = .top
         model.isExpanded = true
-        model.snapshots = (0..<cells).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<cells).map { index in
+            TestRing.make(index, rows: 0)
         }
         model.adopt(screen: screen)
         return model
@@ -612,9 +605,8 @@ final class OrbHitAccuracyTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = .top
         model.isExpanded = true
-        model.snapshots = (0..<4).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<4).map { index in
+            TestRing.make(index, rows: 0)
         }
         model.adopt(screen: flush ? notched : plain)
         return model
@@ -691,9 +683,8 @@ final class ArcConcentricityTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = .top
         model.isExpanded = true
-        model.snapshots = (0..<4).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<4).map { index in
+            TestRing.make(index, rows: 0)
         }
         model.adopt(screen: notched)
         return model

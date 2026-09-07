@@ -3,17 +3,81 @@ import Foundation
 import ServiceManagement
 import os
 
+/// User display language and number unit style.
+enum AppLanguage: String, CaseIterable, Identifiable {
+    case chinese = "zh_CN"
+    case english = "en"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .chinese: return "中文 (万 / 亿)"
+        case .english: return "English (k / M / B)"
+        }
+    }
+
+    var explanation: String {
+        switch self {
+        case .chinese:
+            return "以中文数字（万、亿）显示 Token 规模与用量，更符合中文直觉习惯。"
+        case .english:
+            return "Display token counts using western metric prefixes (k, M, B)."
+        }
+    }
+}
+
 /// What the user has chosen, kept in `UserDefaults`.
 @MainActor
 final class Preferences: ObservableObject {
-    /// Providers the user has switched off. Stored as the *disconnected* set
-    /// rather than the connected one, so a provider added in a later version is
-    /// on by default instead of silently staying dark.
+    /// Vendor rings the user has switched on, on top of the three primaries.
     ///
-    /// Switching one off is not merely hiding it: the store stops fetching it,
-    /// so its credential is never read at all.
-    @Published var disconnectedProviders: Set<String> {
-        didSet { defaults.set(Array(disconnectedProviders), forKey: Keys.disconnected) }
+    /// Stored as the *enabled* set, which is the opposite of the old provider
+    /// switch and deliberately so: the three primaries carry the app, and a
+    /// vendor breakdown is something you go and ask for. A vendor added to the
+    /// roster in a later version therefore stays quiet until it is wanted,
+    /// instead of appearing on the notch unannounced.
+    @Published var enabledVendors: Set<Vendor> {
+        didSet { defaults.set(enabledVendors.map(\.rawValue), forKey: Keys.enabledVendors) }
+    }
+
+    /// What each vendor's plan costs and when it renews, for the payback
+    /// figures on that vendor's card.
+    ///
+    /// Entered by hand and stored here rather than read from an account: doing
+    /// it the other way would mean holding vendor credentials, which is the one
+    /// thing this app promises not to do.
+    @Published var subscriptions: [Vendor: Subscription] {
+        didSet {
+            let keyed = Dictionary(uniqueKeysWithValues:
+                subscriptions.map { ($0.key.rawValue, $0.value) })
+            defaults.set(try? JSONEncoder().encode(keyed), forKey: Keys.subscriptions)
+        }
+    }
+
+    /// Vendors whose ring has already been switched on for them, once, because
+    /// a plan was found for it.
+    ///
+    /// Remembered separately from `enabledVendors` so that turning one off
+    /// stays off: without this, every launch would helpfully switch it back on
+    /// and the setting would appear not to work. A vendor only ever gets this
+    /// courtesy once.
+    @Published private(set) var autoEnabledVendors: Set<Vendor> {
+        didSet {
+            defaults.set(autoEnabledVendors.map(\.rawValue), forKey: Keys.autoEnabled)
+        }
+    }
+
+    /// Which settings page was open last. Reopening on the page you were last
+    /// working in is the difference between a settings window and a filing
+    /// cabinet you have to re-navigate every time.
+    @Published var lastSettingsPage: String {
+        didSet { defaults.set(lastSettingsPage, forKey: Keys.lastSettingsPage) }
+    }
+
+    /// Language and numerical units format (Chinese 万/亿 vs English k/M/B).
+    @Published var appLanguage: AppLanguage {
+        didSet { defaults.set(appLanguage.rawValue, forKey: Keys.language) }
     }
 
     /// How much of itself the notch shows at rest.
@@ -53,31 +117,29 @@ final class Preferences: ObservableObject {
 
     private let defaults: UserDefaults
     private enum Keys {
-        /// The old name. Kept so existing choices survive the rename.
-        static let disconnected = "hiddenProviders"
+        static let enabledVendors = "enabledVendors"
+        static let subscriptions = "vendorSubscriptions"
+        static let lastSettingsPage = "lastSettingsPage"
+        static let autoEnabled = "autoEnabledVendors"
         static let hasLaunched = "hasLaunchedBefore"
         static let visibility = "notchVisibility"
         static let presence = "appPresence"
         static let edge = "notchEdge"
         static let lastSeenVersion = "lastSeenVersion"
+        static let language = "appLanguage"
     }
 
     /// True the very first time this copy runs, and never again.
-    ///
-    /// Deliberately *not* inferred from "there are no readings yet" — that is
-    /// also true of someone who switched every provider off, and re-introducing
-    /// them to the app every launch would be worse than never introducing them
-    /// at all.
     let isFirstLaunch: Bool
 
-    /// The bundle identifier before the app was renamed to Codenotch.
+    /// The bundle identifier before the app was renamed.
     ///
     /// A bundle id is the name of the defaults domain, so renaming the app
     /// silently moved every setting to a new, empty one — connection choices,
     /// the notch's mode, the archived readings, all apparently lost. Copying
     /// the old domain across once is the difference between a rename and what
     /// looks like a reset.
-    private static let previousDomain = "com.vinz.usagenotch"
+    nonisolated private static let previousDomain = "com.reff.usagenotch"
 
     static func migrateFromPreviousName(into defaults: UserDefaults = .standard,
                                         from domain: String = previousDomain) {
@@ -98,7 +160,13 @@ final class Preferences: ObservableObject {
         self.defaults = defaults
         self.isFirstLaunch = !defaults.bool(forKey: Keys.hasLaunched)
         defaults.set(true, forKey: Keys.hasLaunched)
-        self.disconnectedProviders = Set(defaults.stringArray(forKey: Keys.disconnected) ?? [])
+        self.enabledVendors = Set((defaults.stringArray(forKey: Keys.enabledVendors) ?? [])
+            .compactMap(Vendor.init(rawValue:)))
+        let storedPlans = defaults.data(forKey: Keys.subscriptions)
+            .flatMap { try? JSONDecoder().decode([String: Subscription].self, from: $0) } ?? [:]
+        self.subscriptions = Dictionary(uniqueKeysWithValues: storedPlans.compactMap { key, plan in
+            Vendor(rawValue: key).map { ($0, plan) }
+        })
         // Absent means never chosen, which is the hover behaviour the app was
         // designed around — not hidden, which would make a fresh install look
         // like it failed to start.
@@ -119,18 +187,40 @@ final class Preferences: ObservableObject {
         // Read from the system rather than from our own store: the user can turn
         // this off in System Settings, and a remembered `true` would then be a lie.
         self.launchAtLogin = Self.isRegisteredForLogin
+        self.autoEnabledVendors = Set((defaults.stringArray(forKey: Keys.autoEnabled) ?? [])
+            .compactMap(Vendor.init(rawValue:)))
+        self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "rings"
+        self.appLanguage = defaults.string(forKey: Keys.language)
+            .flatMap(AppLanguage.init(rawValue:)) ?? .chinese
     }
 
-    func isConnected(_ providerID: String) -> Bool {
-        !disconnectedProviders.contains(providerID)
+    func showsRing(for vendor: Vendor) -> Bool { enabledVendors.contains(vendor) }
+
+    /// Switch on the ring for a vendor whose plan has just been recognised.
+    ///
+    /// The point is that finding a subscription is itself the answer to "do you
+    /// want to see this vendor" — somebody paying Anthropic every month wants
+    /// the Anthropic ring, and making them go and find the switch for it is
+    /// asking a question the app already knows the answer to.
+    func autoEnableRings(for vendors: [Vendor]) {
+        let fresh = vendors.filter { !autoEnabledVendors.contains($0) }
+        guard !fresh.isEmpty else { return }
+        autoEnabledVendors.formUnion(fresh)
+        enabledVendors.formUnion(fresh)
+        Log.usage.notice("switched on \(fresh.count, privacy: .public) ring(s) for detected plans")
     }
 
-    func setConnected(_ connected: Bool, for providerID: String) {
-        if connected {
-            disconnectedProviders.remove(providerID)
-        } else {
-            disconnectedProviders.insert(providerID)
-        }
+    func subscription(for vendor: Vendor) -> Subscription? {
+        subscriptions[vendor].flatMap { $0.isActive ? $0 : nil }
+    }
+
+    func setSubscription(_ plan: Subscription?, for vendor: Vendor) {
+        if let plan, plan.isActive { subscriptions[vendor] = plan }
+        else { subscriptions.removeValue(forKey: vendor) }
+    }
+
+    func setRing(_ shown: Bool, for vendor: Vendor) {
+        if shown { enabledVendors.insert(vendor) } else { enabledVendors.remove(vendor) }
     }
 
     /// Forget everything this app has stored and quit.
@@ -144,7 +234,7 @@ final class Preferences: ObservableObject {
     /// update, and wiping data on every Sparkle update would be catastrophic.
     /// It has to be something the user asks for.
     static func eraseAllData() {
-        let bundleID = Bundle.main.bundleIdentifier ?? "com.vinz.codenotch"
+        let bundleID = Bundle.main.bundleIdentifier ?? "com.reff.toknotch"
         UserDefaults.standard.removePersistentDomain(forName: bundleID)
         UserDefaults.standard.synchronize()
 
@@ -178,7 +268,7 @@ final class Preferences: ObservableObject {
             // Commonly refused for an app running from a build directory rather
             // than /Applications, which is worth saying plainly.
             Log.usage.error("launch at login failed: \(error.localizedDescription, privacy: .public)")
-            launchAtLoginProblem = "macOS refused this — try moving Codenotch to /Applications."
+            launchAtLoginProblem = "macOS refused this — try moving TokNotch to /Applications."
             launchAtLogin = Self.isRegisteredForLogin
         }
     }

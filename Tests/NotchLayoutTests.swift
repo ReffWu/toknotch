@@ -1,5 +1,5 @@
 import XCTest
-@testable import Codenotch
+@testable import TokNotch
 
 /// The layout is a scaled copy of `docs/design/frame-124-hover-tooltip.png`.
 /// These pin the ratios the frame fixes, so a change to `Design.scale` resizes
@@ -41,35 +41,45 @@ final class NotchLayoutTests: XCTestCase {
         )
     }
 
-    /// The session list is extra card, so the hover region has to grow with it
-    /// or the pointer falls out of the bottom of a card it is still over.
-    func testCardGrowsWithTheSessionList() {
-        let bare = NotchLayout.cardHeight(windowCount: 2)
-        let one = NotchLayout.cardHeight(windowCount: 2, sessionCount: 1)
-        let two = NotchLayout.cardHeight(windowCount: 2, sessionCount: 2)
-        XCTAssertGreaterThan(one, bare)
-        XCTAssertEqual(
-            two - one,
-            2 * NotchLayout.cardBodyLineHeight + NotchLayout.sessionRowGap + NotchLayout.blockSpacing,
-            accuracy: 0.001
-        )
+    /// A row that carries a bar is taller than one that does not, so the hover
+    /// region has to grow with it or the pointer falls out of the bottom of a
+    /// card it is still over.
+    func testCardGrowsWithBars() {
+        let flat = NotchLayout.cardHeight(rowCount: 4)
+        let one = NotchLayout.cardHeight(rowCount: 4, barCount: 1)
+        let two = NotchLayout.cardHeight(rowCount: 4, barCount: 2)
+        XCTAssertGreaterThan(one, flat)
+        XCTAssertEqual(two - one, NotchLayout.labelToBar + NotchLayout.barHeight,
+                       accuracy: 0.001)
     }
 
-    /// The activity indicator lives in the gap between the glyph and the inside
-    /// edge of the track, and must not touch either.
-    func testActivityRingClearsTheGlyphAndTheTrack() {
-        let outerEdge = NotchLayout.activityDiameter / 2 + NotchLayout.activityStroke / 2
-        let innerEdge = NotchLayout.activityDiameter / 2 - NotchLayout.activityStroke / 2
-        let trackInnerEdge = NotchLayout.ringDiameter / 2 - NotchLayout.trackStroke
-        XCTAssertLessThan(outerEdge, trackInnerEdge)
-        XCTAssertGreaterThan(innerEdge, NotchLayout.glyphSize / 2)
+    /// The caption rides on the title row, so it costs the card no height of
+    /// its own. That is what lets the height be budgeted rather than measured —
+    /// a caption on a line of its own could wrap, and the measurement of that
+    /// wrapping disagreed with what SwiftUI actually drew.
+    func testTheCaptionCostsNoHeightOfItsOwn() {
+        XCTAssertEqual(NotchLayout.cardHeight(rowCount: 0),
+                       2 * NotchLayout.cardPadding
+                       + max(NotchLayout.glyphSize, NotchLayout.cardTitleLineHeight),
+                       accuracy: 0.001)
+    }
+
+    /// The hero is the tallest single thing on a card, and it has to be
+    /// budgeted for or the answer is what gets clipped.
+    func testTheHeroIsBudgetedFor() {
+        let plain = NotchLayout.cardHeight(rowCount: 3)
+        let withHero = NotchLayout.cardHeight(rowCount: 3, hasHero: true)
+        let withBar = NotchLayout.cardHeight(rowCount: 3, hasHero: true, hasHeroBar: true)
+        XCTAssertGreaterThan(withHero - plain, NotchLayout.heroLineHeight)
+        XCTAssertEqual(withBar - withHero,
+                       NotchLayout.heroBarGap + NotchLayout.heroBarHeight, accuracy: 0.001)
     }
 
     /// Every cell's tooltip has to fit inside the panel, or the card would be
     /// clipped for the first and last providers.
     func testTooltipFitsThePanelForEveryCell() {
         let cells = 3
-        let cardHalf = NotchLayout.cardHeight(windowCount: 2) / 2
+        let cardHalf = NotchLayout.cardHeight(rowCount: 2) / 2
         let panelHeight = NotchLayout.shapeLength(cellCount: cells)
             + 2 * NotchLayout.slack(for: .right)
         for index in 0..<cells {
@@ -84,7 +94,7 @@ final class NotchLayoutTests: XCTestCase {
 /// the one the model still holds.
 ///
 /// `@Published` notifies subscribers in `willSet`, so a sink that reacts to
-/// `snapshots` changing and then reads `model.snapshots` back sees the *previous*
+/// `rings` changing and then reads `model.rings` back sees the *previous*
 /// array. That is how the panel ended up sized for zero cells while one was on
 /// screen — and a panel too short for its shape clips the bottom flare, which is
 /// visible as the notch looking cut off instead of curving into the bezel.
@@ -99,10 +109,10 @@ final class PanelSizingTests: XCTestCase {
         XCTAssertGreaterThan(two, one)
     }
 
-    /// Sizing must not depend on what `snapshots` happens to hold right now.
+    /// Sizing must not depend on what `rings` happens to hold right now.
     func testSizingIgnoresTheModelsCurrentList() {
         let model = NotchViewModel()
-        XCTAssertTrue(model.snapshots.isEmpty)
+        XCTAssertTrue(model.rings.isEmpty)
         XCTAssertEqual(
             model.panelSize(cellCount: 1).height,
             model.shapeLength(cellCount: 1) + 2 * NotchLayout.slack(for: .right),
@@ -128,9 +138,8 @@ final class PanelSizingTests: XCTestCase {
 final class FoldedNotchTests: XCTestCase {
     private func model(cells: Int) -> NotchViewModel {
         let model = NotchViewModel()
-        model.snapshots = (0..<cells).map {
-            ProviderSnapshot(id: "p\($0)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<cells).map {
+            TestRing.make($0, rows: 0)
         }
         return model
     }
@@ -252,24 +261,35 @@ final class SideNotchShapeTests: XCTestCase {
 /// report the same number of windows. Its height is computed rather than left to
 /// SwiftUI so the hover region matches — and these pin that it really does vary.
 final class TooltipResizeTests: XCTestCase {
-    func testHeightVariesWithTheNumberOfWindows() {
-        let one = NotchLayout.cardHeight(windowCount: 1)
-        let two = NotchLayout.cardHeight(windowCount: 2)
-        XCTAssertGreaterThan(two, one)
+    func testHeightVariesWithTheNumberOfRows() {
+        XCTAssertGreaterThan(NotchLayout.cardHeight(rowCount: 2),
+                             NotchLayout.cardHeight(rowCount: 1))
     }
 
-    /// Claude has two windows plus a session list; Codex has one and none. That
-    /// difference is the exact case where unclipped contents used to hang
-    /// outside a shorter background while the height was still animating.
+    /// A vendor ring's card carries two standing rows and no models; a primary
+    /// with a full model table carries six rows, three of them barred. That
+    /// spread is the exact case where unclipped contents used to hang outside a
+    /// shorter background while the height was still animating.
     func testTheExtremesDifferEnoughToBeVisible() {
-        let smallest = NotchLayout.cardHeight(windowCount: 1)
-        let largest = NotchLayout.cardHeight(windowCount: 2, sessionCount: 2)
+        let smallest = NotchLayout.cardHeight(rowCount: 2)
+        let largest = NotchLayout.cardHeight(rowCount: NotchLayout.maxRowCount,
+                                             barCount: NotchLayout.maxBarCount)
         XCTAssertGreaterThan(largest - smallest, 40,
                              "the resize is big enough that overflow would show")
     }
 
-    func testAWindowlessCardStillHasARealHeight() {
-        XCTAssertGreaterThan(NotchLayout.cardHeight(windowCount: 0), NotchLayout.cardPadding * 2)
+    func testARowlessCardStillHasARealHeight() {
+        XCTAssertGreaterThan(NotchLayout.cardHeight(rowCount: 0), NotchLayout.cardPadding * 2)
+    }
+
+    /// The reserved maximum has to actually cover the worst card the builder
+    /// can produce, or the panel is too short for its own contents.
+    func testTheReservedMaximumCoversTheFullestCard() {
+        XCTAssertGreaterThanOrEqual(
+            NotchLayout.defaultMaxCardHeight,
+            NotchLayout.cardHeight(rowCount: NotchLayout.maxRowCount,
+                                   barCount: NotchLayout.maxBarCount)
+        )
     }
 }
 
@@ -277,23 +297,17 @@ final class TooltipResizeTests: XCTestCase {
 /// that illusion is the two halves moving on different schedules.
 @MainActor
 final class TooltipCohesionTests: XCTestCase {
-    private func snapshot(windows: Int) -> ProviderSnapshot {
-        ProviderSnapshot(
-            id: "p", displayName: "P", glyph: .claude, fidelity: .official, status: .ok,
-            windows: (0..<windows).map {
-                LimitWindow(id: "w\($0)", label: "W", usedFraction: 0.5, resetsAt: Date())
-            }
-        )
-    }
-
     /// The card's drawn height and its hover region come from the same call, so
     /// what you can see and what you can reach cannot drift apart.
     func testDrawnHeightMatchesTheHoverRegion() {
-        for windows in 0...3 {
-            let s = snapshot(windows: windows)
+        for rows in 0...NotchLayout.maxRowCount {
+            let ring = TestRing.make(0, rows: rows, bars: min(rows, 2))
             XCTAssertEqual(
-                NotchLayout.cardHeight(windowCount: s.windows.count),
-                NotchLayout.cardHeight(windowCount: windows),
+                NotchLayout.cardHeight(
+                    rowCount: ring.rows.count,
+                    barCount: ring.rows.filter { $0.fraction != nil }.count
+                ),
+                NotchLayout.cardHeight(rowCount: rows, barCount: min(rows, 2)),
                 accuracy: 0.001
             )
         }
@@ -303,7 +317,7 @@ final class TooltipCohesionTests: XCTestCase {
     /// the tail with it. Every step between two providers has to be a real
     /// number for that travel to be smooth.
     func testHeightIsContinuousAcrossProviderShapes() {
-        let heights = (0...3).map { NotchLayout.cardHeight(windowCount: $0) }
+        let heights = (0...3).map { NotchLayout.cardHeight(rowCount: $0) }
         for height in heights {
             XCTAssertTrue(height.isFinite && height > 0)
         }
@@ -315,7 +329,7 @@ final class TooltipCohesionTests: XCTestCase {
     func testTheTailIsAFixedSize() {
         XCTAssertGreaterThan(NotchLayout.tailHeight, 0)
         XCTAssertGreaterThan(NotchLayout.tailLength, 0)
-        XCTAssertLessThan(NotchLayout.tailHeight, NotchLayout.cardHeight(windowCount: 1),
+        XCTAssertLessThan(NotchLayout.tailHeight, NotchLayout.cardHeight(rowCount: 1),
                           "the tail must fit inside the shortest card it can point from")
     }
 }
@@ -399,159 +413,12 @@ final class SettingsOrbTests: XCTestCase {
         XCTAssertGreaterThan(NotchLayout.orbHotZone, NotchLayout.orbDiameter)
     }
 }
-
-/// Hiding a provider is stored as the hidden set, so one added in a later
-/// version shows up by default rather than silently staying dark.
-@MainActor
-final class PreferencesTests: XCTestCase {
-    private func preferences() -> Preferences {
-        let name = "PreferencesTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-        return Preferences(defaults: defaults)
-    }
-
-    func testTheFirstLaunchIsAnnouncedExactlyOnce() {
-        let name = "PreferencesTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-
-        XCTAssertTrue(Preferences(defaults: defaults).isFirstLaunch)
-        XCTAssertFalse(Preferences(defaults: defaults).isFirstLaunch,
-                       "a returning user would be introduced to the app again")
-    }
-
-    func testEverythingIsConnectedByDefault() {
-        let p = preferences()
-        XCTAssertTrue(p.isConnected("claude"))
-        XCTAssertTrue(p.isConnected("a-provider-that-does-not-exist-yet"))
-    }
-
-    func testConnectingAndDisconnectingRoundTrips() {
-        let p = preferences()
-        p.setConnected(false, for: "cursor")
-        XCTAssertFalse(p.isConnected("cursor"))
-        XCTAssertTrue(p.isConnected("claude"))
-        p.setConnected(true, for: "cursor")
-        XCTAssertTrue(p.isConnected("cursor"))
-    }
-
-    func testChoicesSurviveARestart() {
-        let name = "PreferencesTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-
-        Preferences(defaults: defaults).setConnected(false, for: "codex")
-        XCTAssertFalse(Preferences(defaults: defaults).isConnected("codex"))
-    }
-
-    /// The key is deliberately unchanged across the rename, so choices made
-    /// before it survive.
-    func testItReadsChoicesStoredUnderTheOldName() {
-        let name = "PreferencesTests.\(UUID().uuidString)"
-        let defaults = UserDefaults(suiteName: name)!
-        defaults.removePersistentDomain(forName: name)
-        defaults.set(["cursor"], forKey: "hiddenProviders")
-
-        XCTAssertFalse(Preferences(defaults: defaults).isConnected("cursor"))
-    }
-}
-
-/// Settings shows whose account each reading comes from. Not decoration: the app
-/// borrows credentials it does not own, so the account it reads can quietly be a
-/// different one from the account you are using — which is exactly what happened
-/// with Cursor during development.
-final class ProviderAccountTests: XCTestCase {
-    func testSummaryReadsAsASentence() {
-        let account = ProviderAccount(
-            label: "someone@example.com", plan: "free", source: "Cursor", manageURL: nil
-        )
-        XCTAssertEqual(account.summary, "someone@example.com · Free · via Cursor")
-    }
-
-    /// Claude's credential carries no address, so the row still has to say
-    /// something useful rather than collapsing to an empty line.
-    func testSummarySurvivesAMissingLabel() {
-        let account = ProviderAccount(label: nil, plan: "pro", source: "Claude Code", manageURL: nil)
-        XCTAssertEqual(account.summary, "Pro · via Claude Code")
-    }
-
-    func testSummarySurvivesAMissingPlan() {
-        let account = ProviderAccount(label: "a@b.c", plan: nil, source: "Codex", manageURL: nil)
-        XCTAssertEqual(account.summary, "a@b.c · via Codex")
-    }
-
-    /// The identity lives in the id token's claims. Decoding is base64url with
-    /// the padding stripped, which plain base64 refuses.
-    func testCodexClaimsDecodeFromABase64URLPayload() throws {
-        let payload = #"{"email":"a@b.c","x":"-_"}"#
-        let encoded = Data(payload.utf8).base64EncodedString()
-            .replacingOccurrences(of: "+", with: "-")
-            .replacingOccurrences(of: "/", with: "_")
-            .replacingOccurrences(of: "=", with: "")
-        let claims = try XCTUnwrap(CodexCredentials.claims(inJWT: "header.\(encoded).signature"))
-        XCTAssertEqual(claims["email"] as? String, "a@b.c")
-    }
-
-    func testMalformedTokensAreRefusedRatherThanCrashing() {
-        XCTAssertNil(CodexCredentials.claims(inJWT: "nonsense"))
-        XCTAssertNil(CodexCredentials.claims(inJWT: "only.two"))
-        XCTAssertNil(CodexCredentials.claims(inJWT: "a.!!!!.c"))
-    }
-
-    func testAMissingAuthFileIsNotAnAccount() {
-        let missing = URL(fileURLWithPath: "/tmp/nope-\(UUID().uuidString).json")
-        XCTAssertNil(CodexCredentials.account(from: missing))
-    }
-}
-
-/// `account()` is a protocol *requirement*, not just an extension default.
-///
-/// A method that exists only in a protocol extension is dispatched statically,
-/// so calling it through `any UsageProvider` lands on the default and never on
-/// the implementation. It fails silently — every account simply reports as
-/// absent — which is what shipped for one build.
-final class ProviderAccountDispatchTests: XCTestCase {
-    private struct Silent: UsageProvider {
-        let id = "silent"
-        let displayName = "Silent"
-        let glyph = ProviderGlyph.claude
-        func fetchSnapshot() async throws -> ProviderSnapshot {
-            throw UsageProviderError.needsAuth
-        }
-    }
-
-    private struct Speaking: UsageProvider {
-        let id = "speaking"
-        let displayName = "Speaking"
-        let glyph = ProviderGlyph.claude
-        func fetchSnapshot() async throws -> ProviderSnapshot {
-            throw UsageProviderError.needsAuth
-        }
-        func account() -> ProviderAccount? {
-            ProviderAccount(label: "a@b.c", plan: "pro", source: "Test", manageURL: nil)
-        }
-    }
-
-    /// Through the existential — the way the store actually calls it.
-    func testAnImplementationIsFoundThroughTheProtocol() {
-        let providers: [any UsageProvider] = [Silent(), Speaking()]
-        XCTAssertNil(providers[0].account())
-        XCTAssertEqual(providers[1].account()?.label, "a@b.c",
-                       "the concrete implementation was skipped — static dispatch")
-    }
-
-    func testTheDefaultStillAppliesToProvidersWithoutOne() {
-        XCTAssertNil((Silent() as any UsageProvider).account())
-    }
-}
-
 /// Antigravity's mark is flattened from its own SVG, so what is asserted is
 /// that it survived flattening: one closed loop, inside the unit box, filling
 /// it. The Gemini spark it replaced was generated, and its geometry could be
 /// checked exactly; this one comes from artwork and can only be checked for
 /// sanity.
-final class ProviderGlyphTests: XCTestCase {
+final class VendorMarkTests: XCTestCase {
     private var loop: [CGPoint] { GlyphOutline.antigravity[0] }
 
     func testItIsOneClosedLoopInTheUnitBox() {
@@ -571,15 +438,19 @@ final class ProviderGlyphTests: XCTestCase {
         XCTAssertEqual(span, 1, accuracy: 0.01)
     }
 
-    func testEveryGlyphResolvesAnOutline() {
-        for glyph in [ProviderGlyph.claude, .openai, .third, .cursor, .antigravity] {
-            XCTAssertFalse(glyph.outline.isEmpty, "\(glyph) draws nothing")
-        }
+    /// The two vendors whose logos are traced rather than lettered.
+    func testTheTracedVendorMarksResolve() {
+        XCTAssertFalse(GlyphOutline.claude.isEmpty)
+        XCTAssertFalse(GlyphOutline.openai.isEmpty)
     }
 
-    /// The raw value is what archived readings were written under.
-    func testTheRawValueSurvivesTheRename() {
-        XCTAssertEqual(ProviderGlyph.antigravity.rawValue, "gemini")
+    /// Every other vendor falls back to initials, so each one needs a distinct,
+    /// non-empty pair — two vendors sharing "M" would be unreadable at 17pt.
+    func testEveryVendorHasDistinctInitials() {
+        let lettered = Vendor.allCases.filter { $0 != .anthropic && $0 != .openai }
+        let initials = lettered.map(\.initials)
+        XCTAssertFalse(initials.contains(where: \.isEmpty))
+        XCTAssertEqual(Set(initials).count, initials.count, "two vendors share a mark")
     }
 }
 
@@ -653,13 +524,13 @@ final class RenameMigrationTests: XCTestCase {
     @MainActor
     func testItCarriesSettingsAcrossTheRename() {
         let (defaults, _) = suite()
-        let old = oldDomain(["hiddenProviders": ["cursor"], "notchVisibility": "alwaysShow"])
+        let old = oldDomain(["enabledVendors": ["openai"], "notchVisibility": "alwaysShow"])
         defer { UserDefaults.standard.removePersistentDomain(forName: old) }
 
         Preferences.migrateFromPreviousName(into: defaults, from: old)
 
         let preferences = Preferences(defaults: defaults)
-        XCTAssertFalse(preferences.isConnected("cursor"))
+        XCTAssertTrue(preferences.showsRing(for: .openai))
         XCTAssertEqual(preferences.notchVisibility, .alwaysShow)
     }
 
@@ -669,176 +540,22 @@ final class RenameMigrationTests: XCTestCase {
     func testItLeavesAnAlreadyUsedDomainAlone() {
         let (defaults, _) = suite()
         _ = Preferences(defaults: defaults)          // stamps hasLaunchedBefore
-        defaults.set(["codex"], forKey: "hiddenProviders")
-        let old = oldDomain(["hiddenProviders": ["cursor"]])
+        defaults.set(["google"], forKey: "enabledVendors")
+        let old = oldDomain(["enabledVendors": ["openai"]])
         defer { UserDefaults.standard.removePersistentDomain(forName: old) }
 
         Preferences.migrateFromPreviousName(into: defaults, from: old)
 
-        XCTAssertEqual(defaults.stringArray(forKey: "hiddenProviders"), ["codex"])
+        XCTAssertEqual(defaults.stringArray(forKey: "enabledVendors"), ["google"])
     }
 
     @MainActor
     func testMigratingWithNothingToMigrateIsHarmless() {
         let (defaults, _) = suite()
         Preferences.migrateFromPreviousName(into: defaults, from: "does.not.exist")
-        XCTAssertTrue(Preferences(defaults: defaults).isConnected("claude"))
+        XCTAssertTrue(Preferences(defaults: defaults).enabledVendors.isEmpty)
     }
 }
-
-/// The card's height is budgeted, not measured, and the panel reaches inward by
-/// the budget. A card taller than that is not scrolled or grown — it is
-/// clipped, and the clipping takes the *title* off the top. Six sessions did
-/// exactly that.
-final class TooltipOverflowTests: XCTestCase {
-    /// Whatever cap is in force, the card it produces has to fit the budget
-    /// that same cap sized the panel from.
-    func testACardNeverExceedsTheBudgetItsCapImplies() {
-        for cap in 0...NotchLayout.sessionCeiling {
-            let budget = NotchLayout.maxCardHeight(sessionCap: cap)
-            for sessions in 0...40 {
-                for windows in 0...NotchLayout.maxWindowCount {
-                    let height = NotchLayout.cardHeight(windowCount: windows,
-                                                        sessionCount: sessions,
-                                                        sessionCap: cap)
-                    XCTAssertLessThanOrEqual(
-                        height, budget,
-                        "cap \(cap): \(windows) windows and \(sessions) sessions overflow"
-                    )
-                }
-            }
-        }
-    }
-
-    /// Beyond the cap the height stops growing — that is what makes the bound
-    /// hold however many sessions are running.
-    func testHeightStopsGrowingPastTheCap() {
-        let cap = NotchLayout.defaultSessionCap
-        let atCap = NotchLayout.cardHeight(windowCount: 3, sessionCount: cap,
-                                           sessionCap: cap)
-        let overCap = NotchLayout.cardHeight(windowCount: 3, sessionCount: cap + 5,
-                                             sessionCap: cap)
-        let farOver = NotchLayout.cardHeight(windowCount: 3, sessionCount: 40,
-                                             sessionCap: cap)
-        XCTAssertEqual(overCap, farOver, "the height still grows with hidden sessions")
-        XCTAssertGreaterThan(overCap, atCap, "no room was left for the 'and N more' line")
-    }
-}
-
-/// Hiding sessions behind "and N more" is a cost, not a feature: the point of
-/// the readout is that nothing needs opening. So the cap is solved for the
-/// display rather than fixed — a laptop that cannot hold ten rows summarises,
-/// a desk display that can does not.
-final class SessionCapTests: XCTestCase {
-    func testWhatFitsAlwaysFitsTheBudgetItWasSolvedFor() {
-        for budget in stride(from: CGFloat(150), through: 1200, by: 37) {
-            let n = NotchLayout.sessionsFitting(cardBudget: budget,
-                                                windowCount: NotchLayout.maxWindowCount)
-            guard n > 0 else { continue }
-            XCTAssertLessThanOrEqual(
-                NotchLayout.maxCardHeight(sessionCap: n), budget,
-                "\(n) rows were admitted into \(budget)pt but do not fit"
-            )
-        }
-    }
-
-    /// The row after the last admitted one has to be one that genuinely does
-    /// not fit, or the search stopped early and hid a session for nothing.
-    func testNothingIsHiddenThatWouldHaveFitted() {
-        for budget in stride(from: CGFloat(150), through: 1200, by: 37) {
-            let n = NotchLayout.sessionsFitting(cardBudget: budget,
-                                                windowCount: NotchLayout.maxWindowCount)
-            guard n < NotchLayout.sessionCeiling else { continue }
-            XCTAssertGreaterThan(
-                NotchLayout.maxCardHeight(sessionCap: n + 1), budget,
-                "\(n + 1) rows would have fitted in \(budget)pt and were hidden anyway"
-            )
-        }
-    }
-
-    func testMoreRoomNeverListsFewer() {
-        var last = 0
-        for budget in stride(from: CGFloat(100), through: 1400, by: 11) {
-            let n = NotchLayout.sessionsFitting(cardBudget: budget,
-                                                windowCount: NotchLayout.maxWindowCount)
-            XCTAssertGreaterThanOrEqual(n, last, "a bigger screen listed fewer sessions")
-            last = n
-        }
-    }
-
-    /// Past a dozen the list has stopped being glanceable, and no amount of
-    /// screen should turn the tooltip into a scrolling log.
-    func testTheListStaysGlanceableOnAnyDisplay() {
-        XCTAssertEqual(NotchLayout.sessionsFitting(cardBudget: 100_000,
-                                                   windowCount: 0),
-                       NotchLayout.sessionCeiling)
-    }
-
-    /// The reported case: six sessions, on the display it was reported from.
-    /// Under the shipped cap of four, two of them were hidden on a screen with
-    /// room to spare.
-    @MainActor func testTheReportedCaseIsListedInFull() {
-        let model = NotchViewModel()
-        model.edge = .right
-        model.screenSize = CGSize(width: 1800, height: 1169)
-        XCTAssertGreaterThanOrEqual(model.sessionCap(cellCount: 4), 6)
-    }
-
-    /// Even the shortest display Macs ship with lists at least what the fixed
-    /// cap used to, so solving for the screen never costs anyone a row.
-    @MainActor func testTheSmallestLaptopIsNoWorseOffThanTheFixedCap() {
-        let model = NotchViewModel()
-        model.edge = .right
-        model.screenSize = CGSize(width: 1470, height: 956)   // 13-inch Air
-        XCTAssertGreaterThanOrEqual(model.sessionCap(cellCount: 4),
-                                    NotchLayout.defaultSessionCap)
-    }
-
-    /// And the panel it implies still has to land on the screen.
-    ///
-    /// From 900pt up, which is the shortest display any Mac ships with. Below
-    /// that the four limit windows alone are taller than the screen can hold,
-    /// and no session cap — not even zero — can buy that back.
-    @MainActor func testThePanelStillFitsTheScreenItWasSolvedFor() {
-        for height in stride(from: CGFloat(900), through: 2000, by: 23) {
-            let model = NotchViewModel()
-            model.edge = .right
-            model.screenSize = CGSize(width: 1512, height: height)
-            model.screenUsableSize = CGSize(width: 1512, height: height - 37)
-            XCTAssertLessThanOrEqual(
-                model.panelSize(cellCount: 4).height, height,
-                "the panel runs off a \(height)pt screen"
-            )
-        }
-    }
-
-    /// A top or bottom notch spends the card's height reaching inward instead,
-    /// against the usable screen — it starts below the menu bar, so the menu
-    /// bar is room it never had.
-    @MainActor func testAHorizontalNotchStaysWithinTheUsableScreen() {
-        for height in stride(from: CGFloat(900), through: 2000, by: 23) {
-            for edge in [NotchEdge.top, .bottom] {
-                let model = NotchViewModel()
-                model.edge = edge
-                model.screenSize = CGSize(width: 1512, height: height)
-                model.screenUsableSize = CGSize(width: 1512, height: height - 37)
-                XCTAssertLessThanOrEqual(
-                    model.panelSize(cellCount: 4).height, height - 37,
-                    "\(edge): the panel runs off a \(height)pt screen"
-                )
-            }
-        }
-    }
-
-    /// Before the controller has said which screen it is on, the figure that
-    /// shipped is what holds — never a panel sized for a display we have not
-    /// been told about.
-    @MainActor func testAnUnknownScreenKeepsTheShippedCap() {
-        let model = NotchViewModel()
-        XCTAssertEqual(model.sessionCap(cellCount: 4), NotchLayout.defaultSessionCap)
-    }
-}
-
 /// A tooltip is centred on the cell it belongs to, so the first and last
 /// providers throw half a card past the end of the stack. Both orientations
 /// need room for it — a side edge was assumed exempt because the card sits
@@ -864,88 +581,5 @@ final class TooltipEndroomTests: XCTestCase {
                                     NotchLayout.defaultMaxCardHeight / 2)
         XCTAssertGreaterThanOrEqual(NotchLayout.slack(for: .top),
                                     NotchLayout.cardWidth / 2)
-    }
-}
-
-/// A card with no readings shows a status message instead, and the budget used
-/// to reserve one line for it whatever it said. The longest of them takes
-/// three, so the card came up short and clipped the part that says what to do —
-/// on the one ring a user is looking at because something is wrong.
-final class StatusMessageHeightTests: XCTestCase {
-    /// Every message the app can actually produce, against the budget the card
-    /// is built to.
-    private var everyStatusCard: [(name: String, snapshot: ProviderSnapshot)] {
-        let states: [(String, ProviderStatus)] = [
-            ("needsAuth", .needsAuth),
-            ("accessDenied", .accessDenied),
-            ("unsupported", .unsupported("The free plan has nothing for Cursor to meter yet")),
-            ("error", .error("HTTP 500")),
-            ("stale", .stale(since: .distantPast)),
-            ("ok", .ok)
-        ]
-        return [("claude", "Claude"), ("claude-work", "Claude (work)"), ("cursor", "Cursor"),
-                ("codex", "Codex"), ("gemini", "Antigravity")].flatMap { id, name in
-            states.map { state in
-                ("\(id)/\(state.0)",
-                 ProviderSnapshot(id: id, displayName: name, glyph: .claude,
-                                  fidelity: .official, status: state.1, windows: []))
-            }
-        }
-    }
-
-    func testTheBudgetHoldsEveryMessageTheAppCanShow() {
-        for (name, snapshot) in everyStatusCard {
-            guard let message = snapshot.statusMessage else { continue }
-            let budgeted = NotchLayout.cardHeight(windowCount: 0,
-                                                  statusMessage: message)
-            let bare = NotchLayout.cardHeight(windowCount: 0, statusMessage: "")
-            let needed = NotchLayout.bodyTextHeight(message)
-            XCTAssertGreaterThanOrEqual(
-                budgeted, bare - NotchLayout.cardBodyLineHeight + needed,
-                "\(name): \"\(message)\" is clipped"
-            )
-        }
-    }
-
-    /// The message that found this: three lines where one was reserved.
-    func testARefusalMessageIsGivenItsRealHeight() {
-        let refused = ProviderSnapshot(id: "gemini", displayName: "Antigravity",
-                                       glyph: .antigravity, fidelity: .official,
-                                       status: .accessDenied, windows: [])
-        let message = try! XCTUnwrap(refused.statusMessage)
-        XCTAssertGreaterThan(NotchLayout.bodyTextHeight(message),
-                             2 * NotchLayout.cardBodyLineHeight,
-                             "the message that motivated this now fits on one line")
-        XCTAssertGreaterThan(
-            NotchLayout.cardHeight(windowCount: 0, statusMessage: message),
-            NotchLayout.cardHeight(windowCount: 0, statusMessage: "Signed out"),
-            "a message that wraps is given no more room than one that does not"
-        )
-    }
-
-    /// Whole lines, so the last one never straddles the clip.
-    func testHeightIsAWholeNumberOfLines() {
-        for text in ["", "short", String(repeating: "a long message ", count: 12)] {
-            let height = NotchLayout.bodyTextHeight(text)
-            let lines = height / NotchLayout.cardBodyLineHeight
-            XCTAssertEqual(lines, lines.rounded(), accuracy: 0.0001, "\(text.prefix(20))")
-        }
-    }
-
-    /// A status card still has to fit the panel that was sized without knowing
-    /// what it would say.
-    func testAStatusCardStillFitsTheBudgetedPanel() {
-        for (name, snapshot) in everyStatusCard {
-            let height = NotchLayout.cardHeight(
-                windowCount: 0,
-                sessionCount: NotchLayout.sessionCeiling,
-                sessionCap: NotchLayout.sessionCeiling,
-                statusMessage: snapshot.statusMessage
-            )
-            XCTAssertLessThanOrEqual(
-                height, NotchLayout.maxCardHeight(sessionCap: NotchLayout.sessionCeiling),
-                "\(name): a status card overflows the panel"
-            )
-        }
     }
 }

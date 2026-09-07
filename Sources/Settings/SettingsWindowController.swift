@@ -10,30 +10,15 @@ import SwiftUI
 final class SettingsWindowController {
     private var window: NSWindow?
     private let preferences: Preferences
-    /// A closure, not a snapshot. Read once at launch, the account shown here
-    /// went stale the moment someone switched account in Cursor — and stayed
-    /// stale until the app was restarted.
-    private let providers: () -> [ProviderSummary]
-    private let signOut: (String) -> Void
-    private let signIn: (String) -> Bool
-    private let switchAccount: (String) -> Bool
-    private let retry: (String) -> Void
+    /// The live store, so the vendor list and the source status stay current
+    /// while the window is open rather than being snapshotted when it opens.
+    private let store: UsageStore
     private let updater: Updater
 
-    init(preferences: Preferences,
-         providers: @escaping () -> [ProviderSummary],
-         updater: Updater,
-         signOut: @escaping (String) -> Void,
-         signIn: @escaping (String) -> Bool,
-         switchAccount: @escaping (String) -> Bool,
-         retry: @escaping (String) -> Void) {
-        self.switchAccount = switchAccount
-        self.retry = retry
-        self.updater = updater
+    init(preferences: Preferences, store: UsageStore, updater: Updater) {
         self.preferences = preferences
-        self.providers = providers
-        self.signOut = signOut
-        self.signIn = signIn
+        self.store = store
+        self.updater = updater
     }
 
     /// Bring the window to the front from an accessory app.
@@ -60,19 +45,20 @@ final class SettingsWindowController {
                                 width: SettingsView.width, height: SettingsView.height),
             // No `fullSizeContentView`: it pulls content up beneath the title
             // bar, and the form's first section header would sit behind it.
-            styleMask: [.titled, .closable],
+            // `fullSizeContentView`: the sidebar and the content run all the way
+            // to the top of the window. There is nothing a title bar would carry
+            // here — the sidebar already says which page you are on, and the
+            // split view's own toggle only offers to hide the one control that
+            // makes the window navigable.
+            styleMask: [.titled, .closable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
-        window.title = "Codenotch Settings"
+        window.title = "TokNotch"
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
         window.contentView = NSHostingView(
-            rootView: SettingsView(preferences: preferences,
-                                   providers: providers,
-                                   signOut: signOut,
-                                   signIn: signIn,
-                                   switchAccount: switchAccount,
-                                   retry: retry,
-                                   updater: updater)
+            rootView: SettingsView(preferences: preferences, store: store, updater: updater)
         )
         window.center()
         window.isReleasedWhenClosed = false

@@ -19,7 +19,7 @@ enum NotchEdge: String, CaseIterable, Identifiable {
     var isVertical: Bool { self == .right || self == .left }
 
     /// Where the tooltip goes: away from the bezel, always.
-    enum TooltipDirection: Equatable {
+    enum TooltipDirection: String, Equatable {
         case leading    // card to the left of the notch
         case trailing   // card to the right of it
         case up         // card above it
@@ -63,6 +63,15 @@ enum NotchEdge: String, CaseIterable, Identifiable {
         }
     }
 
+    var chineseTitle: String {
+        switch self {
+        case .top:    return "顶部刘海"
+        case .right:  return "屏幕右侧"
+        case .left:   return "屏幕左侧"
+        case .bottom: return "屏幕底部"
+        }
+    }
+
     var explanation: String {
         switch self {
         case .right:
@@ -75,6 +84,19 @@ enum NotchEdge: String, CaseIterable, Identifiable {
                  + "read as one shape."
         case .bottom:
             return "A wide bar resting on top of the Dock, readings side by side."
+        }
+    }
+
+    var chineseExplanation: String {
+        switch self {
+        case .top:
+            return "吸附于 MacBook 顶部原生刘海或屏幕正上方，与系统刘海浑然一体。"
+        case .right:
+            return "吸附于屏幕右侧边缘垂直排列。"
+        case .left:
+            return "吸附于屏幕左侧边缘垂直排列。"
+        case .bottom:
+            return "吸附于屏幕底部边缘水平排列。"
         }
     }
 }

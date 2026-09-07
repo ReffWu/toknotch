@@ -1,6 +1,6 @@
 import SwiftUI
 import XCTest
-@testable import Codenotch
+@testable import TokNotch
 
 /// The layout maths can be right in every unit and still put nothing on the
 /// screen. These render the real view and count the pixels it actually paints,
@@ -11,13 +11,8 @@ final class NotchRenderTests: XCTestCase {
         let model = NotchViewModel()
         model.edge = edge
         model.isExpanded = true
-        model.snapshots = (0..<cells).map { index in
-            ProviderSnapshot(
-                id: "p\(index)", displayName: "P\(index)", glyph: .claude,
-                fidelity: .official, status: .ok,
-                windows: [LimitWindow(id: "w", label: "Session", usedFraction: 0.4)],
-                headlineID: "w"
-            )
+        model.rings = (0..<cells).map { index in
+            TestRing.make(index, rows: 1)
         }
         return model
     }
@@ -260,9 +255,8 @@ final class EdgeArrivalTests: XCTestCase {
     private func openController() -> NotchWindowController {
         let controller = NotchWindowController()
         controller.show()
-        controller.model.snapshots = (0..<3).map { index in
-            ProviderSnapshot(id: "p\(index)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        controller.model.rings = (0..<3).map { index in
+            TestRing.make(index, rows: 0)
         }
         controller.model.isExpanded = true
         return controller
@@ -426,87 +420,5 @@ final class StrayClickPinTests: XCTestCase {
         for _ in 0..<3 { controller.handleClick() }
         XCTAssertFalse(controller.model.isPinned)
         XCTAssertTrue(controller.model.isExpanded)
-    }
-}
-
-/// A ring dimmed the instant the very first idle refresh attempt failed,
-/// because `staleAfter` and `idleRefreshInterval` were the same value — so a
-/// reading was *guaranteed* to reach the dimming threshold before an idle
-/// schedule could even try to refresh it once. Reported as "rings dim to
-/// invisibility on every idle cycle".
-final class StaleAfterMarginTests: XCTestCase {
-    private final class FailingProvider: UsageProvider, @unchecked Sendable {
-        let id = "x"
-        let displayName = "X"
-        let glyph = ProviderGlyph.claude
-        private var succeedOnce = true
-
-        func fetchSnapshot() async throws -> ProviderSnapshot {
-            defer { succeedOnce = false }
-            if succeedOnce {
-                return ProviderSnapshot(id: id, displayName: displayName, glyph: glyph,
-                                        fidelity: .official, status: .ok,
-                                        windows: [LimitWindow(id: "w", label: "W",
-                                                              usedFraction: 0.1)])
-            }
-            throw UsageProviderError.badResponse(status: 500)
-        }
-        nonisolated func account() -> ProviderAccount? { nil }
-        nonisolated var signInRoute: SignInRoute { .guidance("") }
-        func signOut() async {}
-        func presentSignIn() {}
-        nonisolated func forgetCachedCredential() {}
-    }
-
-    private func defaults() -> UserDefaults {
-        let name = "StaleAfterMarginTests.\(UUID().uuidString)"
-        let d = UserDefaults(suiteName: name)!
-        d.removePersistentDomain(forName: name)
-        return d
-    }
-
-    /// One failed attempt, well inside the margin, must not dim the ring —
-    /// that is the ordinary shape of an idle afternoon, not a fault.
-    @MainActor
-    func testOneFailedIdleAttemptDoesNotDimTheRing() async throws {
-        let store = UsageStore(
-            providers: [FailingProvider()],
-            refreshInterval: 0.05, idleRefreshInterval: 0.15, staleAfter: 0.45,
-            archive: UsageArchive(defaults: defaults())
-        )
-        await store.refresh()
-        XCTAssertEqual(store.snapshots.first?.status, .ok)
-
-        try await Task.sleep(nanoseconds: 200_000_000)   // > idleRefreshInterval
-        await store.refresh()                            // the attempt that fails
-
-        let status = try XCTUnwrap(store.snapshots.first?.status)
-        XCTAssertFalse(status.isStale,
-                       "the ring dimmed after a single failed attempt, well inside the margin")
-    }
-
-    /// Once genuinely stale for longer than the margin, it does dim — the
-    /// mechanism still works, it just no longer fires prematurely.
-    @MainActor
-    func testItStillDimsOnceGenuinelyStale() async throws {
-        let store = UsageStore(
-            providers: [FailingProvider()],
-            refreshInterval: 0.05, idleRefreshInterval: 0.05, staleAfter: 0.2,
-            archive: UsageArchive(defaults: defaults())
-        )
-        await store.refresh()
-        try await Task.sleep(nanoseconds: 300_000_000)   // > staleAfter
-        await store.refresh()
-
-        let status = try XCTUnwrap(store.snapshots.first?.status)
-        XCTAssertTrue(status.isStale, "the mechanism no longer dims a genuinely old reading")
-    }
-
-    /// The shipped defaults keep the same three-to-one margin verified above,
-    /// not just some values that happen to satisfy it.
-    @MainActor
-    func testTheShippedDefaultsKeepTheSameMargin() {
-        let store = UsageStore(providers: [])
-        XCTAssertGreaterThan(store.staleAfterForTesting, store.idleRefreshIntervalForTesting)
     }
 }

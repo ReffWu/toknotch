@@ -120,23 +120,42 @@ enum NotchLayout {
     static let cardWidth     = Design.px(600)
     static let cardCorner    = Design.px(49.5)
     static let cardPadding   = Design.px(32)
-    static let tailLength    = Design.px(75)
-    static let tailHeight    = Design.px(87)
+    /// How far the tail reaches out from the card, and how broad its base is.
+    ///
+    /// Roughly one to two and a half. The wedge that shipped first was 75 x 87
+    /// — deeper than it was wide — which is what made it read as a spike rather
+    /// than as part of the card.
+    static let tailLength    = Design.px(50)
+    static let tailHeight    = Design.px(108)
     static let tailGap       = Design.px(28)    // tail tip -> notch body edge
     static let barHeight     = Design.px(10.5)
+    /// The break-even tick cut into a payback bar.
+    static let markerWidth   = Design.px(6)
     static let headerGap     = Design.px(17)    // glyph -> title
     static let headerToBlock = Design.px(21)
     static let labelToBar    = Design.px(16.8)
     static let barToUsed     = Design.px(17.8)
     static let blockSpacing  = Design.px(20)
-    static let sessionRowGap = Design.px(10)   // the two lines of one session
-    /// The spinner beside a session's status. Sized against the body text's cap
-    /// (18px) rather than picked by eye, so it reads as part of the word rather
-    /// than a bullet pinned near it.
-    static let statusDot       = Design.px(17)
-    static let statusDotStroke = Design.px(3.4)
-    static let statusDotGap    = Design.px(11)
-    static let hairline      = Design.px(2.5)  // rule above the session list
+    /// Around the hero figure: the card's answer, and the space that makes it
+    /// read as one.
+    static let heroGap           = Design.px(22)
+    static let heroCaptionGap    = Design.px(6)
+    static let heroBarGap        = Design.px(18)
+    static let heroBarHeight     = Design.px(13)
+    static let heroLineHeight: CGFloat = lineHeight(
+        NSFont.systemFont(ofSize: Design.fontSize(capPixels: 64), weight: .semibold)
+    )
+    static let heroCaptionLineHeight: CGFloat = lineHeight(
+        NSFont.systemFont(ofSize: Design.fontSize(capPixels: 20), weight: .medium)
+    )
+
+    /// Between the caption and the first row.
+    static let captionGap  = Design.px(14)
+    /// Between one metric row and the next.
+    static let rowSpacing  = Design.px(18)
+    /// Either side of the rule that separates two groups of rows.
+    static let groupSpacing = Design.px(22)
+    static let hairline    = Design.px(2.5)
 
     /// The percent label's line box. Fixed rather than intrinsic so the panel
     /// geometry can be worked out in AppKit before SwiftUI lays anything out.
@@ -161,13 +180,11 @@ enum NotchLayout {
 
     /// How tall a run of body text is once it has wrapped to that column.
     ///
-    /// Measured, because a status message is the one piece of card text whose
-    /// length is not known here. The budget assumed a single line, and the
-    /// longest of them — "Codenotch was refused access to …'s saved login.
-    /// Click this ring to ask again, and choose Always Allow." — takes three:
-    /// 33pt against 12pt reserved. The card came up 21pt short and clipped the
-    /// two lines that said what to do about it, on the one ring a user looks at
-    /// precisely because something is wrong.
+    /// Measured, because a note is the one piece of card text whose length is
+    /// not known here — it says what went wrong and what fixes it, and the
+    /// longest of them runs to three lines. A budget that assumed one line
+    /// clipped the part that said what to do, on exactly the card a reader is
+    /// looking at because something is wrong.
     ///
     /// Rounded up to whole lines: the card's height is a stack of line boxes,
     /// and half a line of budget leaves the last one straddling the clip.
@@ -182,8 +199,15 @@ enum NotchLayout {
         return CGFloat(lines) * cardBodyLineHeight
     }
 
+    /// The height SwiftUI actually draws one line of this font at.
+    ///
+    /// Rounded rather than ceiled. `ceil` overstates it by a point, and a card's
+    /// height is a stack of these — so every line on it contributed a point of
+    /// dead black at the bottom, which on a six-row card is a visible band of
+    /// empty card under the last row. `LineHeightProbeTests` holds this against
+    /// a genuinely rendered line so it cannot drift back.
     private static func lineHeight(_ font: NSFont) -> CGFloat {
-        ceil(font.ascender - font.descender + font.leading)
+        (font.ascender - font.descender + font.leading).rounded()
     }
 
     /// Ring plus its percent label.
@@ -268,46 +292,48 @@ enum NotchLayout {
         bodyLength(cellCount: cellCount, edge: edge) + 2 * flare
     }
 
-    /// The tooltip's height for a given number of limit windows and live
-    /// sessions. Worked out here rather than left to SwiftUI so the hover region
-    /// can be computed before the card is ever laid out.
-    static func cardHeight(windowCount: Int, sessionCount: Int = 0,
-                           sessionCap: Int = defaultSessionCap,
-                           statusMessage: String? = nil,
-                           blockMessage: String? = nil) -> CGFloat {
-        let header = max(glyphSize, cardTitleLineHeight)
-        var height = 2 * cardPadding + header
+    /// The tooltip's height for a card of `rowCount` rows, `barCount` of which
+    /// draw a bar. Worked out here rather than left to SwiftUI, so the hover
+    /// region and the panel can both be sized before the card is ever laid out.
+    static func cardHeight(rowCount: Int, barCount: Int = 0, ruleCount: Int = 0,
+                           hasHero: Bool = false, hasHeroBar: Bool = false,
+                           note: String? = nil) -> CGFloat {
+        var height = 2 * cardPadding
+        height += max(glyphSize, cardTitleLineHeight)
 
-        // The blocked line sits under the header, above everything else — it
-        // is the reading that stops you working, so it leads.
-        if let blockMessage {
-            height += headerToBlock + bodyTextHeight(blockMessage)
+        if hasHero {
+            height += heroGap + heroLineHeight + heroCaptionGap + heroCaptionLineHeight
+            if hasHeroBar { height += heroBarGap + heroBarHeight }
         }
 
-        if windowCount > 0 {
-            let block = 2 * cardBodyLineHeight + labelToBar + barHeight + barToUsed
-            height += headerToBlock
-                + CGFloat(windowCount) * block
-                + CGFloat(windowCount - 1) * blockSpacing
-        } else {
-            // The status message, at whatever height it actually wraps to.
-            height += headerToBlock + bodyTextHeight(statusMessage ?? "")
+        // A note replaces everything else: when there is nothing to report,
+        // saying so *is* the card.
+        if let note {
+            return height + headerToBlock + bodyTextHeight(note)
         }
+        guard rowCount > 0 else { return height }
 
-        if sessionCount > 0 {
-            let shown = min(sessionCount, max(0, sessionCap))
-            let row = 2 * cardBodyLineHeight + sessionRowGap
-            height += blockSpacing + hairline + blockSpacing
-                + CGFloat(shown) * row
-                + CGFloat(max(0, shown - 1)) * blockSpacing
-            // The "and N more" line, which only exists when something is hidden.
-            if sessionCount > shown {
-                height += blockSpacing + cardBodyLineHeight
-            }
-        }
-        return height
+        let gaps = rowCount - 1
+        return height + headerToBlock
+            + CGFloat(rowCount) * cardBodyLineHeight
+            + CGFloat(barCount) * (labelToBar + barHeight)
+            + CGFloat(max(0, gaps - ruleCount)) * rowSpacing
+            + CGFloat(ruleCount) * (2 * groupSpacing + hairline)
     }
 
+    /// The fullest card that can occur: a vendor with a subscription, which
+    /// carries the payback group, the rule under it, the standing facts and the
+    /// model table with a bar on every model row. The panel is sized once for
+    /// the whole stack, so it has to hold whichever card turns out to be worst.
+    static let maxRowCount = RingBuilder.maxRowsPerCard
+    static let maxBarCount = RingBuilder.modelsPerCard + 1
+    static let maxRuleCount = 1
+
+
+    static let defaultMaxCardHeight = cardHeight(
+        rowCount: maxRowCount, barCount: maxBarCount, ruleCount: maxRuleCount,
+        hasHero: true, hasHeroBar: true
+    )
 
     /// Room at each end of the stack: enough for the settings orb to hang past
     /// the foot of the shape, and enough for a tooltip anchored to the first or
@@ -315,16 +341,9 @@ enum NotchLayout {
     ///
     /// Both orientations need half a card past each end, and for the same
     /// reason: the card is centred on the cell it belongs to, so hovering the
-    /// first or last provider throws half the card past the stack.
-    ///
-    /// A side edge was assumed exempt — the card sits *beside* the stack, so
-    /// it looked like it needed no room at the ends. It sits beside it
-    /// horizontally and is centred on it *vertically*, so half its height still
-    /// has to fit. With the tallest card at ~474pt against 71pt of slack, the
-    /// first provider's tooltip lost its title off the top of the panel.
-    ///
-    /// Which dimension crosses the ends is what differs: the card's height
-    /// along a vertical edge, its width along a horizontal one.
+    /// first or last ring throws half the card past the stack. Which dimension
+    /// crosses the ends is what differs — the card's height along a vertical
+    /// edge, its width along a horizontal one.
     static func slack(for edge: NotchEdge,
                       maxCardHeight: CGFloat = defaultMaxCardHeight) -> CGFloat {
         edge.isVertical
@@ -333,63 +352,6 @@ enum NotchLayout {
     }
 
     private static let endSlack = Design.px(190)
-
-    /// The busiest provider that occurs — Claude, with four limit windows.
-    /// The tallest card is sized for it, since the panel is sized once for the
-    /// whole stack and has to hold whichever card is worst.
-    static let maxWindowCount = 4
-
-    /// How many sessions a tooltip lists before summarising the rest.
-    ///
-    /// Not a fixed number, because the honest answer depends on the display.
-    /// The card's height is budgeted rather than measured, and the budget is
-    /// what decides how far the panel reaches — so a card taller than the panel
-    /// is not scrolled or grown, it is *clipped*, at the top, where the title
-    /// is. But a cap low enough to be safe on a laptop hides sessions on a
-    /// desk display that had room for all of them, and a hidden session is the
-    /// one thing a glanceable readout must not do.
-    ///
-    /// So the cap is solved for the screen: as many rows as fit, and the
-    /// summary line only when the display genuinely cannot hold the rest.
-    ///
-    /// Solved by walking up rather than by inverting `cardHeight` — the height
-    /// is a sum of a dozen named parts, and an inverted copy of it would have
-    /// to be kept in step by hand. The range is short enough that the search
-    /// costs nothing.
-    static func sessionsFitting(cardBudget: CGFloat, windowCount: Int) -> Int {
-        var fits = 0
-        for n in 1...sessionCeiling {
-            // Costed as though something were still hidden, so that admitting
-            // the nth row can never be what pushes the summary line off the
-            // bottom of the card.
-            let height = cardHeight(windowCount: windowCount,
-                                    sessionCount: n + 1, sessionCap: n)
-            guard height <= cardBudget else { break }
-            fits = n
-        }
-        return fits
-    }
-
-    /// Past this many rows the list has stopped being glanceable, and counting
-    /// the rest is the kinder answer however much room the screen has.
-    static let sessionCeiling = 12
-
-    /// What to assume before the panel knows which screen it is on. The figure
-    /// that shipped, so nothing about the default placement moves.
-    static let defaultSessionCap = 4
-
-    /// The tallest card the panel must be able to show without clipping it.
-    ///
-    /// Being generous costs nothing, since the panel is transparent and passes
-    /// clicks through everywhere the chrome is not — but it cannot be so
-    /// generous that the panel runs off the screen, which is what the cap is
-    /// solved for.
-    static func maxCardHeight(sessionCap: Int) -> CGFloat {
-        cardHeight(windowCount: maxWindowCount,
-                   sessionCount: sessionCap + 1, sessionCap: sessionCap)
-    }
-
-    static let defaultMaxCardHeight = maxCardHeight(sessionCap: defaultSessionCap)
 
     /// How far the panel reaches inward from the bezel, past the notch itself,
     /// so the tooltip has somewhere to live. Beside the stack on a side edge,

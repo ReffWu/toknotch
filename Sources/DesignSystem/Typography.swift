@@ -11,4 +11,11 @@ enum Typography {
 
     /// "Current session", "73% Used", "Resets in 51 min". Cap height 18px.
     static let cardBody = Font.system(size: Design.fontSize(capPixels: 18), weight: .regular)
+
+    /// The one big figure on a card. Rounded, because it is a readout rather
+    /// than prose, and large enough that nothing else on the card competes.
+    static let hero = Font.system(size: Design.fontSize(capPixels: 64),
+                                  weight: .semibold, design: .rounded)
+    /// The line that says what the hero figure means.
+    static let heroCaption = Font.system(size: Design.fontSize(capPixels: 20), weight: .medium)
 }

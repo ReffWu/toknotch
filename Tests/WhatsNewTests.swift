@@ -1,6 +1,6 @@
 import SwiftUI
 import XCTest
-@testable import Codenotch
+@testable import TokNotch
 
 /// What the app says it changed, and when it says it.
 final class ReleaseNotesTests: XCTestCase {

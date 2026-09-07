@@ -1,13 +1,18 @@
 export DEVELOPER_DIR := /Applications/Xcode.app/Contents/Developer
 
-PROJECT := Codenotch.xcodeproj
-SCHEME  := Codenotch
+PROJECT := TokNotch.xcodeproj
+SCHEME  := TokNotch
 DEST    := platform=macOS,arch=arm64
 
-.PHONY: gen build test run clean
+.PHONY: gen build test run clean tokscale
 
 gen:
 	xcodegen generate
+
+# Refresh the tokscale build that ships inside the app. Pass a version to pin
+# one: `make tokscale VERSION=4.15.1`.
+tokscale:
+	./scripts/fetch-tokscale.sh $(VERSION)
 
 build: gen
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \
@@ -20,27 +25,16 @@ test: gen
 run: build
 	@APP=$$(xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \
 		-configuration Debug -showBuildSettings 2>/dev/null \
-		| awk -F' = ' '/ BUILT_PRODUCTS_DIR/ {print $$2; exit}')/Codenotch.app; \
-	pkill -x Codenotch || true; \
+		| awk -F' = ' '/ BUILT_PRODUCTS_DIR/ {print $$2; exit}')/TokNotch.app; \
+	pkill -x TokNotch || true; \
 	open "$$APP"
 
 clean:
 	rm -rf build DerivedData $(PROJECT)
 
 # --- Release -----------------------------------------------------------------
-# The path to a notarized .dmg. Run `make release` for the whole thing, or the
-# steps one at a time while something is going wrong.
-#
-# One-time setup, which you have to run yourself because it takes a password:
-#
-#   xcrun notarytool store-credentials UsageNotch \
-#       --apple-id <your-apple-id> --team-id 6WFPL8B9FB --password <app-specific-password>
-#
-# The app-specific password comes from appleid.apple.com → Sign-In and Security
-# → App-Specific Passwords. Not your Apple ID password.
-
 RELEASE_DIR := build/release
-APP_NAME    := Codenotch
+APP_NAME    := TokNotch
 # The label of the stored notarytool credential in the login keychain, not
 # anything to do with the app's name — it was created before the rename and
 # renaming the variable is what broke `make release` after it. Recreating it
@@ -52,45 +46,25 @@ DMG := $(RELEASE_DIR)/$(APP_NAME).dmg
 
 # Release configuration, exported with the Developer ID identity. `xcodebuild
 # archive` + `-exportArchive` rather than a plain build: it re-signs the bundle
-# as a distributable, which a Debug build is not.
+# Release configuration, built and archived locally.
 archive: gen
 	rm -rf $(RELEASE_DIR)
 	mkdir -p $(RELEASE_DIR)
-	@# Spotlight indexes build output as installed applications, so every
-	@# release leaves extra "Codenotch" entries in app search next to the
-	@# real one in /Applications. This stops the whole tree being indexed.
 	@touch build/.metadata_never_index
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \
 		-configuration Release -archivePath $(RELEASE_DIR)/$(APP_NAME).xcarchive archive
-	printf '%s\n' \
-		'<?xml version="1.0" encoding="UTF-8"?>' \
-		'<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">' \
-		'<plist version="1.0"><dict>' \
-		'<key>method</key><string>developer-id</string>' \
-		'<key>teamID</key><string>6WFPL8B9FB</string>' \
-		'<key>signingStyle</key><string>manual</string>' \
-		'<key>signingCertificate</key><string>Developer ID Application</string>' \
-		'</dict></plist>' > $(RELEASE_DIR)/ExportOptions.plist
-	xcodebuild -exportArchive \
-		-archivePath $(RELEASE_DIR)/$(APP_NAME).xcarchive \
-		-exportOptionsPlist $(RELEASE_DIR)/ExportOptions.plist \
-		-exportPath $(RELEASE_DIR)
 
-# A plain drag-to-Applications disk image. `hdiutil` writes it read-only and
-# compressed, which is what notarization expects.
+# A plain drag-to-Applications disk image.
 dmg: archive
 	rm -f $(DMG)
 	rm -rf $(RELEASE_DIR)/stage
 	mkdir -p $(RELEASE_DIR)/stage
-	cp -R $(RELEASE_DIR)/$(APP_NAME).app $(RELEASE_DIR)/stage/
+	cp -R $(RELEASE_DIR)/$(APP_NAME).xcarchive/Products/Applications/$(APP_NAME).app $(RELEASE_DIR)/stage/
 	ln -s /Applications $(RELEASE_DIR)/stage/Applications
 	hdiutil create -volname "$(APP_NAME)" -srcfolder $(RELEASE_DIR)/stage \
 		-ov -format UDZO $(DMG)
-	codesign --force --sign "Developer ID Application" --timestamp $(DMG)
-	@# The app is inside the dmg now. Leaving the loose copies around is how
-	@# three spare "Codenotch" entries end up in Spotlight; everything
-	@# downstream (notarize, verify, appcast) works from the dmg alone.
-	rm -rf $(RELEASE_DIR)/stage $(RELEASE_DIR)/$(APP_NAME).app
+	codesign --force --sign - $(DMG)
+	rm -rf $(RELEASE_DIR)/stage
 
 # Submits and waits. `--wait` blocks until Apple answers, which is usually a
 # couple of minutes; on rejection, the log says which binary failed and why.
@@ -99,7 +73,7 @@ notarize: dmg
 	xcrun stapler staple $(DMG)
 
 # Sparkle ships its tools inside the resolved package artifacts.
-SPARKLE_BIN = $(shell dirname $$(find $$HOME/Library/Developer/Xcode/DerivedData/Codenotch-*/SourcePackages/artifacts/sparkle -name generate_appcast 2>/dev/null | head -1))
+SPARKLE_BIN = $(shell dirname $$(find $$HOME/Library/Developer/Xcode/DerivedData/TokNotch-*/SourcePackages/artifacts/sparkle -name generate_appcast 2>/dev/null | head -1))
 
 # The feed customers' copies poll. Signs each update with the EdDSA private key
 # in the login keychain — Sparkle installs nothing that key did not sign, so a

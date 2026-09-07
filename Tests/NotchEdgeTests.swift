@@ -1,6 +1,6 @@
 import SwiftUI
 import XCTest
-@testable import Codenotch
+@testable import TokNotch
 
 private struct FakeScreen: ScreenDescribing {
     var frameValue: CGRect
@@ -352,9 +352,8 @@ final class FoldingOnEveryEdgeTests: XCTestCase {
     private func model(cells: Int, edge: NotchEdge) -> NotchViewModel {
         let model = NotchViewModel()
         model.edge = edge
-        model.snapshots = (0..<cells).map {
-            ProviderSnapshot(id: "p\($0)", displayName: "P", glyph: .claude,
-                             fidelity: .official, status: .ok, windows: [])
+        model.rings = (0..<cells).map {
+            TestRing.make($0, rows: 0)
         }
         return model
     }

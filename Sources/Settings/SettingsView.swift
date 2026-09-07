@@ -1,434 +1,719 @@
 import AppKit
 import SwiftUI
 
-/// The settings sheet, reached from the orb below the notch.
+/// The settings window, reached from the orb below the notch.
+///
+/// Four pages behind a sidebar rather than one long scroll: the decisions here
+/// fall into genuinely different kinds — what the notch shows, what the plans
+/// cost, how it looks, and how the app behaves — and stacking them into a
+/// single form made every one of them look equally important and equally dull.
 struct SettingsView: View {
     @ObservedObject var preferences: Preferences
-    let providers: () -> [ProviderSummary]
-    /// Re-read whenever the sheet comes forward. Switching account happens in
-    /// another app, so the user is always coming *back* here to see it — which
-    /// makes returning focus the exact moment the old value is wrong.
-    @State private var accounts: [ProviderSummary] = []
-    /// Switching off has to reach the store's archive, not just the preference
-    /// — see `UsageStore.signOut(providerID:)`.
-    let signOut: (String) -> Void
-    /// Switching on takes the user to wherever that account is signed in.
-    /// Returns false when there was nothing to open.
-    let signIn: (String) -> Bool
-    let switchAccount: (String) -> Bool
-    /// Re-reads a provider's credential. For a declined keychain prompt that is
-    /// the whole remedy: asking again is what puts the prompt back on screen.
-    let retry: (String) -> Void
+    @ObservedObject var store: UsageStore
     @ObservedObject var updater: Updater
 
-    var body: some View {
-        // One page of grouped sections rather than tabs. Tabs hid three
-        // quarters of the settings behind a click, for an app with about a
-        // screenful of them in total — the grouping was the thing that was
-        // missing, not the separation. A grouped `Form` is what macOS itself
-        // uses for this: each section is a titled, rounded group, so the
-        // structure is visible all at once instead of navigated to.
-        Form {
-            Section("Integrations") {
-                if needsSetup { setupNote }
-                ForEach(accounts) {
-                    AccountRow(provider: $0, preferences: preferences,
-                               signOut: signOut, signIn: signIn,
-                               switchAccount: switchAccount, retry: retry)
-                }
-                // Beside the switches it explains, not stranded at the end of
-                // the page.
-                Text("Codenotch never signs in — each reading is borrowed from the "
-                     + "tool that already holds the account. Signing out here stops "
-                     + "the credential being read and forgets the numbers, but leaves "
-                     + "you signed in to that tool. macOS asks once per tool the "
-                     + "first time, and again whenever you sign in to a different "
-                     + "account; Always Allow keeps it quiet.")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+    @State private var page: Page = .rings
+    /// Which page to open on. Only set by the render tests, which have to be
+    /// able to photograph each one.
+    var startingPage: Page? = nil
 
-            // One section, because they are one question: what Codenotch
-            // looks like and where it turns up. Split across three headers it
-            // read as three unrelated settings, and "Where Codenotch appears"
-            // was a header long enough to look like a warning.
-            Section("Appearance") {
-                Picker("Show", selection: $preferences.notchVisibility) {
-                    ForEach(NotchVisibility.allCases) { Text($0.title).tag($0) }
-                }
-                .pickerStyle(.segmented)
+    enum Page: String, CaseIterable, Identifiable {
+        case rings, plans, appearance, general
+        var id: String { rawValue }
 
-                Text(preferences.notchVisibility.explanation)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Picker("Edge", selection: $preferences.notchEdge) {
-                    ForEach(NotchEdge.allCases) { Text($0.title).tag($0) }
-                }
-                .pickerStyle(.segmented)
-
-                Text(preferences.notchEdge.explanation)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                // "App icon", not "Icon": the two rows above it are about the
-                // notch, and on its own the word would read as another of them.
-                Picker("App icon", selection: $preferences.appPresence) {
-                    ForEach(AppPresence.allCases) { Text($0.title).tag($0) }
-                }
-                .pickerStyle(.segmented)
-
-                Text(preferences.appPresence.explanation)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            // Startup and updates together: both are about what Codenotch does
-            // without being asked, and one switch under its own header looked
-            // like an oversight rather than a section.
-            Section("General") {
-                Toggle("Open Codenotch at login", isOn: $preferences.launchAtLogin)
-                if let problem = preferences.launchAtLoginProblem {
-                    Text(problem)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Toggle("Install updates automatically", isOn: Binding(
-                    get: { updater.automatic },
-                    set: { updater.automatic = $0 }
-                ))
-
-                HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    // Disclosed rather than merely silent. An app that updates
-                    // itself unprompted *and* reads other apps' credentials is
-                    // exactly the shape security tooling flags; saying so, with
-                    // a way to switch it off, is the difference between a
-                    // background updater and something that looks like it is
-                    // hiding.
-                    Text("Version \(updater.currentVersion). Updates install in the "
-                         + "background and apply next time Codenotch starts.")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 0)
-                    Button("Check now") { updater.checkNow() }
-                        .controlSize(.small)
-                }
-
-                // Says what happened, where the user is already looking.
-                // Sparkle's own answer to a failed check is a modal reading
-                // "an error occurred in retrieving update information", which
-                // names no cause and offers nothing to do about it.
-                if let message = updater.outcome.message {
-                    Text(message)
-                        .font(.caption)
-                        .foregroundStyle(
-                            updater.outcome == .unreachable ? .orange : .secondary
-                        )
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+        var symbol: String {
+            switch self {
+            case .rings:      return "circle.dashed"
+            case .plans:      return "creditcard.fill"
+            case .appearance: return "paintbrush.fill"
+            case .general:    return "gearshape.fill"
             }
         }
-        .formStyle(.grouped)
-        // Outside the form, so it stays put at the foot of the window rather
-        // than scrolling away below the last section — a credit that has to be
-        // hunted for is not really a credit.
-        .safeAreaInset(edge: .bottom, spacing: 0) { credit }
-        .frame(width: SettingsView.width, height: SettingsView.height)
-        .onAppear { accounts = providers() }
-        .onReceive(NotificationCenter.default.publisher(
-            for: NSWindow.didBecomeKeyNotification
-        )) { _ in accounts = providers() }
+
+        var tint: Color {
+            switch self {
+            case .rings:      return .orange
+            case .plans:      return .green
+            case .appearance: return .pink
+            case .general:    return .gray
+            }
+        }
+
+        func summary(_ language: AppLanguage) -> String {
+            switch (self, language) {
+            case (.rings, .chinese):
+                return "选择刘海上显示哪些环。三个常驻环之外，你用过的每家服务商都能单独打开。"
+            case (.rings, .english):
+                return "Choose what the notch shows. Beyond the three that are always on, every vendor you've used can have a ring of its own."
+            case (.plans, .chinese):
+                return "填入每家的月费，就能看到这个计费周期里它产生的等效 API 价值是订阅费的多少倍。"
+            case (.plans, .english):
+                return "Enter what each plan costs and see what its usage has been worth against it, over the period the plan has actually paid for."
+            case (.appearance, .chinese):
+                return "刘海贴在哪条边、什么时候露出来，以及 TokNotch 本身出现在哪里。"
+            case (.appearance, .english):
+                return "Which edge the notch lives on, when it shows itself, and where TokNotch itself turns up."
+            case (.general, .chinese):
+                return "语言与数字写法、开机启动，以及用量数据从哪里来。"
+            case (.general, .english):
+                return "Language and number style, opening at login, and where the usage numbers come from."
+            }
+        }
+
+        func title(_ language: AppLanguage) -> String {
+            switch (self, language) {
+            case (.rings, .chinese):      return "刘海显示"
+            case (.rings, .english):      return "The notch"
+            case (.plans, .chinese):      return "订阅与回本"
+            case (.plans, .english):      return "Plans & payback"
+            case (.appearance, .chinese): return "外观"
+            case (.appearance, .english): return "Appearance"
+            case (.general, .chinese):    return "通用"
+            case (.general, .english):    return "General"
+            }
+        }
     }
 
-    private var credit: some View {
-        VStack(spacing: 0) {
+    private var language: AppLanguage { preferences.appLanguage }
+    private func t(_ chinese: String, _ english: String) -> String {
+        language == .chinese ? chinese : english
+    }
+
+    var body: some View {
+        // A plain split rather than `NavigationSplitView`. That view insists on
+        // putting a sidebar-collapse button into the window's toolbar, and it
+        // cannot be removed — which means a title bar has to exist to hold it,
+        // and a button whose only offer is to hide the one control that makes
+        // this window navigable. Two columns side by side owe nobody a toolbar.
+        HStack(spacing: 0) {
+            sidebar
+                .frame(width: SettingsView.sidebarWidth)
+                .background(SidebarMaterial())
             Divider()
-            HStack(spacing: 4) {
-                Text("App designed and developed by")
-                // Only the handle is the link, so the line reads as a sentence
-                // rather than as a button with a sentence attached.
-                Link("@hivinz_", destination: SettingsView.authorURL)
-                    // A link that does not change the pointer reads as text.
-                    .onHover { inside in
-                        if inside { NSCursor.pointingHand.push() } else { NSCursor.pop() }
-                    }
-            }
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .padding(.vertical, 10)
-            .frame(maxWidth: .infinity)
-        }
-        .background(.ultraThinMaterial)
-    }
-
-    static let authorURL = URL(string: "https://x.com/hivinz_")!
-
-    /// Narrower than the tabbed version needed: without a row of tab titles to
-    /// fit, the width is set by the account rows alone.
-    static let width: CGFloat = 500
-    /// Tall enough that Startup and Updates are visible without scrolling —
-    /// four account rows push everything below them a long way down.
-    static let height: CGFloat = 560
-
-    /// Nothing to read from anywhere. On a first launch that is the normal
-    /// state, and it is the only moment the sheet has something to explain.
-    private var needsSetup: Bool {
-        !accounts.isEmpty && accounts.allSatisfy { $0.account == nil }
-    }
-
-    /// Names the tools rather than saying "tools already signed in on this
-    /// Mac". Someone who uses Claude in a browser reads that sentence, installs
-    /// this, sees four blank rings and concludes it is broken — and the
-    /// distinction that catches them out is Claude *Code*, not the Claude app.
-    static let setupCopy =
-        "Codenotch reads usage from tools already signed in on this Mac — it "
-        + "never asks for your password. Install and sign in to any of Claude "
-        + "Code (the terminal tool, not the Claude app), Cursor, Codex or "
-        + "Antigravity, and its ring appears in the notch."
-
-    /// Said before it happens rather than after. A system dialogue asking to
-    /// read a *credential*, from an app installed a minute ago, looks alarming
-    /// unless it was expected — and choosing Allow instead of Always Allow makes
-    /// it return on every read, which is what "it asks every time" turns out to
-    /// be.
-    static let keychainCopy =
-        "macOS will ask once for permission to read Claude Code's and "
-        + "Antigravity's saved logins. Choose Always Allow — plain Allow makes "
-        + "it ask again every time."
-
-    private var setupNote: some View {
-        HStack(alignment: .top, spacing: 10) {
-            Image(systemName: "sparkles")
-                .foregroundStyle(.orange)
-            VStack(alignment: .leading, spacing: 3) {
-                Text("Connect an assistant to get started")
-                    .font(.callout.weight(.medium))
-                Text(SettingsView.setupCopy)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(SettingsView.keychainCopy)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.top, 2)
-            }
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.orange.opacity(0.09), in: RoundedRectangle(cornerRadius: 8))
-    }
-
-
-}
-
-/// One provider: whether Codenotch reads it, whose account that is, and where
-/// to go if there is nothing to read.
-private struct AccountRow: View {
-    let provider: ProviderSummary
-    @ObservedObject var preferences: Preferences
-    let signOut: (String) -> Void
-    let signIn: (String) -> Bool
-    let switchAccount: (String) -> Bool
-    let retry: (String) -> Void
-
-    private var isConnected: Bool { preferences.isConnected(provider.id) }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // Centred, not baseline-aligned. A glyph is a `Shape` and has no
-            // text baseline, so `.firstTextBaseline` lines its *bottom edge* up
-            // with the text's baseline and lifts every icon above its own name.
-            // Everything on this row is a single line, so centring is what makes
-            // the mark, the name, the button and the switch sit on one axis.
-            HStack(alignment: .center, spacing: 10) {
-                ProviderGlyphView(glyph: provider.glyph, size: 16)
-                    .foregroundStyle(isConnected ? .primary : .tertiary)
-
-                Text(provider.name)
-                    .foregroundStyle(isConnected ? .primary : .secondary)
-
-                Spacer(minLength: 8)
-
-                // Prefers the app that owns the account, and falls back to the
-                // web page only when there is no app to open.
-                //
-                // The reading is borrowed from an app on this Mac, so that app
-                // is where the account actually lives — and the website is a
-                // different session entirely, which will bounce you to a login
-                // if the browser is not signed in. Sending someone to a login
-                // screen from a row that says "connected" is the wrong answer
-                // whenever the real thing is one launch away.
-                // The way back from a declined keychain prompt, and the only
-                // one: declining is easy to do by reflex, and nothing else on
-                // screen will ask macOS again.
-                //
-                // Shown only while macOS is actually refusing. It used to be
-                // permanent for any keychain-backed provider, which meant it sat
-                // there next to a working account offering to fix nothing — and
-                // when it *was* needed there was no way to tell the two apart.
-                if isConnected, provider.wasRefusedAccess {
-                    Button("Allow access…") { retry(provider.id) }
-                        .controlSize(.small)
-                        .help("Asks macOS for \(provider.name)'s saved login again. "
-                              + "Choose Always Allow and it will stop asking.")
-                }
-
-                if isConnected, let destination {
-                    Button(destination.title) { open(destination) }
-                        .controlSize(.small)
-                        .help(destination.help)
-                }
-
-                Toggle("", isOn: binding)
-                    .toggleStyle(.switch)
-                    .controlSize(.small)
-                    .labelsHidden()
-                    .help(isConnected
-                          ? "Switch off to stop reading \(provider.name) and forget its "
-                            + "readings. " + provider.signIn.signOutCaveat
-                          : "Switch on to sign in and read \(provider.name) again.")
-            }
-
             detail
-                .font(.caption)
-                .padding(.leading, 26)
         }
+        .frame(width: SettingsView.width, height: SettingsView.height)
+        .ignoresSafeArea()
+        .onAppear {
+            page = startingPage
+                ?? Page(rawValue: preferences.lastSettingsPage)
+                ?? .rings
+        }
+        .onChange(of: page) { _, new in preferences.lastSettingsPage = new.rawValue }
+    }
+
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            // Clear of the window controls, which sit over the sidebar now that
+            // there is no title bar for them to live in.
+            Color.clear.frame(height: 42)
+
+            ForEach(Page.allCases) { item in
+                Button {
+                    page = item
+                } label: {
+                    HStack(spacing: 10) {
+                        SettingsIcon(symbol: item.symbol, tint: item.tint)
+                        Text(item.title(language))
+                            .font(.system(size: 13))
+                            .foregroundStyle(page == item ? Color.white : Color.primary)
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(page == item ? Color.accentColor : .clear)
+                    )
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 9)
     }
 
     @ViewBuilder
     private var detail: some View {
-        if !isConnected {
-            Text("Signed out — nothing is read, and no readings are kept.")
-                .foregroundStyle(.tertiary)
-        } else if let account = provider.account {
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 8) {
-                    Text(account.summary)
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
-                    if canOpenSignIn {
-                        Button("Switch…") { _ = switchAccount(provider.id) }
-                            .buttonStyle(.link)
-                            .help(provider.signIn.switchHint)
+        switch page {
+        case .rings:      RingsPage(preferences: preferences, store: store)
+        case .plans:      PlansPage(preferences: preferences, store: store)
+        case .appearance: AppearancePage(preferences: preferences)
+        case .general:    GeneralPage(preferences: preferences, store: store, updater: updater)
+        }
+    }
+
+    static let sidebarWidth: CGFloat = 178
+    static let width: CGFloat = 700
+    static let height: CGFloat = 650
+}
+
+// MARK: - What the notch shows
+
+struct RingsPage: View {
+    @ObservedObject var preferences: Preferences
+    @ObservedObject var store: UsageStore
+
+    private var language: AppLanguage { preferences.appLanguage }
+    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
+
+    var body: some View {
+        SettingsPage {
+
+            SettingsGroup(
+                title: t("常驻的三个环", "Always shown"),
+                footnote: t("这三个环始终显示。环的弧代表它跟什么比 — 走满一圈是你超过了自己，不是警告。",
+                            "These three are always on. Each ring's arc is a comparison — a full ring means you beat your own best, not a warning.")
+            ) {
+                ForEach(Array(RingKind.primaries.enumerated()), id: \.element.id) { index, kind in
+                    if index > 0 { SettingsDivider() }
+                    SettingsRow(
+                        title: primaryTitle(kind),
+                        subtitle: primaryNote(kind),
+                        leading: { RingGlyphView(glyph: glyph(for: kind), size: 17)
+                            .foregroundStyle(.primary) },
+                        trailing: { headline(for: kind) }
+                    )
+                }
+            }
+
+            SettingsGroup(
+                title: t("按服务商拆分", "By vendor"),
+                footnote: store.availableVendors.isEmpty ? nil
+                    : t("每家一个环，显示它的累计用量与占全部用量的比例，默认全部关闭。列表来自本机实际用量 — 没用过的厂商不会出现。",
+                        "One ring each, showing that vendor's lifetime usage and its share of everything. All off by default; the list comes from what this Mac has actually run.")
+            ) {
+                if store.availableVendors.isEmpty {
+                    SettingsRow("hourglass", tint: .gray,
+                                title: t("正在扫描本机用量…", "Scanning this Mac's usage…")) { EmptyView() }
+                } else {
+                    ForEach(Array(store.availableVendors.enumerated()), id: \.element.rawValue) { index, vendor in
+                        if index > 0 { SettingsDivider() }
+                        SettingsRow(
+                            title: vendor.title(language),
+                            subtitle: subtitle(for: vendor),
+                            leading: { RingGlyphView(glyph: .vendor(vendor), size: 17)
+                                .foregroundStyle(vendor.ringTint) },
+                            trailing: {
+                                Toggle("", isOn: Binding(
+                                    get: { preferences.showsRing(for: vendor) },
+                                    set: { preferences.setRing($0, for: vendor) }
+                                ))
+                                .toggleStyle(.switch)
+                                .controlSize(.small)
+                                .labelsHidden()
+                            }
+                        )
                     }
                 }
-                // Says where the account actually lives, which is the whole
-                // answer to "how do I change it" — not here.
-                Text(provider.signIn.switchHint)
-                    .foregroundStyle(.tertiary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        } else if provider.wasRefusedAccess {
-            // Not a sign-in problem, so do not send them off to sign in. The
-            // credential is right there and macOS is the one saying no — the
-            // remedy is the button on this same row.
-            Text("macOS is not letting Codenotch read \(provider.name)'s saved "
-                 + "login. Choose Allow access… above, then Always Allow.")
-                .foregroundStyle(.orange)
-                .fixedSize(horizontal: false, vertical: true)
-        } else {
-            HStack(spacing: 8) {
-                Text(provider.signIn.explanation)
-                    .foregroundStyle(.orange)
-                    .fixedSize(horizontal: false, vertical: true)
-                if let title = provider.signIn.actionTitle, canOpenSignIn {
-                    Button(title) { _ = signIn(provider.id) }
-                        .controlSize(.small)
-                }
-
             }
         }
     }
 
-    /// Where this row's "Open" button goes.
-    enum Destination {
-        case app(URL, name: String)
-        case website(URL, host: String)
+    private func subtitle(for vendor: Vendor) -> String? {
+        guard let totals = store.lifetime(for: vendor) else { return nil }
+        return "\(UsageFormat.tokens(totals.tokens, language)) · \(UsageFormat.money(totals.cost))"
+    }
 
-        var title: String {
-            switch self {
-            case .app(_, let name):     return "Open \(name)"
-            case .website(_, let host): return "Open \(host)"
-            }
-        }
-
-        var help: String {
-            switch self {
-            case .app(_, let name):
-                return "Opens \(name), which is where this account is signed in."
-            case .website(_, let host):
-                return "Opens \(host) in your browser. That site has its own sign-in, "
-                     + "separate from the credential read here."
-            }
+    @ViewBuilder
+    private func headline(for kind: RingKind) -> some View {
+        if let ring = store.rings.first(where: { $0.kind == kind }), ring.hasReading {
+            Text(ring.headline)
+                .font(.system(size: 12, weight: .medium, design: .rounded))
+                .foregroundStyle(.secondary)
+                .monospacedDigit()
         }
     }
 
-    /// The owning app when it is installed, the vendor's page otherwise.
-    private var destination: Destination? {
-        if case .openApp(let bundleID, let name) = provider.signIn,
-           let app = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
-            return .app(app, name: name)
-        }
-        // Claude Code is a command with no app to open, so its row is always a
-        // link — and claude.ai is genuinely where its usage can be checked.
-        if let url = provider.account?.manageURL, let host = url.host {
-            return .website(url, host: host)
-        }
-        return nil
-    }
-
-    private func open(_ destination: Destination) {
-        switch destination {
-        case .app(let url, _):
-            NSWorkspace.shared.openApplication(at: url, configuration: .init())
-        case .website(let url, _):
-            NSWorkspace.shared.open(url)
+    private func glyph(for kind: RingKind) -> RingGlyph {
+        switch kind {
+        case .today:         return .today
+        case .month:         return .month
+        case .lifetime:      return .lifetime
+        case .vendor(let v): return .vendor(v)
         }
     }
 
-    /// Offering to open an app that isn't installed gives a button that does
-    /// nothing — worse than no button.
-    private var canOpenSignIn: Bool {
-        switch provider.signIn {
-        case .modal:
-            return true
-        case .openApp(let bundleID, _):
-            return NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) != nil
-        case .guidance:
-            return false
+    private func primaryTitle(_ kind: RingKind) -> String {
+        switch kind {
+        case .today:    return t("今日", "Today")
+        case .month:    return t("本月", "This month")
+        case .lifetime: return t("累计", "All time")
+        case .vendor(let v): return v.title(language)
         }
     }
 
-    /// One control for both directions: on signs in, off signs out.
+    private func primaryNote(_ kind: RingKind) -> String {
+        switch kind {
+        case .today:    return t("对比近 30 天最高的一天", "against your best day in 30")
+        case .month:    return t("对比上月同期", "against the same days last month")
+        case .lifetime: return t("距离下一个里程碑", "toward the next milestone")
+        case .vendor:   return t("占全部用量", "share of everything")
+        }
+    }
+}
+
+// MARK: - Plans & payback
+
+struct PlansPage: View {
+    @ObservedObject var preferences: Preferences
+    @ObservedObject var store: UsageStore
+
+    private var language: AppLanguage { preferences.appLanguage }
+    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
+
+    /// Vendors you can actually hold a plan with, and that this Mac has used.
     ///
-    /// Switching on does more than set a flag — if there is no credential to
-    /// read it opens the sign-in there and then, which is the point of managing
-    /// this from one place. Switching off is a real sign-out: it forgets the
-    /// readings as well as stopping the next one.
-    private var binding: Binding<Bool> {
-        Binding(
-            get: { preferences.isConnected(provider.id) },
-            set: { wantsOn in
-                if wantsOn {
-                    preferences.setConnected(true, for: provider.id)
-                    // Nothing to open for Claude Code — but then there is no
-                    // account either, so `detail` is already showing what to do.
-                    _ = signIn(provider.id)
+    /// Deliberately not every vendor in the stack: DeepSeek, MiniMax, Qwen and
+    /// the rest are billed by the token here, so a row asking what their
+    /// subscription costs is a question with no answer — and nine such rows
+    /// bury the two that matter.
+    private var vendors: [Vendor] {
+        store.availableVendors.filter { !PlanCatalog.plans(for: $0).isEmpty }
+    }
+
+    private var configured: [(Vendor, Subscription)] {
+        vendors.compactMap { vendor in store.plan(for: vendor).map { (vendor, $0) } }
+    }
+
+    private var totalMonthly: Double { configured.reduce(0) { $0 + $1.1.monthlyUSD } }
+    private var totalEarned: Double {
+        configured.reduce(0) { $0 + (store.payback(for: $1.0, plan: $1.1)?.earned ?? 0) }
+    }
+
+    var body: some View {
+        SettingsPage {
+
+            if !configured.isEmpty {
+                SettingsGroup(title: t("本期合计", "This period")) {
+                    PaybackSummary(paid: totalMonthly, earned: totalEarned, language: language)
+                }
+            }
+
+            SettingsGroup(
+                title: t("每家的订阅", "Your plans"),
+                footnote: t("套餐会自动认出来：Claude 读自它的配置文件，ChatGPT 读自 Codex 的登录态 — 只取套餐名与计费起始日，绝不读取密钥，也绝不外传。认不出的从菜单里挑一个即可，价格已内置。",
+                            "Plans are recognised for you: Claude from its configuration file, ChatGPT from the Codex sign-in — only the plan name and the billing start date, never the keys beside them, and never off this Mac. Anything left over is one menu away.")
+            ) {
+                if vendors.isEmpty {
+                    SettingsRow("hourglass", tint: .gray,
+                                title: t("正在扫描本机用量…", "Scanning this Mac's usage…")) { EmptyView() }
                 } else {
-                    signOut(provider.id)
-                    preferences.setConnected(false, for: provider.id)
+                    ForEach(Array(vendors.enumerated()), id: \.element.rawValue) { index, vendor in
+                        if index > 0 { SettingsDivider(inset: 0) }
+                        PlanRow(vendor: vendor, preferences: preferences,
+                                store: store, language: language)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/// The one line the plans page exists to produce.
+private struct PaybackSummary: View {
+    let paid: Double
+    let earned: Double
+    let language: AppLanguage
+
+    private var multiple: Double { paid > 0 ? earned / paid : 0 }
+    private var paidBack: Bool { multiple >= 1 }
+    private var scale: PaybackScale { .around(multiple) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 9) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(language == .chinese ? "等效价值" : "Earned")
+                    .font(.system(size: 12)).foregroundStyle(.secondary)
+                Text(UsageFormat.money(earned))
+                    .font(.system(size: 22, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                Spacer()
+                Text(String(format: "%.1f×", multiple))
+                    .font(.system(size: 18, weight: .semibold, design: .rounded))
+                    .foregroundStyle(paidBack ? Color.green : Color.orange)
+                    .monospacedDigit()
+            }
+
+            GeometryReader { proxy in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(Color.primary.opacity(0.09))
+                    Capsule()
+                        .fill((paidBack ? Color.green : Color.orange).gradient)
+                        .frame(width: max(4, proxy.size.width * scale.fill(multiple)))
+                    if let breakEven = scale.breakEven {
+                        // Break-even, cut into the bar in the card's own colour.
+                        // Once a plan is well past paying for itself the fill
+                        // alone says nothing; where this tick sits is the whole
+                        // reading.
+                        Capsule()
+                            .fill(Color(nsColor: .controlBackgroundColor))
+                            .frame(width: 2)
+                            .offset(x: proxy.size.width * breakEven - 1)
+                    }
+                }
+            }
+            .frame(height: 6)
+
+            Text(paidBack
+                 ? (language == .chinese
+                    ? "订阅共 \(UsageFormat.money(paid))/月 · 已超出 \(UsageFormat.money(earned - paid))"
+                    : "\(UsageFormat.money(paid))/mo in plans · \(UsageFormat.money(earned - paid)) beyond break-even")
+                 : (language == .chinese
+                    ? "订阅共 \(UsageFormat.money(paid))/月 · 还差 \(UsageFormat.money(paid - earned))"
+                    : "\(UsageFormat.money(paid))/mo in plans · \(UsageFormat.money(paid - earned)) to go"))
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, SettingsMetrics.rowPaddingH)
+        .padding(.vertical, 11)
+    }
+}
+
+/// One vendor's plan: what it is, when it renews, and how it is doing.
+///
+/// A menu of the vendor's own plans rather than a box to type a number into.
+/// Nobody holds "20" — they hold Claude Pro — and looking a list price up is
+/// work the app can do once for everybody. Where the plan can be read out of
+/// the tool's own configuration it is simply already selected.
+private struct PlanRow: View {
+    let vendor: Vendor
+    @ObservedObject var preferences: Preferences
+    @ObservedObject var store: UsageStore
+    let language: AppLanguage
+
+    /// Shown only while "custom" is chosen, and committed on Return or on
+    /// losing focus — a field bound straight to a number rewrites itself on
+    /// every keystroke, so editing 200 into 20 passes through whatever the
+    /// half-typed text parses to.
+    @State private var draft: String = ""
+    @FocusState private var editing: Bool
+
+    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
+
+    private var detected: DetectedPlan? { store.detectedPlans[vendor] }
+    private var plan: Subscription? { store.plan(for: vendor) }
+    private var isDetected: Bool { store.isDetected(vendor) }
+    private var isCustom: Bool { plan != nil && plan?.planID == nil }
+
+    private var menu: [PlanCatalog.Plan] { PlanCatalog.menu(for: vendor) }
+
+    private var selected: PlanCatalog.Plan {
+        guard let plan else { return .none }
+        if let id = plan.planID, let known = PlanCatalog.plan(id: id, for: vendor) { return known }
+        return plan.isActive ? .custom : .none
+    }
+
+    private var selection: Binding<PlanCatalog.Plan> {
+        Binding(
+            get: { selected },
+            set: { choice in
+                // A Picker may call this during layout with the value it just
+                // read. Storing that unconditionally is how vendors nobody had
+                // touched ended up with plans of their own.
+                guard choice != selected else { return }
+                let day = plan?.renewalDay ?? detected?.renewalDay ?? 1
+                switch choice.id {
+                case "none":
+                    // An explicit "no plan", which has to outrank detection —
+                    // hence a stored zero rather than removing the entry.
+                    preferences.subscriptions[vendor] = Subscription(monthlyUSD: 0, renewalDay: day)
+                case "custom":
+                    preferences.subscriptions[vendor] =
+                        Subscription(monthlyUSD: plan?.monthlyUSD ?? 0, renewalDay: day)
+                    draft = plan.map { trimmed($0.monthlyUSD) } ?? ""
+                    editing = true
+                default:
+                    preferences.subscriptions[vendor] =
+                        Subscription(monthlyUSD: choice.monthlyUSD, renewalDay: day,
+                                     planID: choice.id)
                 }
             }
         )
     }
 
+    private var renewalDay: Binding<Int> {
+        Binding(
+            get: { plan?.renewalDay ?? detected?.renewalDay ?? 1 },
+            set: { day in
+                // Only a vendor that actually has a plan has a renewal day, and
+                // only a real change is worth storing.
+                guard let current = plan, current.renewalDay != day else { return }
+                preferences.subscriptions[vendor] =
+                    Subscription(monthlyUSD: current.monthlyUSD, renewalDay: day,
+                                 planID: current.planID)
+            }
+        )
+    }
+
+    private var payback: Payback? {
+        plan.flatMap { store.payback(for: vendor, plan: $0) }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            HStack(spacing: 9) {
+                RingGlyphView(glyph: .vendor(vendor), size: 17)
+                    .foregroundStyle(vendor.ringTint)
+                    .frame(width: SettingsMetrics.iconSize)
+
+                Text(vendor.title(language))
+                    .font(.system(size: 13))
+                    .lineLimit(1)
+                    // Without this the name is the one flexible thing in a full
+                    // row, so it is what gets squeezed away to nothing.
+                    .layoutPriority(1)
+                Spacer(minLength: 6)
+
+                Picker("", selection: selection) {
+                    ForEach(menu) { Text(caption(for: $0)).tag($0) }
+                }
+                .labelsHidden()
+                .frame(width: menuWidth)
+
+                Picker("", selection: renewalDay) {
+                    ForEach(1...31, id: \.self) { day in
+                        Text(language == .chinese ? "\(day) 号" : ordinal(day)).tag(day)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 68)
+                .disabled(plan == nil)
+
+                verdict.frame(width: 66, alignment: .trailing)
+            }
+
+            if isCustom || provenance != nil {
+                HStack(spacing: 6) {
+                    if isCustom {
+                        Text("$").font(.system(size: 11)).foregroundStyle(.secondary)
+                        TextField("0", text: $draft)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(width: 62)
+                            .multilineTextAlignment(.trailing)
+                            .monospacedDigit()
+                            .focused($editing)
+                            .onSubmit(commit)
+                            .onChange(of: editing) { _, focused in if !focused { commit() } }
+                        Text(language == .chinese ? "/ 月" : "/ mo")
+                            .font(.system(size: 11)).foregroundStyle(.secondary)
+                    }
+                    if let note = provenance {
+                        Text(note).font(.system(size: 10.5)).foregroundStyle(.tertiary)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.leading, SettingsMetrics.iconSize + 9)
+            }
+        }
+        .padding(.horizontal, SettingsMetrics.rowPaddingH)
+        .padding(.vertical, 8)
+        .onAppear { draft = plan.map { trimmed($0.monthlyUSD) } ?? "" }
+    }
+
+    /// Menus of long plan names need room; a vendor with no plans at all only
+    /// ever shows "—" and "…".
+    /// Wide enough for the longest plan name and its price together —
+    /// "ChatGPT Plus · $20" truncated to "ChatGPT Plus ·…", which reads as
+    /// though something is missing.
+    private var menuWidth: CGFloat { PlanCatalog.plans(for: vendor).isEmpty ? 84 : 162 }
+
+    private func caption(for option: PlanCatalog.Plan) -> String {
+        switch option.id {
+        case "none":   return t("无订阅", "No plan")
+        case "custom": return t("自定义…", "Custom…")
+        default:
+            return option.monthlyUSD > 0
+                ? "\(option.name) · \(UsageFormat.moneyShort(option.monthlyUSD))"
+                : option.name
+        }
+    }
+
+    /// Says where a figure came from. The detected case is the one worth
+    /// stating: a number that appeared without being typed needs to account
+    /// for itself.
+    private var provenance: String? {
+        if isDetected, let detected {
+            return t("自动识别：\(detected.name) · 读自 \(detected.source)",
+                     "Detected: \(detected.name) · from \(detected.source)")
+        }
+        if let detected, detected.subscription != nil, !isDetected {
+            return t("已手动覆盖（识别到 \(detected.name)）",
+                     "Overridden (detected \(detected.name))")
+        }
+        return nil
+    }
+
+    private func commit() {
+        // Only ever writes while the custom field is the thing on screen.
+        guard isCustom else { return }
+        let cleaned = draft.trimmingCharacters(in: .whitespaces)
+            .replacingOccurrences(of: "$", with: "")
+            .replacingOccurrences(of: ",", with: "")
+        let value = Double(cleaned) ?? 0
+        preferences.subscriptions[vendor] =
+            Subscription(monthlyUSD: value, renewalDay: renewalDay.wrappedValue)
+        draft = value > 0 ? trimmed(value) : ""
+    }
+
+    private func trimmed(_ value: Double) -> String {
+        value == value.rounded() ? String(Int(value)) : String(format: "%.2f", value)
+    }
+
+    private func ordinal(_ day: Int) -> String {
+        let suffix: String
+        switch (day % 10, day % 100) {
+        case (1, 11), (2, 12), (3, 13): suffix = "th"
+        case (1, _): suffix = "st"
+        case (2, _): suffix = "nd"
+        case (3, _): suffix = "rd"
+        default: suffix = "th"
+        }
+        return "\(day)\(suffix)"
+    }
+
+    @ViewBuilder
+    private var verdict: some View {
+        if let payback {
+            VStack(alignment: .trailing, spacing: 0) {
+                Text(String(format: "%.1f×", payback.multiple))
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                Text(payback.hasPaidBack ? t("已回本", "paid back") : t("回本中", "on the way"))
+                    .font(.system(size: 10))
+            }
+            .foregroundStyle(payback.hasPaidBack ? Color.green : Color.orange)
+        } else {
+            Text("—").font(.system(size: 13)).foregroundStyle(.quaternary)
+        }
+    }
+}
+
+// MARK: - Appearance
+
+struct AppearancePage: View {
+    @ObservedObject var preferences: Preferences
+
+    private var language: AppLanguage { preferences.appLanguage }
+    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
+
+    var body: some View {
+        SettingsPage {
+
+            SettingsGroup(title: t("刘海", "The notch")) {
+                SettingsPictureRow(
+                    title: t("显示模式", "Show"),
+                    subtitle: language == .chinese
+                        ? preferences.notchVisibility.chineseExplanation
+                        : preferences.notchVisibility.explanation,
+                    selection: $preferences.notchVisibility,
+                    options: NotchVisibility.allCases,
+                    caption: { language == .chinese ? $0.chineseTitle : $0.title },
+                    preview: { NotchVisibilityPreview(visibility: $0) }
+                )
+                SettingsDivider(inset: 0)
+                SettingsPictureRow(
+                    title: t("贴在哪条边", "Edge"),
+                    subtitle: language == .chinese
+                        ? preferences.notchEdge.chineseExplanation
+                        : preferences.notchEdge.explanation,
+                    selection: $preferences.notchEdge,
+                    options: NotchEdge.allCases,
+                    caption: { language == .chinese ? $0.chineseTitle : $0.title },
+                    preview: { NotchEdgePreview(edge: $0) }
+                )
+            }
+
+            SettingsGroup(title: t("应用本身", "The app itself"),
+                          footnote: language == .chinese
+                            ? preferences.appPresence.chineseExplanation
+                            : preferences.appPresence.explanation) {
+                SettingsMenuRow(
+                    title: t("在哪里能找到它", "Where it shows up"),
+                    selection: $preferences.appPresence,
+                    options: AppPresence.allCases,
+                    label: { language == .chinese ? $0.chineseTitle : $0.title },
+                    symbol: "macwindow", tint: .indigo
+                )
+            }
+        }
+    }
+}
+
+// MARK: - General
+
+struct GeneralPage: View {
+    @ObservedObject var preferences: Preferences
+    @ObservedObject var store: UsageStore
+    @ObservedObject var updater: Updater
+
+    private var language: AppLanguage { preferences.appLanguage }
+    private func t(_ zh: String, _ en: String) -> String { language == .chinese ? zh : en }
+
+    var body: some View {
+        SettingsPage {
+
+            SettingsGroup(title: t("语言与单位", "Language & units"),
+                          footnote: preferences.appLanguage.explanation) {
+                SettingsMenuRow(
+                    title: t("数字怎么写", "How numbers are written"),
+                    selection: $preferences.appLanguage,
+                    options: AppLanguage.allCases,
+                    label: { $0.title },
+                    symbol: "textformat.123", tint: .teal
+                )
+            }
+
+            SettingsGroup(title: t("启动", "Startup")) {
+                SettingsRow("power", tint: .blue,
+                            title: t("开机时自动启动", "Open at login"),
+                            subtitle: preferences.launchAtLoginProblem) {
+                    Toggle("", isOn: $preferences.launchAtLogin)
+                        .toggleStyle(.switch).controlSize(.small).labelsHidden()
+                }
+            }
+
+            SettingsGroup(
+                title: t("数据来源", "Where the numbers come from"),
+                footnote: t("用量由 tokscale 在本机扫描各个 AI 工具的会话记录得出；套餐则读自各工具的登录信息，只取套餐名与计费日。全程本地：不碰钥匙串、不弹密码框、不上传任何数据。",
+                            "Usage comes from tokscale reading each tool's own session logs on this Mac; plans come from each tool's sign-in, and only the plan name and billing date are read. Entirely local: no keychain, no password prompts, nothing leaves the machine.")
+            ) {
+                SettingsRow(store.problem == nil ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
+                            tint: store.problem == nil ? .green : .orange,
+                            title: status, subtitle: source) {
+                    Button(t("刷新", "Refresh")) { store.refreshNow() }
+                        .controlSize(.small)
+                        .disabled(store.isRefreshing)
+                }
+            }
+
+            SettingsGroup(title: t("关于", "About")) {
+                SettingsRow("app.badge", tint: .indigo,
+                            title: "TokNotch \(updater.currentVersion)",
+                            subtitle: t("刘海里的 Token 用量", "token usage, in the notch")) {
+                    EmptyView()
+                }
+            }
+        }
+    }
+
+    private var status: String {
+        if let problem = store.problem { return problem }
+        guard let updated = store.lastUpdated else { return t("正在读取…", "Reading…") }
+        let formatter = DateFormatter()
+        formatter.timeStyle = .medium
+        formatter.dateStyle = .none
+        return t("读取正常 · 更新于 \(formatter.string(from: updated))",
+                 "Reading fine · updated \(formatter.string(from: updated))")
+    }
+
+    /// Says which copy of tokscale is answering, because "it is built in" is
+    /// the whole reason this app needs no setup.
+    private var source: String {
+        TokscaleCLI.isUsingBundledBinary
+            ? t("内置 tokscale \(TokscaleCLI.bundledVersion ?? "") — 无需另行安装",
+                "Built-in tokscale \(TokscaleCLI.bundledVersion ?? "") — nothing to install")
+            : t("使用本机安装的 tokscale", "Using the tokscale installed on this Mac")
+    }
 }

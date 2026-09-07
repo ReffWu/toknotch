@@ -5,7 +5,6 @@ import SwiftUI
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var notchController: NotchWindowController?
     private var store: UsageStore?
-    private var monitors: [String: any AgentActivityMonitor] = [:]
     private var preferences: Preferences?
     private var settings: SettingsWindowController?
     private var whatsNew: WhatsNewWindowController?
@@ -23,12 +22,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             || NSClassFromString("XCTestCase") != nil
     }
 
-    /// Every Claude Code configuration directory on this Mac — `~/.claude` and
-    /// any `~/.claude-<slug>` — found once at launch. Each gets a usage
-    /// provider and a session monitor of its own, keyed by the same id, so a
-    /// work login's sessions spin the work ring and nobody else's.
-    private let claudeProfiles = ClaudeProfile.discover()
-
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Set here, not in the Info.plist: this call is applied at launch and
         // overrides `LSUIElement` either way. Removing the plist key alone left
@@ -40,174 +33,132 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let controller = NotchWindowController()
 
-        // `CODENOTCH_DEMO=1` puts the design frame's three providers on screen
-        // with its numbers, for screenshots and for eyeballing the layout.
-        if ProcessInfo.processInfo.environment["CODENOTCH_DEMO"] == "1" {
-            controller.model.snapshots = Fixtures.snapshots()
-        } else {
-            // Nothing needs a browser session at the moment. `WebSessionProvider`
-            // and `Sites.perplexity` are kept: they are the working pattern for a
-            // site behind bot management, and re-registering is one line.
-            let webProviders: [WebSessionProvider] = []
-            controller.signInItems = webProviders.map { provider in
-                (title: "Sign in to \(provider.displayName)…",
-                 action: { [weak provider] in provider?.presentSignIn() })
-            }
-            // Before Preferences reads anything, or the first launch flag and
-            // every choice would be read from an empty domain.
-            Preferences.migrateFromPreviousName()
-            let preferences = Preferences()
-            self.preferences = preferences
-
-            // Cursor reads the editor's own session rather than a browser one:
-            // signing into cursor.com separately created a second, empty account.
-            //
-            // Built *after* preferences and told what is switched off, so the
-            // very first list it draws already excludes them. Constructed first,
-            // it drew every provider from the archive and only dropped the
-            // switched-off ones once the binding below delivered.
-            Log.usage.info("claude profiles: \(self.claudeProfiles.map(\.displayPath).joined(separator: ", "), privacy: .public)")
-            let store = UsageStore(
-                providers: claudeProfiles.map { ClaudeOAuthProvider(profile: $0) }
-                    + [CursorLocalProvider(), CodexLocalProvider(), AntigravityProvider(),
-                       GLMProvider()]
-                    + webProviders,
-                disconnected: preferences.disconnectedProviders
-            )
-
-            // The stored edge goes in before the panel is ever put up. The
-            // sink below delivers on the next run loop turn, by which time the
-            // notch has already been shown on the default edge — so without
-            // this, every launch on any other edge opens with a flash of the
-            // right-hand one and then crossfades away from it.
-            controller.model.edge = preferences.notchEdge
-
-            let updater = Updater()
-            self.updater = updater
-
-            let settings = SettingsWindowController(
-                preferences: preferences,
-                // A closure so the sheet re-reads accounts each time it comes
-                // forward; a snapshot here is what made a switched account keep
-                // showing the old address until the app restarted.
-                providers: { [weak store] in store?.providerSummaries ?? [] },
-                updater: updater,
-                signOut: { [weak store] in store?.signOut(providerID: $0) },
-                signIn: { [weak store] in store?.signIn(providerID: $0) ?? false },
-                switchAccount: { [weak store] in
-                    store?.openAccountSource(providerID: $0) ?? false
-                },
-                retry: { [weak store] in store?.reauthorize(providerID: $0) }
-            )
-            controller.onOpenSettings = { [weak settings] in settings?.show() }
-            self.settings = settings
-
-            // What changed, once per version — including on a fresh install,
-            // where it is the introduction.
-            let whatsNew = WhatsNewWindowController(
-                preferences: preferences, version: updater.currentVersion
-            )
-            self.whatsNew = whatsNew
-
-            // An agent app has no dock icon and no window: installed and
-            // launched, it shows four empty rings on a screen edge and no
-            // reason to look at them. Once, on the very first run, it opens the
-            // one place that explains what to connect.
-            //
-            // Sequenced behind What's New rather than beside it: two windows
-            // arriving together is one to dismiss before you can read either.
-            let introduce = { [weak settings] in
-                guard preferences.isFirstLaunch else { return }
-                settings?.show()
-            }
-            whatsNew.onDismiss = introduce
-            if !whatsNew.showIfNeeded() {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: introduce)
-            }
-
-            let statusItem = StatusItemController { [weak settings] in settings?.show() }
-            self.statusItem = statusItem
-
-            preferences.$appPresence
-                .receive(on: RunLoop.main)
-                .sink { presence in
-                    NSApp.setActivationPolicy(presence.activationPolicy)
-                    if presence.wantsStatusItem { statusItem.show() } else { statusItem.hide() }
-                }
-                .store(in: &cancellables)
-
-            preferences.$notchVisibility
-                .receive(on: RunLoop.main)
-                .sink { [weak controller] in controller?.apply($0) }
-                .store(in: &cancellables)
-
-            preferences.$notchEdge
-                .receive(on: RunLoop.main)
-                .sink { [weak controller] in controller?.apply(edge: $0) }
-                .store(in: &cancellables)
-
-            preferences.$disconnectedProviders
-                .receive(on: RunLoop.main)
-                .sink { [weak store] in store?.disconnected = $0 }
-                .store(in: &cancellables)
-
-            store.$snapshots
-                .receive(on: RunLoop.main)
-                .sink { [weak controller] snapshots in
-                    withAnimation(NotchMotion.unfold) {
-                        controller?.model.snapshots = snapshots
-                    }
-                    controller?.model.now = Date()
-                }
-                .store(in: &cancellables)
-            store.start()
-            controller.onRefresh = { [weak store] in store?.refreshNow() }
-            controller.onRefreshProvider = { [weak store] id in store?.refresh(providerID: id) }
-            store.$refreshing
-                .receive(on: RunLoop.main)
-                .sink { [weak controller] ids in controller?.model.refreshing = ids }
-                .store(in: &cancellables)
-
-            // CODENOTCH_DISCOVER=<url> loads that page in the signed-in WebView
-            // and logs the API calls it makes — for finding an undocumented
-            // endpoint by watching the site rather than guessing at path names.
-            if let target = ProcessInfo.processInfo.environment["CODENOTCH_DISCOVER"],
-               let url = URL(string: target),
-               let provider = webProviders.first(where: { url.host?.contains($0.id) == true })
-                   ?? webProviders.first {
-                Task {
-                    let calls = await provider.recordCalls(on: url)
-                    Log.usage.notice("discovered: \(calls.joined(separator: "  "), privacy: .public)")
-                }
-            }
-            self.store = store
+        // `TOKNOTCH_DEMO=1` puts fixed numbers on screen for screenshots and
+        // for eyeballing the layout without touching tokscale.
+        if ProcessInfo.processInfo.environment["TOKNOTCH_DEMO"] == "1" {
+            controller.model.rings = Fixtures.rings()
+            controller.show()
+            notchController = controller
+            return
         }
 
-        // What each agent is doing right now, so the notch can say whether it is
-        // still working without you switching to it.
-        var monitors: [String: any AgentActivityMonitor] = [
-            "cursor": CursorActivityMonitor(),
-            "codex": CodexActivityMonitor(),
-            "gemini": AntigravityActivityMonitor()
-        ]
-        for profile in claudeProfiles {
-            monitors[profile.id] = ClaudeSessionMonitor(directory: profile.sessionsDirectory)
+        // Before Preferences reads anything, or the first-launch flag and every
+        // choice would be read from an empty domain.
+        Preferences.migrateFromPreviousName()
+        let preferences = Preferences()
+        self.preferences = preferences
+
+        let store = UsageStore()
+        store.language = preferences.appLanguage
+        store.enabledVendors = preferences.enabledVendors
+        store.subscriptions = preferences.subscriptions
+        self.store = store
+
+        // The stored edge goes in before the panel is ever put up. The sink
+        // below delivers on the next run loop turn, by which time the notch has
+        // already been shown on the default edge — so without this, every launch
+        // on any other edge opens with a flash of the right-hand one and then
+        // crossfades away from it.
+        controller.model.edge = preferences.notchEdge
+
+        let updater = Updater()
+        self.updater = updater
+
+        let settings = SettingsWindowController(preferences: preferences, store: store,
+                                                updater: updater)
+        controller.onOpenSettings = { [weak settings] in settings?.show() }
+        self.settings = settings
+        setupMainMenu()
+
+        // What changed, once per version — including on a fresh install, where
+        // it is the introduction.
+        let whatsNew = WhatsNewWindowController(preferences: preferences,
+                                                version: updater.currentVersion)
+        self.whatsNew = whatsNew
+
+        // With no dock icon and no window, a fresh install shows three rings on
+        // a screen edge and no reason to look at them. Once, on the very first
+        // run, it opens the one place that explains them.
+        //
+        // Sequenced behind What's New rather than beside it: two windows
+        // arriving together is one to dismiss before you can read either.
+        let introduce = { [weak settings] in
+            guard preferences.isFirstLaunch else { return }
+            settings?.show()
         }
-        for (id, monitor) in monitors {
-            monitor.sessionsPublisher
-                .receive(on: RunLoop.main)
-                .sink { [weak controller] live in
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-                        controller?.model.sessions[id] = live
-                    }
-                    controller?.model.now = Date()
-                }
-                .store(in: &cancellables)
-            monitor.start()
+        whatsNew.onDismiss = introduce
+        if !whatsNew.showIfNeeded() {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: introduce)
         }
-        // Poll usage hard only while something is actually running.
-        store?.isBusy = { monitors.values.contains { m in m.sessions.contains { $0.state == .busy } } }
-        self.monitors = monitors
+
+        let statusItem = StatusItemController { [weak settings] in settings?.show() }
+        self.statusItem = statusItem
+
+        DistributedNotificationCenter.default().addObserver(
+            forName: NSNotification.Name("com.reff.toknotch.openSettings"),
+            object: nil, queue: .main
+        ) { [weak settings] _ in settings?.show() }
+
+        preferences.$appPresence
+            .receive(on: RunLoop.main)
+            .sink { presence in
+                NSApp.setActivationPolicy(presence.activationPolicy)
+                if presence.wantsStatusItem { statusItem.show() } else { statusItem.hide() }
+            }
+            .store(in: &cancellables)
+
+        preferences.$notchVisibility
+            .receive(on: RunLoop.main)
+            .sink { [weak controller] in controller?.apply($0) }
+            .store(in: &cancellables)
+
+        preferences.$notchEdge
+            .receive(on: RunLoop.main)
+            .sink { [weak controller] in controller?.apply(edge: $0) }
+            .store(in: &cancellables)
+
+        // Both of these are presentation: the store re-renders the rings it
+        // already has rather than reading tokscale again.
+        preferences.$appLanguage
+            .receive(on: RunLoop.main)
+            .sink { [weak store] in store?.language = $0 }
+            .store(in: &cancellables)
+
+        preferences.$enabledVendors
+            .receive(on: RunLoop.main)
+            .sink { [weak store] in store?.enabledVendors = $0 }
+            .store(in: &cancellables)
+
+        preferences.$subscriptions
+            .receive(on: RunLoop.main)
+            .sink { [weak store] in store?.subscriptions = $0 }
+            .store(in: &cancellables)
+
+        // Finding a plan is itself the answer to "do you want this vendor's
+        // ring": somebody paying for Claude every month wants to see Claude.
+        // Once each, so switching one off keeps it off.
+        store.$detectedPlans
+            .receive(on: RunLoop.main)
+            .sink { [weak preferences] plans in
+                preferences?.autoEnableRings(for: plans.keys.sorted { $0.rawValue < $1.rawValue })
+            }
+            .store(in: &cancellables)
+
+        store.$rings
+            .receive(on: RunLoop.main)
+            .sink { [weak controller] rings in
+                withAnimation(NotchMotion.unfold) { controller?.model.rings = rings }
+                controller?.model.now = Date()
+            }
+            .store(in: &cancellables)
+
+        store.$isRefreshing
+            .receive(on: RunLoop.main)
+            .sink { [weak controller] in controller?.model.isRefreshing = $0 }
+            .store(in: &cancellables)
+
+        controller.onRefresh = { [weak store] in store?.refreshNow() }
+        store.start()
 
         controller.show()
         notchController = controller
@@ -236,7 +187,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         store?.stop()
-        monitors.values.forEach { $0.stop() }
         notchController?.stop()
+    }
+
+    @objc @MainActor func openSettingsFromMenu() {
+        settings?.show()
+    }
+
+    @IBAction @MainActor func showSettingsWindow(_ sender: Any?) {
+        settings?.show()
+    }
+
+    @IBAction @MainActor func showPreferencesWindow(_ sender: Any?) {
+        settings?.show()
+    }
+
+    @MainActor private func setupMainMenu() {
+        let mainMenu = NSMenu()
+        let appMenuItem = NSMenuItem()
+        mainMenu.addItem(appMenuItem)
+        let appMenu = NSMenu(title: "TokNotch")
+        appMenuItem.submenu = appMenu
+        let settingsItem = NSMenuItem(title: "Settings…", action: #selector(openSettingsFromMenu), keyEquivalent: ",")
+        settingsItem.target = self
+        appMenu.addItem(settingsItem)
+        appMenu.addItem(.separator())
+        let quitItem = NSMenuItem(title: "Quit TokNotch", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(quitItem)
+        NSApp.mainMenu = mainMenu
     }
 }

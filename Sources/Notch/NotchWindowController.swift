@@ -20,7 +20,6 @@ final class NotchWindowController {
     /// One "Sign in to …" item per provider that needs a browser session.
     var signInItems: [(title: String, action: () -> Void)] = []
     /// Refetch a single provider, asked for by clicking its ring.
-    var onRefreshProvider: ((String) -> Void)?
     /// Open the settings window, asked for by clicking the handle.
     var onOpenSettings: (() -> Void)?
 
@@ -70,14 +69,14 @@ final class NotchWindowController {
             }
             .store(in: &cancellables)
 
-        // The notch is as tall as the provider list, so gaining or losing one
-        // has to resize the panel, not just redraw inside it.
-        model.$snapshots
+        // The notch is as tall as the ring list, so gaining or losing one has to
+        // resize the panel, not just redraw inside it.
+        model.$rings
             .map(\.count)
             .removeDuplicates()
             .sink { [weak self] count in
                 // The count comes from the emission, not from re-reading the
-                // model: `@Published` fires in `willSet`, so `model.snapshots`
+                // model: `@Published` fires in `willSet`, so `model.rings`
                 // is still the previous array at this point.
                 MainActor.assumeIsolated { self?.relocate(cellCount: count) }
             }
@@ -99,7 +98,7 @@ final class NotchWindowController {
     func relocate(cellCount: Int? = nil) {
         guard let screen = NotchGeometry.preferredScreen(from: NSScreen.screens) else { return }
         model.adopt(screen: screen)
-        let size = model.panelSize(cellCount: cellCount ?? model.snapshots.count)
+        let size = model.panelSize(cellCount: cellCount ?? model.rings.count)
         let frame = NotchGeometry.panelFrame(for: screen, panelSize: size, edge: model.edge)
         lastVisibleFrame = screen.visibleFrame
 
@@ -210,15 +209,8 @@ final class NotchWindowController {
     /// The card, its tail, and the gap between the tail and the notch — so
     /// sliding the pointer off the notch and onto the card never leaves it.
     private func tooltipRect(index: Int) -> CGRect? {
-        guard model.snapshots.indices.contains(index) else { return nil }
-        let snapshot = model.snapshots[index]
-        let cardHeight = NotchLayout.cardHeight(
-            windowCount: snapshot.windows.count,
-            sessionCount: model.activity(for: snapshot.id)?.sessions.count ?? 0,
-            sessionCap: model.sessionCap,
-            statusMessage: snapshot.statusMessage,
-            blockMessage: snapshot.block?.summary(now: model.now)
-        )
+        guard model.rings.indices.contains(index) else { return nil }
+        let cardHeight = model.rings[index].cardHeight
         // Across the stack the region is the card, its tail, and the gap the
         // pointer has to cross. Along it, the card's own extent.
         let cardAcross = model.edge.isVertical ? NotchLayout.cardWidth : cardHeight
@@ -414,8 +406,10 @@ final class NotchWindowController {
         }
         if notchRect.contains(local),
            let index = cellIndex(along: placement.along(of: local)),
-           model.snapshots.indices.contains(index) {
-            onRefreshProvider?(model.snapshots[index].id)
+           model.rings.indices.contains(index) {
+            // Every ring is a view of the same local read, so clicking any of
+            // them asks for that read again rather than for one ring's share.
+            onRefresh?()
             return
         }
         togglePinned()
@@ -541,7 +535,7 @@ final class NotchWindowController {
 
     private func cellIndex(along: CGFloat) -> Int? {
         let pitch = NotchLayout.cellPitch(for: model.edge)
-        for index in model.snapshots.indices {
+        for index in model.rings.indices {
             let centre = model.slack + model.ringCenter(index: index)
             if abs(along - centre) <= pitch / 2 { return index }
         }
@@ -578,7 +572,7 @@ final class NotchWindowController {
         keepOpen.state = model.staysOpen ? .on : .off
         keepOpen.isEnabled = !model.isAlwaysOn
         keepOpen.toolTip = model.isAlwaysOn
-            ? "Codenotch is set to Always show. Change it in Settings."
+            ? "TokNotch is set to Always show. Change it in Settings."
             : nil
         menu.addItem(keepOpen)
         menu.addItem(.separator())
@@ -605,7 +599,7 @@ final class NotchWindowController {
         }
         menu.addItem(.separator())
         menu.addItem(
-            withTitle: "Quit Codenotch",
+            withTitle: "Quit TokNotch",
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         ).isEnabled = true

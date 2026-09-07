@@ -3,19 +3,14 @@ import Combine
 
 @MainActor
 final class NotchViewModel: ObservableObject {
-    @Published var snapshots: [ProviderSnapshot] = []
-    /// Live agent sessions, keyed by the provider they belong to. They surface
-    /// inside that provider's own ring rather than as a cell of their own — one
-    /// ring per provider, so nothing in the notch looks like a ring without
-    /// being one.
-    @Published var sessions: [String: [AgentSession]] = [:]
+    @Published var rings: [RingSnapshot] = []
 
     /// Which cell the cursor is over, if any. Driven from the window controller
     /// rather than SwiftUI's `.onHover`: the panel ignores mouse events until
     /// the cursor is over it, so SwiftUI cannot see the crossing that turns
     /// event handling on in the first place.
     @Published var hoveredIndex: Int?
-    /// Ticked on refresh so the "Resets in N min" copy stays honest.
+    /// Ticked on refresh, so anything dated on a card stays honest.
     @Published var now: Date = Date()
 
     /// Whether the notch is open or folded away to its pill.
@@ -33,8 +28,10 @@ final class NotchViewModel: ObservableObject {
 
     /// Held open, by either route. What the folding logic actually asks.
     var staysOpen: Bool { isPinned || isAlwaysOn }
-    /// Providers with a fetch in flight, driven by the store.
-    @Published var refreshing: Set<String> = []
+    /// A read in flight, driven by the store. One flag rather than a set: the
+    /// two commands behind it are a single read of one local source, so there
+    /// is no such thing as one ring refreshing without the others.
+    @Published var isRefreshing = false
     /// The settings handle is under the cursor.
     @Published var isHoveringSettings = false
     /// Which screen edge the notch is welded to. Everything geometric reads
@@ -48,9 +45,8 @@ final class NotchViewModel: ObservableObject {
 
     /// How much screen there is to spend on the panel.
     ///
-    /// The tooltip's budget comes out of this: how many sessions a card can
-    /// list before the panel holding it would run off the display. Zero until
-    /// the controller says otherwise, which reads as "no screen known yet".
+    /// Zero until the controller says otherwise, which reads as "no screen
+    /// known yet".
     @Published var screenSize: CGSize = .zero
 
     /// The same screen minus the menu bar and the Dock.
@@ -135,7 +131,7 @@ final class NotchViewModel: ObservableObject {
     /// notch appears not to have opened at all. So the floor is the notch plus
     /// a fillet's worth of opening at each side, and a corner's worth beyond
     /// that for the bar's own rounding to live in.
-    var endSpread: CGFloat { endSpread(cellCount: snapshots.count) }
+    var endSpread: CGFloat { endSpread(cellCount: rings.count) }
 
     func endSpread(cellCount: Int) -> CGFloat {
         guard let hardwareNotch else { return 0 }
@@ -239,7 +235,7 @@ final class NotchViewModel: ObservableObject {
     /// The straight part of the shape, flares excluded.
     var bodyLength: CGFloat {
         NotchLayout.bodyLength(
-            cellCount: snapshots.count, edge: edge
+            cellCount: rings.count, edge: edge
         ) + 2 * endSpread
     }
 
@@ -249,64 +245,30 @@ final class NotchViewModel: ObservableObject {
         NotchLayout.ringCenter(index: index, edge: edge, flare: flare) + endSpread
     }
 
-    /// A provider with no activity source gets none, rather than borrowing
-    /// somebody else's.
-    func activity(for providerID: String) -> ActivitySummary? {
-        ActivitySummary(sessions: sessions[providerID] ?? [])
+    var hoveredRing: RingSnapshot? {
+        guard let hoveredIndex, rings.indices.contains(hoveredIndex) else { return nil }
+        return rings[hoveredIndex]
     }
 
-    var hoveredSnapshot: ProviderSnapshot? {
-        guard let hoveredIndex, snapshots.indices.contains(hoveredIndex) else { return nil }
-        return snapshots[hoveredIndex]
-    }
+    var shapeLength: CGFloat { shapeLength(cellCount: rings.count) }
 
-    var shapeLength: CGFloat { shapeLength(cellCount: snapshots.count) }
-
-    var panelSize: CGSize { panelSize(cellCount: snapshots.count) }
+    var panelSize: CGSize { panelSize(cellCount: rings.count) }
 
     /// How stack space maps onto the panel right now.
     var placement: NotchPlacement { NotchPlacement(edge: edge, panelSize: panelSize) }
 
     /// Room at each end of the stack, for this edge.
-    var slack: CGFloat { slack(cellCount: snapshots.count) }
+    var slack: CGFloat { slack(cellCount: rings.count) }
 
     func slack(cellCount: Int) -> CGFloat {
         NotchLayout.slack(for: edge, maxCardHeight: maxCardHeight(cellCount: cellCount))
     }
 
-    /// How many sessions a tooltip may list here before it has to summarise
-    /// the rest — as many as this screen has room for.
-    var sessionCap: Int { sessionCap(cellCount: snapshots.count) }
-
-    func sessionCap(cellCount: Int) -> Int {
-        guard screenSize != .zero else { return NotchLayout.defaultSessionCap }
-        return NotchLayout.sessionsFitting(cardBudget: cardBudget(cellCount: cellCount),
-                                           windowCount: NotchLayout.maxWindowCount)
-    }
-
-    func maxCardHeight(cellCount: Int) -> CGFloat {
-        NotchLayout.maxCardHeight(sessionCap: sessionCap(cellCount: cellCount))
-    }
-
-    /// How tall the tallest card may be before the panel runs off the screen.
-    ///
-    /// Which way it runs out differs by orientation, because the card's height
-    /// is spent on a different axis: along a side edge it is spent *along* the
-    /// stack, half of it past each end, so the stack itself takes its share
-    /// first. Along a horizontal edge the card hangs *inward* instead, and what
-    /// it competes with is the depth already spent on the notch body and tail.
-    private func cardBudget(cellCount: Int) -> CGFloat {
-        if edge.isVertical {
-            return screenSize.height
-                - shapeLength(cellCount: cellCount)
-                - 2 * NotchLayout.cardCorner
-        }
-        return screenUsableSize.height
-            - contentInset
-            - NotchLayout.bodyDepth(for: edge)
-            - NotchLayout.tailLength
-            - NotchLayout.tailGap
-    }
+    /// The tallest card that can occur here. Fixed rather than solved for the
+    /// screen: a card is now three standing rows plus at most three model rows,
+    /// so there is no longer a list whose length has to be traded against the
+    /// display's height.
+    func maxCardHeight(cellCount: Int) -> CGFloat { NotchLayout.defaultMaxCardHeight }
 
     /// The drawn extent of the notch body right now, along the stack.
     ///
@@ -346,7 +308,7 @@ final class NotchViewModel: ObservableObject {
     /// Sized from an explicit count rather than from `snapshots`.
     ///
     /// `@Published` notifies its subscribers in `willSet`, so a sink reacting to
-    /// a change in the provider list still sees the *old* array if it reads the
+    /// a change in the ring list still sees the *old* array if it reads the
     /// model back. Taking the count as an argument is the only way to be sure
     /// the panel is sized for the list that caused the change.
     func shapeLength(cellCount: Int) -> CGFloat {

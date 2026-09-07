@@ -19,7 +19,7 @@ struct NotchRootView: View {
                 // Outside the notch and outside its clip: the orb hangs past
                 // the end of the shape, tucked into the corner the far flare
                 // makes.
-                if !model.snapshots.isEmpty {
+                if !model.rings.isEmpty {
                     SettingsOrb(isHovered: model.isHoveringSettings, edge: model.edge,
                                     convex: model.orbHugsCorner,
                                     arcRadius: model.orbArcRadius,
@@ -36,21 +36,15 @@ struct NotchRootView: View {
                         .animation(motion(orbMotion), value: model.isExpanded)
                 }
 
-                if let snapshot = model.hoveredSnapshot, let index = model.hoveredIndex,
+                if let ring = model.hoveredRing, let index = model.hoveredIndex,
                    model.isExpanded {
-                    TooltipCard(
-                        snapshot: snapshot,
-                        activity: model.activity(for: snapshot.id),
-                        now: model.now,
-                        direction: model.edge.tooltipDirection,
-                        sessionCap: model.sessionCap
-                    )
+                    TooltipCard(ring: ring, direction: model.edge.tooltipDirection)
                         // Deliberately *no* `.id` here: the card is one object
                         // that travels and resizes between cells, which reads
                         // far better than one card leaving and another arriving.
                         // What must not interpolate is its contents — see
                         // `TooltipCard`.
-                        .position(tooltipCentre(place, index: index, snapshot: snapshot))
+                        .position(tooltipCentre(place, index: index, ring: ring))
                         .transition(.opacity.combined(with: .offset(
                             x: model.edge.outward.x * Design.px(24),
                             y: model.edge.outward.y * Design.px(24)
@@ -70,7 +64,7 @@ struct NotchRootView: View {
     /// than into it.
     private var orbMotion: Animation {
         model.isExpanded
-            ? NotchMotion.stagger(index: model.snapshots.count)
+            ? NotchMotion.stagger(index: model.rings.count)
             : NotchMotion.merge
     }
 
@@ -101,12 +95,8 @@ struct NotchRootView: View {
     /// pulled toward the edge, so the whole thing reads as one movement.
     @ViewBuilder
     private var cells: some View {
-        let stack = ForEach(Array(model.snapshots.enumerated()), id: \.element.id) { index, snapshot in
-            ProviderCell(
-                snapshot: snapshot,
-                activity: model.activity(for: snapshot.id),
-                isRefreshing: model.refreshing.contains(snapshot.id)
-            )
+        let stack = ForEach(Array(model.rings.enumerated()), id: \.element.id) { index, ring in
+            RingCell(ring: ring, isRefreshing: model.isRefreshing)
                 // Pinned to what the cell claims along the stack, or the drawn
                 // rings stop lining up with the centres `ringCenter` hands to
                 // the hover bands and the tooltip tails. Across a horizontal
@@ -184,17 +174,9 @@ struct NotchRootView: View {
     /// The tooltip is the card plus its tail; `position` centres that pair, so
     /// the tail lands on the hovered cell and the card sits beyond it.
     private func tooltipCentre(
-        _ place: NotchPlacement, index: Int, snapshot: ProviderSnapshot
+        _ place: NotchPlacement, index: Int, ring: RingSnapshot
     ) -> CGPoint {
-        let card = model.edge.isVertical
-            ? NotchLayout.cardWidth
-            : NotchLayout.cardHeight(
-                windowCount: snapshot.windows.count,
-                sessionCount: model.activity(for: snapshot.id)?.sessions.count ?? 0,
-                sessionCap: model.sessionCap,
-                statusMessage: snapshot.statusMessage,
-                blockMessage: snapshot.block?.summary(now: model.now)
-            )
+        let card = model.edge.isVertical ? NotchLayout.cardWidth : ring.cardHeight
         return place.point(
             along: model.slack + model.ringCenter(index: index),
             across: model.tooltipInset + (NotchLayout.tailLength + card) / 2
