@@ -36,11 +36,17 @@ struct NotchEdgePreview: View {
         ScreenPreview {
             GeometryReader { proxy in
                 let long = min(proxy.size.height, proxy.size.width) * 0.52
-                let thick: CGFloat = 5
+                let thick: CGFloat = 7
                 let size = edge.isVertical
                     ? CGSize(width: thick, height: long)
                     : CGSize(width: long, height: thick)
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
+                // The real shape, not a stand-in: a plain rounded rectangle
+                // reads as a floating pill, but the notch is welded to the
+                // bezel — flared flush into the edge on that side, rounded
+                // only on the far one. Small numbers scaled for this tiny
+                // canvas rather than the app's own — the real ones are sized
+                // for a 30-40pt notch, not a 7pt one.
+                SideNotchShape(edge: edge, curlRadius: 3, cornerRadius: 2.5)
                     .fill(.black)
                     .frame(width: size.width, height: size.height)
                     .position(centre(in: proxy.size, size: size))
@@ -84,17 +90,22 @@ struct NotchVisibilityPreview: View {
         }
     }
 
+    /// This preview is always the right edge, whatever "貼在哪条边" is set to
+    /// — it is showing how *much* shows, not where, so one fixed edge is the
+    /// right constant to hold.
+    private static let thick: CGFloat = 7
+
     private func bar(height: CGFloat, in bounds: CGSize) -> some View {
-        RoundedRectangle(cornerRadius: 2, style: .continuous)
+        SideNotchShape(edge: .right, curlRadius: 3, cornerRadius: 2.5)
             .fill(.black)
-            .frame(width: 5, height: height)
-            .position(x: bounds.width - 2.5, y: bounds.height / 2)
+            .frame(width: Self.thick, height: height)
+            .position(x: bounds.width - Self.thick / 2, y: bounds.height / 2)
     }
 
     private func outline(height: CGFloat, in bounds: CGSize) -> some View {
-        RoundedRectangle(cornerRadius: 2, style: .continuous)
-            .strokeBorder(Color.black.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
-            .frame(width: 5, height: height)
-            .position(x: bounds.width - 2.5, y: bounds.height / 2)
+        SideNotchShape(edge: .right, curlRadius: 3, cornerRadius: 2.5)
+            .stroke(Color.black.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+            .frame(width: Self.thick, height: height)
+            .position(x: bounds.width - Self.thick / 2, y: bounds.height / 2)
     }
 }
