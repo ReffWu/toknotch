@@ -74,17 +74,20 @@ struct NotchVisibilityPreview: View {
                 let full = proxy.size.height * 0.52
                 switch visibility {
                 case .alwaysShow:
-                    bar(height: full, in: proxy.size)
+                    bar(height: full, thick: Self.openThick, in: proxy.size)
                 case .onHover:
-                    // The resting pill: the same object, most of it folded away.
-                    bar(height: full * 0.42, in: proxy.size)
+                    // Folding away shrinks the notch's *depth*, not its
+                    // length — the collapsed pill stands nearly as tall as the
+                    // open shape, just a sliver of how far it reaches off the
+                    // edge. A shorter bar drew the wrong axis shrinking.
+                    bar(height: full, thick: Self.restingThick, in: proxy.size)
                 case .hidden:
                     // Not simply blank: a blank box looks identical whether or
                     // not the click landed, and gave no way to tell the option
                     // had actually been picked. An outline of where the pill
                     // would sit, with nothing filling it, reads as "gone" while
                     // still confirming a choice was drawn.
-                    outline(height: full * 0.42, in: proxy.size)
+                    outline(height: full, thick: Self.restingThick, in: proxy.size)
                 }
             }
         }
@@ -93,19 +96,24 @@ struct NotchVisibilityPreview: View {
     /// This preview is always the right edge, whatever "貼在哪条边" is set to
     /// — it is showing how *much* shows, not where, so one fixed edge is the
     /// right constant to hold.
-    private static let thick: CGFloat = 7
+    private static let openThick: CGFloat = 7
+    /// The real pill is about a sixth of the open notch's depth
+    /// (`NotchLayout.pillWidth` against `sideBodyDepth`); a sixth of 7pt reads
+    /// as a hairline at this size, so this is eased up for legibility rather
+    /// than drawn to the literal ratio.
+    private static let restingThick: CGFloat = 3
 
-    private func bar(height: CGFloat, in bounds: CGSize) -> some View {
-        SideNotchShape(edge: .right, curlRadius: 3, cornerRadius: 2.5)
+    private func bar(height: CGFloat, thick: CGFloat, in bounds: CGSize) -> some View {
+        SideNotchShape(edge: .right, curlRadius: min(3, thick / 2), cornerRadius: min(2.5, thick / 2))
             .fill(.black)
-            .frame(width: Self.thick, height: height)
-            .position(x: bounds.width - Self.thick / 2, y: bounds.height / 2)
+            .frame(width: thick, height: height)
+            .position(x: bounds.width - thick / 2, y: bounds.height / 2)
     }
 
-    private func outline(height: CGFloat, in bounds: CGSize) -> some View {
-        SideNotchShape(edge: .right, curlRadius: 3, cornerRadius: 2.5)
+    private func outline(height: CGFloat, thick: CGFloat, in bounds: CGSize) -> some View {
+        SideNotchShape(edge: .right, curlRadius: min(3, thick / 2), cornerRadius: min(2.5, thick / 2))
             .stroke(Color.black.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
-            .frame(width: Self.thick, height: height)
-            .position(x: bounds.width - Self.thick / 2, y: bounds.height / 2)
+            .frame(width: thick, height: height)
+            .position(x: bounds.width - thick / 2, y: bounds.height / 2)
     }
 }
