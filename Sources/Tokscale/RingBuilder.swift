@@ -19,11 +19,17 @@ enum RingBuilder {
                       language: AppLanguage,
                       now: Date = Date(),
                       calendar: Calendar = .current) -> [RingSnapshot] {
-        var rings: [RingSnapshot] = [
-            period(.today, digest.today, digest, language, now, calendar),
-            period(.month, digest.month, digest, language, now, calendar),
-            period(.lifetime, digest.lifetime, digest, language, now, calendar)
-        ]
+        // Ordered by `RingKind.primaries` rather than listed here, so the stack
+        // and the settings list cannot disagree about the order.
+        var rings: [RingSnapshot] = RingKind.primaries.map { kind in
+            let slice: UsageDigest.Period
+            switch kind {
+            case .month:    slice = digest.month
+            case .lifetime: slice = digest.lifetime
+            default:        slice = digest.today
+            }
+            return period(kind, slice, digest, language, now, calendar)
+        }
         // In the order the digest found them — busiest vendor first — so
         // turning several on gives a stack that reads as a ranking.
         rings += digest.vendors

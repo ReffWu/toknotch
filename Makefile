@@ -4,7 +4,7 @@ PROJECT := TokNotch.xcodeproj
 SCHEME  := TokNotch
 DEST    := platform=macOS,arch=arm64
 
-.PHONY: gen build test run clean tokscale
+.PHONY: gen build test run clean tokscale sparkle-keys sign-app
 
 gen:
 	xcodegen generate
@@ -44,22 +44,52 @@ DMG := $(RELEASE_DIR)/$(APP_NAME).dmg
 
 .PHONY: archive dmg notarize release verify-release
 
-# Release configuration, exported with the Developer ID identity. `xcodebuild
-# archive` + `-exportArchive` rather than a plain build: it re-signs the bundle
+# How the build is signed.
+#
+# Ad-hoc by default, so `make dmg` always works and produces something you can
+# hand to somebody who is willing to click through Gatekeeper. `make release`
+# overrides both of these — a published build has to be Developer ID signed and
+# hardened, or notarisation refuses it and Sparkle cannot install it.
+SIGN_IDENTITY ?= -
+SIGN_FLAGS    ?= CODE_SIGN_IDENTITY="$(SIGN_IDENTITY)"
+
+APP_IN_ARCHIVE = $(RELEASE_DIR)/$(APP_NAME).xcarchive/Products/Applications/$(APP_NAME).app
+
 # Release configuration, built and archived locally.
 archive: gen
 	rm -rf $(RELEASE_DIR)
 	mkdir -p $(RELEASE_DIR)
 	@touch build/.metadata_never_index
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \
-		-configuration Release -archivePath $(RELEASE_DIR)/$(APP_NAME).xcarchive archive
+		-configuration Release -archivePath $(RELEASE_DIR)/$(APP_NAME).xcarchive \
+		$(SIGN_FLAGS) archive
+
+# Sign the binary we ship inside the app, then the app around it.
+#
+# tokscale arrives ad-hoc signed by whoever built the npm package. Under the
+# hardened runtime a process may not execute code signed by somebody else, so a
+# release that skips this notarises cleanly, installs cleanly, and then reads
+# nothing at all. Inside out, because re-signing a nested binary invalidates the
+# signature of the bundle around it.
+sign-app: archive
+	@if [ "$(SIGN_IDENTITY)" = "-" ]; then \
+		echo "ad-hoc build: leaving signatures as they are"; \
+	else \
+		codesign --force --options runtime --timestamp --sign "$(SIGN_IDENTITY)" \
+			"$(APP_IN_ARCHIVE)/Contents/Resources/tokscale/libFoundationModels.dylib"; \
+		codesign --force --options runtime --timestamp --sign "$(SIGN_IDENTITY)" \
+			"$(APP_IN_ARCHIVE)/Contents/Resources/tokscale/tokscale"; \
+		codesign --force --options runtime --timestamp --sign "$(SIGN_IDENTITY)" \
+			"$(APP_IN_ARCHIVE)"; \
+		codesign --verify --deep --strict --verbose=2 "$(APP_IN_ARCHIVE)"; \
+	fi
 
 # A plain drag-to-Applications disk image.
-dmg: archive
+dmg: sign-app
 	rm -f $(DMG)
 	rm -rf $(RELEASE_DIR)/stage
 	mkdir -p $(RELEASE_DIR)/stage
-	cp -R $(RELEASE_DIR)/$(APP_NAME).xcarchive/Products/Applications/$(APP_NAME).app $(RELEASE_DIR)/stage/
+	cp -R $(APP_IN_ARCHIVE) $(RELEASE_DIR)/stage/
 	ln -s /Applications $(RELEASE_DIR)/stage/Applications
 	hdiutil create -volname "$(APP_NAME)" -srcfolder $(RELEASE_DIR)/stage \
 		-ov -format UDZO $(DMG)
@@ -103,8 +133,20 @@ appcast: $(DMG)
 	$(SPARKLE_BIN)/generate_appcast $(PAGES_DIR) --download-url-prefix $(DOWNLOAD_PREFIX)
 	@echo "Publish by committing $(PAGES_DIR)/ and pushing."
 
+# The published build: Developer ID signed, hardened, notarised, stapled, and
+# advertised in the appcast Sparkle polls.
+release: SIGN_IDENTITY = Developer ID Application
+release: SIGN_FLAGS = CODE_SIGN_IDENTITY="Developer ID Application" ENABLE_HARDENED_RUNTIME=YES
 release: notarize verify-release appcast
 	@echo "Notarized: $(DMG)"
+
+# One-time: the key pair Sparkle signs updates with. The private half goes into
+# the login keychain and never leaves this Mac; the public half is printed for
+# Info.plist. Run once, ever — regenerating it strands everybody already
+# running a copy, because their app will reject anything the new key signed.
+sparkle-keys:
+	@test -n "$(SPARKLE_BIN)" || (echo "Sparkle tools not found — run make build first" && exit 1)
+	$(SPARKLE_BIN)/generate_keys
 
 # What Gatekeeper on a customer's Mac will check. `spctl` accepting the app is
 # the actual proof that the download will open without a right-click.

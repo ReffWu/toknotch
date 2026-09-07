@@ -688,6 +688,28 @@ struct GeneralPage: View {
                 }
             }
 
+            SettingsGroup(
+                title: t("更新", "Updates"),
+                footnote: Updater.isConfigured ? nil
+                    : t("这份是本地构建，没有更新源 — 不是出错，只是它不是从发布渠道装的。",
+                        "This is a local build with no update feed — not a fault, just a copy that did not come from a release.")
+            ) {
+                SettingsRow("arrow.triangle.2.circlepath", tint: .blue,
+                            title: t("自动检查更新", "Check automatically"),
+                            subtitle: updateStatus) {
+                    Toggle("", isOn: $updater.automatic)
+                        .toggleStyle(.switch).controlSize(.small).labelsHidden()
+                        .disabled(!Updater.isConfigured)
+                }
+                SettingsDivider()
+                SettingsRow("square.and.arrow.down", tint: .cyan,
+                            title: t("现在检查", "Check now")) {
+                    Button(t("检查", "Check")) { updater.checkForUpdates() }
+                        .controlSize(.small)
+                        .disabled(!Updater.isConfigured || updater.outcome == .checking)
+                }
+            }
+
             SettingsGroup(title: t("关于", "About")) {
                 SettingsRow("app.badge", tint: .indigo,
                             title: "TokNotch \(updater.currentVersion)",
@@ -695,6 +717,23 @@ struct GeneralPage: View {
                     EmptyView()
                 }
             }
+        }
+    }
+
+    /// What the updater is currently able to say for itself.
+    private var updateStatus: String? {
+        switch updater.outcome {
+        case .unconfigured: return nil
+        case .idle:
+            return updater.lastChecked.map {
+                let f = DateFormatter(); f.dateStyle = .medium; f.timeStyle = .short
+                return t("上次检查 \(f.string(from: $0))", "Last checked \(f.string(from: $0))")
+            }
+        case .checking:            return t("正在检查…", "Checking…")
+        case .upToDate:            return t("已是最新版本", "Up to date")
+        case .found(let version):  return t("有新版本 \(version)", "Version \(version) is available")
+        case .unreachable:         return t("暂时连不上更新源", "Couldn't reach the update feed")
+        case .failed(let why):     return t("检查失败：\(why)", "Check failed — \(why)")
         }
     }
 

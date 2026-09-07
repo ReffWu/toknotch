@@ -20,6 +20,11 @@ settings:
     ENABLE_APP_SANDBOX: "NO"
     ENABLE_USER_SCRIPT_SANDBOXING: "NO"
 
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.6.0"
+
 targets:
   TokNotch:
     type: application
@@ -33,6 +38,8 @@ targets:
       - path: Vendor/tokscale
         type: folder
         buildPhase: resources
+    dependencies:
+      - package: Sparkle
     info:
       path: Sources/Info.plist
       properties:
@@ -41,6 +48,20 @@ targets:
         LSMinimumSystemVersion: "14.0"
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        # Sparkle. These have to live here rather than in Sources/Info.plist:
+        # XcodeGen *generates* that file from this block, so anything written
+        # into it by hand is silently discarded on the next `make gen`.
+        #
+        # SUPublicEDKey is the public half of the key pair made by
+        # `make sparkle-keys`; the private half stays in the login keychain.
+        # Without both of these the app deliberately never starts the updater.
+        SUFeedURL: https://hivinz.com/appcast.xml
+        SUPublicEDKey: wpcSIsJIvvZPj3jAoJuw8wl0+fVXS3K3ChODZ0W8EBI=
+        # Answers Sparkle's first-run question for the user. Without it the
+        # very first launch opens a dialogue asking permission to check for
+        # updates — a poor thing to greet somebody with before they have seen
+        # the app do anything.
+        SUEnableAutomaticChecks: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.reff.toknotch

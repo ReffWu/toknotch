@@ -62,6 +62,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controller.model.edge = preferences.notchEdge
 
         let updater = Updater()
+        updater.start()
         self.updater = updater
 
         let settings = SettingsWindowController(preferences: preferences, store: store,

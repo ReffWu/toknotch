@@ -17,8 +17,13 @@ enum RingKind: Equatable, Hashable {
         }
     }
 
-    /// The three that carry the app. Vendor rings are opt-in and follow them.
-    static let primaries: [RingKind] = [.today, .month, .lifetime]
+    /// The three that carry the app, in the order they appear.
+    ///
+    /// Widest span first, narrowing to today. Reading down the stack then goes
+    /// from what you have done overall to what you have done since this
+    /// morning, which is how the numbers relate to each other — today is a
+    /// slice of the month, which is a slice of the lifetime.
+    static let primaries: [RingKind] = [.lifetime, .month, .today]
 }
 
 /// One row inside a card: a label, a figure, and optionally a bar.
