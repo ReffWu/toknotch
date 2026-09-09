@@ -9,8 +9,32 @@
     {
       "idiom": "mac",
       "size": "16x16",
+      "scale": "1x",
+      "filename": "icon_16x16_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
+    },
+    {
+      "idiom": "mac",
+      "size": "16x16",
       "scale": "2x",
       "filename": "icon_16x16@2x.png"
+    },
+    {
+      "idiom": "mac",
+      "size": "16x16",
+      "scale": "2x",
+      "filename": "icon_16x16@2x_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
     },
     {
       "idiom": "mac",
@@ -21,8 +45,32 @@
     {
       "idiom": "mac",
       "size": "32x32",
+      "scale": "1x",
+      "filename": "icon_32x32_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
+    },
+    {
+      "idiom": "mac",
+      "size": "32x32",
       "scale": "2x",
       "filename": "icon_32x32@2x.png"
+    },
+    {
+      "idiom": "mac",
+      "size": "32x32",
+      "scale": "2x",
+      "filename": "icon_32x32@2x_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
     },
     {
       "idiom": "mac",
@@ -33,8 +81,32 @@
     {
       "idiom": "mac",
       "size": "128x128",
+      "scale": "1x",
+      "filename": "icon_128x128_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
+    },
+    {
+      "idiom": "mac",
+      "size": "128x128",
       "scale": "2x",
       "filename": "icon_128x128@2x.png"
+    },
+    {
+      "idiom": "mac",
+      "size": "128x128",
+      "scale": "2x",
+      "filename": "icon_128x128@2x_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
     },
     {
       "idiom": "mac",
@@ -45,8 +117,32 @@
     {
       "idiom": "mac",
       "size": "256x256",
+      "scale": "1x",
+      "filename": "icon_256x256_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
+    },
+    {
+      "idiom": "mac",
+      "size": "256x256",
       "scale": "2x",
       "filename": "icon_256x256@2x.png"
+    },
+    {
+      "idiom": "mac",
+      "size": "256x256",
+      "scale": "2x",
+      "filename": "icon_256x256@2x_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
     },
     {
       "idiom": "mac",
@@ -57,12 +153,36 @@
     {
       "idiom": "mac",
       "size": "512x512",
+      "scale": "1x",
+      "filename": "icon_512x512_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
+    },
+    {
+      "idiom": "mac",
+      "size": "512x512",
       "scale": "2x",
       "filename": "icon_512x512@2x.png"
+    },
+    {
+      "idiom": "mac",
+      "size": "512x512",
+      "scale": "2x",
+      "filename": "icon_512x512@2x_light.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "light"
+        }
+      ]
     }
   ],
   "info": {
     "version": 1,
-    "author": "xcode"
+    "author": "make-app-icon.py"
   }
 }
