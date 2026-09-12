@@ -1,142 +1,150 @@
 <div align="center">
 
-<img src="docs/assets/icon.png" width="128" height="128" alt="TokNotch App Icon" />
+<img src="docs/assets/icon.png" width="128" height="128" alt="TokNotch" />
 
 # TokNotch
 
-**AI Token Ledger & Activity Indicator on your macOS Notch**  
-**把 tokscale 搬进刘海 · 屏幕边缘 AI Token 账本与编码助手实时指示器**
+**You pay for AI every month. Now you can see what it's worth.**
+
+English · [简体中文](README.zh-CN.md)
 
 [![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![Release Hub](https://img.shields.io/badge/Artifacts-Hub-cyan?style=flat-square)](https://reffwu.github.io/artifacts/toknotch/)
-
-[Features](#features) • [What It Reads](#what-it-reads) • [Placement & Motion](#placement--motion) • [Building](#building) • [中文介绍](#中文介绍)
+[![9 languages](https://img.shields.io/badge/languages-9-cyan?style=flat-square)](#it-speaks-your-language)
 
 </div>
 
 ---
 
-A lightweight native macOS utility that docks to any screen edge or nests seamlessly inside your MacBook's hardware notch. Powered by an embedded **tokscale** engine, TokNotch tracks real-time token burn, equivalent API retail costs, subscription payback multipliers, and live agent activity rings for your coding assistants.
+Three rings live at the edge of your screen: **today**, **this month**, **everything**.
+Reach for them and they open. That's the whole app.
 
 <p align="center">
-  <img src="docs/assets/preview-tooltip.png" width="48%" alt="TokNotch Usage Card & Rings" />
-  <img src="docs/assets/preview-detail.png" width="48%" alt="TokNotch Notch Dock" />
+  <img src="docs/assets/preview-tooltip.png" width="48%" alt="The card that opens when you reach for the notch" />
+  <img src="docs/assets/preview-detail.png" width="48%" alt="TokNotch resting at the screen edge" />
 </p>
 
 ---
 
-## Features
+## Three things, and that's it
 
-- **Three-Ring Usage Indicators (今日 · 本月 · 累计)**: One glance shows today's token velocity, this month's burn, and cumulative all-time consumption with vendor-branded rings.
-- **Embedded tokscale Engine**: Ships with a pre-compiled, self-contained `tokscale` binary inside the app bundle. Zero manual dependencies — no npm, node, or Homebrew required for end users.
-- **Subscription Payback & Retail Value**: Automatically tallies model usage against retail API pricing, computing your subscription payback multiplier (e.g. 13.4× ROI bubble) and exact dollars saved.
-- **Active Session Tracking ("Is it still working?")**:
-  - A thin arc spins smoothly inside a provider's ring while a task is running.
-  - Transforms into a pulsing amber ring when an agent is blocked and waiting for user input.
-- **Multi-Profile Support**: Working with multiple accounts (e.g. `CLAUDE_CONFIG_DIR=~/.claude-work`) produces separate, dedicated rings that never conflict or swap places.
-- **Hardware Notch Adaptation**: Sits cleanly inside MacBook Pro display notches with mathematically exact Bezier corner radii (`SideNotchShape`), or rests as a discreet pill on any of the 4 screen edges.
-- **Inward Reach Protection**: Pill hot zone expands generously along the screen edge for effortless mouse triggers, but restricts inward depth so it never interferes with browser tab strips.
-- **Sparkle Auto-Updates**: EdDSA cryptographic signature verification with silent background updates.
-- **Global Localization**: Native support for English, 简体中文, 繁體中文, 日本語, 한국어, Deutsch, Français, Español, and Русский.
+### 1. A glance is enough
 
----
+No dashboard to open. No tab to keep alive. Leave the rings always on screen,
+or let them rest as a pill at the edge and open when you reach — either way you
+look up, and you know.
 
-## What It Reads
+And the arcs mean something. Today is measured against **your best day in the
+last thirty**. This month against **the same days last month**. All time against
+**the next milestone**. A full ring means you beat your own record — it is never
+a warning, and there is nothing to run out of.
 
-TokNotch **never transmits credentials or requires a separate cloud login**. All metrics are read locally from the tools and sessions your Mac already holds:
+### 2. Did the subscription pay for itself?
 
-| Provider / Model | Source | How |
-|---|---|---|
-| **Claude Code** | Official OAuth | Keychain OAuth token matching Claude Code's internal `/usage` endpoint. |
-| **Cursor** | Official Local Session | Local SQLite state in the Application Support directory. |
-| **Codex** | Official App Server | Local app server RPC with automatic fallback to rollout logs. |
-| **Google Gemini / Antigravity** | Official / Derived | Local language server first, then quota endpoints or request digest. |
-| **DeepSeek** | tokscale Engine | Local CLI session logs & API tokens across terminal environments. |
-| **Alibaba (通义千问 / Qwen)** | tokscale Engine | Local coding assistant session and plan billing entries. |
-| **Zhipu (智谱 GLM)** | tokscale Engine | Z.ai / Coding Plan endpoints and local tool configurations. |
-| **Moonshot (Kimi)** | tokscale Engine | Local agent logs & tool state. |
-| **MiniMax, xAI (Grok), Meta (Llama), Mistral** | tokscale Engine | Aggregated token accounting mapped directly to original model makers. |
+You know what you pay. You don't know what you got.
 
-Switching off a provider in Settings immediately halts reads and purges cached measurements; it never touches or revokes the owning tool's credentials.
+Tell TokNotch what a plan costs and when it renews, and it adds up what the same
+work would have cost at the published API price. Then it says the only thing you
+wanted to know: **paid back 13.4×**, or **$18 to go**.
 
----
+It counts by the real billing period, not the calendar month. A plan billed on
+the 3rd paid for the 3rd through the 2nd, and that's the stretch it judges.
 
-## Placement & Motion
+For Claude and ChatGPT it usually doesn't even ask — the plan is recognised from
+the configuration those tools already keep on your Mac.
 
-- **4 Screen Edges**: Top, bottom, left, and right. Horizontal layouts for top/bottom; vertical columns for left/right.
-- **Usable Screen Anchoring**: Automatically respects menu bars and the Dock, shifting dynamically when the Dock hides or changes position.
-- **Resting Pill & Unfold**: At rest, TokNotch collapses into a sleek edge pill. Hovering wakes it with smooth spring animations.
-- **Glass Settings Orb**: Below the notch sits a subtle interactive orb — an unobtrusive arc at rest, blooming into a gear icon on hover.
-- **App Presence Options**: Run with a Dock icon, a Menu Bar status item, both, or completely borderless and notch-only.
+### 3. Nothing to install. Nothing leaves your Mac.
+
+No Homebrew. No npm. No Node. No account, no sign-in, no API key.
+
+TokNotch reads the session logs your coding tools already write in your home
+folder — that's it. It never opens the keychain, never shows you a password
+prompt, and never sends anything anywhere.
 
 ---
 
-## Building
+## What it counts
 
-### Requirements
-- macOS 14.0 (Sonoma) or newer
-- Xcode 15.0+
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew install xcodegen`)
+Anything your coding tools have actually run, grouped by **who made the model**
+rather than who billed for it — so a Qwen you ran locally still counts as Qwen,
+and GLM through a reseller still counts as Zhipu.
 
-### Commands
+> Anthropic · OpenAI · Google · DeepSeek · Qwen · Zhipu GLM · Moonshot Kimi ·
+> MiniMax · xAI · Xiaomi MiMo · NVIDIA · Meta · Mistral
+
+Each vendor can have a ring of its own — showing its lifetime usage and its
+share of everything. They're all **off by default**, and the list you choose
+from is built from what this Mac has really run. Vendors you've never touched
+never appear.
+
+The counting is done by [tokscale](https://github.com/junhoyeo/tokscale),
+which ships inside the app. Nothing to install, nothing to keep up to date.
+
+---
+
+## Where it sits
+
+**Any of the four edges.** Left or right as a slim column; top or bottom as a
+wide bar. On a MacBook with a notch, the top edge runs up to meet it so the two
+read as one shape.
+
+**Out of the way until you want it.** At rest it's a small pill at the edge.
+Reach for it and it opens. Or keep it open always, or hide it completely — your
+call, in Settings.
+
+**Or barely there at all.** Run it with a Dock icon, with a menu bar item, or
+with neither.
+
+It knows about your Dock and your menu bar, and moves when they do.
+
+---
+
+## It speaks your language
+
+English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español · Русский
+
+Not just the words. Numbers, money and dates follow each language's own
+conventions — 万 and 亿 in Chinese, k/M/B in English, Mrd. in German.
+
+---
+
+## Getting it
+
+Builds are published on the [Releases page](https://github.com/ReffWu/toknotch/releases).
+Drag TokNotch to Applications and open it. It updates itself after that.
+
+**Requires macOS 14 (Sonoma) or newer.**
+
+### Building it yourself
 
 ```sh
-# Generate project and launch a Debug build
+brew install xcodegen
 make run
-
-# Run unit tests
-make test
-
-# Release build (ad-hoc signed DMG)
-make dmg
 ```
 
-> [!NOTE]
-> Debug builds are ad-hoc signed, sufficient for local testing. Run with `CODENOTCH_DEMO=1` or `TOKNOTCH_DEMO=1` to populate fixed mock data without local assistant sessions.
-
-### Diagnostics & Unified Log
-
-TokNotch runs borderless and windowless. To inspect real-time diagnostic output:
-
-```sh
-/usr/bin/log stream --predicate 'subsystem == "com.reff.toknotch"' --level debug
-```
+That's a Debug build, ad-hoc signed, which is enough to run and develop against.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the rest.
 
 ---
 
-## 中文介绍
+## Under the hood
 
-TokNotch 是一款为 macOS 深度定制的原生 AI Token 账本与编码助手常驻指示器。
-
-### 核心亮点
-1. **把 tokscale 搬进刘海**：内置开箱即用的原生 `tokscale` 引擎，无需配置 Node.js、npm 或 Python 环境，安装即用。
-2. **今日 · 本月 · 累计三环设计**：一瞥即知当天消耗速率、本月累计用量与历史总账本。
-3. **真实等效 API 价值与回本倍率**：精准统计各模型 Token 真实开销，换算等效官方 API 价格，并在图标上直观呈现订阅回本收益倍率（例如 13.4× 回本气泡）。
-4. **编码助手忙碌与等待唤醒状态**：
-   - 助手后台工作时，对应品牌环内光弧匀速旋转；
-   - 助手需要确认指令、权限或等待输入时，呼吸式琥珀金光环主动提醒。
-5. **硬件级刘海融合与边缘停靠**：针对 MacBook Pro 屏幕刘海做了精确贝塞尔圆角贴合，无缝融入屏幕硬件；在外接显示器上则作为小巧的折叠药丸停靠在任一屏幕边缘，鼠标触达即展开。
-6. **隐私无感**：完全基于本机既有会话和本地日志提取，无需二次登录，不上传任何代码或密钥。
+If you like knowing how things work, [ARCHITECTURE.md](docs/ARCHITECTURE.md)
+walks through the pieces. The short version: a borderless `NSPanel` that draws
+a real notch shape, a poller around the bundled tokscale binary, and a SwiftUI
+card that unfolds out of the edge.
 
 ---
 
-## Architecture
+## Credits
 
-- `Sources/Tokscale/`: Core token aggregation engine, model-to-vendor inference, and subscription plan catalog.
-- `Sources/Model/`: Usage polling store, ring snapshots, and localized currency/token formatting.
-- `Sources/Notch/`: Edge placement coordinate mapping (`along`/`across`), Bezier notch curvature, window controller, and fluid spring animations.
-- `Sources/Features/`: Ring glyphs, circular progress rendering, and detailed multi-model hover cards.
-- `Sources/Settings/`: SwiftUI settings panel, multi-language localization dictionary, and release notes history.
+TokNotch began as a fork of [vinzdg/codenotch](https://github.com/vinzdg/codenotch)
+and was rewritten around local usage accounting. The original is MIT licensed and
+its copyright is kept in [LICENSE](LICENSE).
 
----
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
+Usage figures come from [tokscale](https://github.com/junhoyeo/tokscale) (MIT),
+bundled in `Vendor/tokscale/`. Updates use [Sparkle](https://sparkle-project.org) (MIT).
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE).

@@ -1,0 +1,41 @@
+name: Bug report
+description: Something in TokNotch isn't behaving
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: And what you expected instead.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: TokNotch version
+      description: Settings → About.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version and Mac
+      placeholder: "macOS 15.2, MacBook Pro 14in M3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: |
+        TokNotch runs windowless, so the unified log is the way to see what it did.
+        Reproduce the problem, then run:
+
+        ```sh
+        /usr/bin/log show --last 10m --predicate 'subsystem == "com.reff.toknotch"' --info --debug
+        ```
+      render: shell

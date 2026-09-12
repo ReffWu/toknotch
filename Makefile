@@ -1,4 +1,5 @@
-export DEVELOPER_DIR := /Applications/Xcode.app/Contents/Developer
+# `?=` rather than `:=` so a CI runner that selects its own Xcode wins.
+export DEVELOPER_DIR ?= /Applications/Xcode.app/Contents/Developer
 
 PROJECT := TokNotch.xcodeproj
 SCHEME  := TokNotch
@@ -12,7 +13,7 @@ gen:
 # Refresh the tokscale build that ships inside the app. Pass a version to pin
 # one: `make tokscale VERSION=4.15.1`.
 tokscale:
-	./scripts/fetch-tokscale.sh $(VERSION)
+	./Scripts/fetch-tokscale.sh $(VERSION)
 
 build: gen
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \

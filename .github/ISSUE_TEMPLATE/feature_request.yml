@@ -1,0 +1,19 @@
+name: Idea
+description: Something TokNotch could do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to find out?
+      description: >
+        The question you want answered at a glance, rather than the control you
+        picture. TokNotch stays small on purpose, so the problem matters more
+        than the feature.
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: How you imagine it working

@@ -6,7 +6,7 @@
 # self-contained Mach-O that links nothing but system frameworks, which is what
 # makes that possible.
 #
-#   ./scripts/fetch-tokscale.sh [version]
+#   ./Scripts/fetch-tokscale.sh [version]
 #
 # Downloads both platform packages from the npm registry and `lipo`s them into
 # one universal binary. Both are needed: the app itself builds universal, so

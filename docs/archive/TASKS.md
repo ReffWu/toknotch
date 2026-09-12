@@ -1,7 +1,7 @@
 # Codenotch — Tasks
 
-Full detail in [`docs/plans/2026-08-28-usage-notch-plan.md`](docs/plans/2026-08-28-usage-notch-plan.md).
-Design spec in [`docs/specs/2026-08-28-usage-notch-design.md`](docs/specs/2026-08-28-usage-notch-design.md).
+Full detail in [`docs/plans/2026-08-28-usage-notch-plan.md`](plans/2026-08-28-usage-notch-plan.md).
+Design spec in [`docs/specs/2026-08-28-usage-notch-design.md`](specs/2026-08-28-usage-notch-design.md).
 
 ## M0 — Project skeleton
 - [x] `project.yml` (XcodeGen: app + unit test target, `LSUIElement`)

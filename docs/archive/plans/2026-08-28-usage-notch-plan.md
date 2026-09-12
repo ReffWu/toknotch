@@ -1,6 +1,6 @@
 # Codenotch — Implementation Plan
 
-Spec: `docs/specs/2026-08-28-usage-notch-design.md`
+Spec: `../specs/2026-08-28-usage-notch-design.md`
 Started: 2026-08-28
 
 Milestones are ordered so that something visible runs on screen by the end of M2, and
