@@ -45,8 +45,14 @@ enum NotchLayout {
     // sized to read as a deliberate handle rather than a sliver of chrome.
     static let pillWidth  = Design.px(26)
     static let pillHeight = Design.px(210)
-    /// The pill is small, so the region that wakes it is deliberately larger.
+    /// The pill is small, so the region that wakes it is deliberately larger
+    /// *along* the edge — a sliver on a screen edge is a fiddly thing to aim at.
     static let pillHotZone = Design.px(90)
+    /// How far the wake region reaches *inward* from the bezel, past the resting
+    /// shape. Kept small on purpose: a generous inward reach means the notch
+    /// opens while the pointer is still well clear of it, and directly under the
+    /// display's notch that band is exactly where a browser's tab strip lives.
+    static let pillReachInward = Design.px(16)
 
     // A provider cell
     static let ringDiameter  = Design.px(117)   // 44pt, the design spec's anchor

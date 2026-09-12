@@ -22,6 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 APPICON = os.path.join(REPO, "Sources/Assets.xcassets/AppIcon.appiconset")
 ARTIFACTS = os.path.abspath(os.path.join(REPO, "..", "..", "artifacts", "toknotch", "assets"))
+DOCS_ASSETS = os.path.join(REPO, "docs", "assets")
 NOTCH_PNG = os.path.join(HERE, "notch-silhouette.png")
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 S = 2048
@@ -196,7 +197,7 @@ def main():
     write_contents()
     print("wrote AppIcon.appiconset (dark = default, light = light appearance)")
 
-    # website: 512 png + webp of the dark mark (used on both light/dark pages)
+    # website & docs: 512 png + webp of the dark mark (used on both light/dark pages)
     if os.path.isdir(ARTIFACTS):
         dark.resize((512, 512), Image.LANCZOS).save(os.path.join(ARTIFACTS, "icon.png"))
         try:
@@ -207,6 +208,15 @@ def main():
         print("wrote", ARTIFACTS)
     else:
         print("artifacts repo not found at", ARTIFACTS, "- skipped website assets")
+
+    if os.path.isdir(DOCS_ASSETS):
+        dark.resize((512, 512), Image.LANCZOS).save(os.path.join(DOCS_ASSETS, "icon.png"))
+        try:
+            dark.resize((512, 512), Image.LANCZOS).save(os.path.join(DOCS_ASSETS, "icon.webp"),
+                                                        "WEBP", quality=90, method=6)
+        except Exception as e:
+            pass
+        print("wrote", DOCS_ASSETS)
 
 
 if __name__ == "__main__":

@@ -176,9 +176,17 @@ final class FoldedNotchTests: XCTestCase {
     }
 
     /// A 10pt target on a screen edge is fiddly, so the region that wakes it is
-    /// deliberately bigger than the pill it surrounds.
+    /// deliberately bigger than the pill it surrounds — along the edge.
     func testTheWakeRegionIsLargerThanThePill() {
         XCTAssertGreaterThan(NotchLayout.pillHotZone, NotchLayout.pillWidth)
+    }
+
+    /// Inward from the bezel, though, it barely clears the resting shape:
+    /// reaching further opens the notch before the pointer is near it, and
+    /// under the display's own notch that band is a browser's tab strip.
+    func testTheWakeRegionHardlyReachesInward() {
+        XCTAssertLessThan(NotchLayout.pillReachInward, NotchLayout.pillHotZone)
+        XCTAssertLessThan(NotchLayout.pillReachInward, NotchLayout.pillWidth)
     }
 }
 
