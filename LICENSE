@@ -20,16 +20,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-TokNotch bundles third-party software, each under its own MIT license:
-
-  tokscale — Copyright (c) 2025 Junho Yeo
-  https://github.com/junhoyeo/tokscale
-  Bundled as an unmodified prebuilt binary in Vendor/tokscale/,
-  with its license text at Vendor/tokscale/LICENSE.
-
-  Sparkle — Copyright (c) 2006-2013 Andy Matuschak and contributors
-  https://github.com/sparkle-project/Sparkle
-  Resolved as a Swift Package dependency.

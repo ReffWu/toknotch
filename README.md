@@ -164,6 +164,7 @@ its copyright is kept in [LICENSE](LICENSE).
 
 Usage figures come from [tokscale](https://github.com/junhoyeo/tokscale) (MIT),
 bundled in `Vendor/tokscale/`. Updates use [Sparkle](https://sparkle-project.org) (MIT).
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## License
 

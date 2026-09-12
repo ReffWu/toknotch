@@ -149,6 +149,7 @@ TokNotch 起初 fork 自 [vinzdg/codenotch](https://github.com/vinzdg/codenotch)
 
 用量数据来自 [tokscale](https://github.com/junhoyeo/tokscale)（MIT），内置于
 `Vendor/tokscale/`。自动更新使用 [Sparkle](https://sparkle-project.org)（MIT）。
+详见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
 ## 许可
 
