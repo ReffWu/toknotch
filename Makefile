@@ -36,14 +36,17 @@ clean:
 # --- Release -----------------------------------------------------------------
 RELEASE_DIR := build/release
 APP_NAME    := TokNotch
-# The label of the stored notarytool credential in the login keychain, not
-# anything to do with the app's name — it was created before the rename and
-# renaming the variable is what broke `make release` after it. Recreating it
-# needs an app-specific password, so the label simply stays as it is.
-NOTARY_PROFILE := UsageNotch
+# The label of the stored notarytool credential in the login keychain. Create it
+# once with:
+#
+#   xcrun notarytool store-credentials TokNotch \
+#       --apple-id <apple-id> --team-id <team-id> --password <app-specific-password>
+#
+# An app-specific password from appleid.apple.com, not the account password.
+NOTARY_PROFILE := TokNotch
 DMG := $(RELEASE_DIR)/$(APP_NAME).dmg
 
-.PHONY: archive dmg notarize release verify-release appcast verify-appcast tag publish
+.PHONY: archive dmg notarize release verify-release appcast verify-appcast tag publish check-signing
 
 # How the build is signed.
 #
@@ -171,11 +174,22 @@ publish: verify-appcast
 		$(FEED_DIR)/$(APP_NAME).dmg $(FEED_DIR)/appcast.xml \
 		--title "TokNotch $(VERSION)" --notes-file CHANGELOG.md --verify-tag
 
+# Fails now rather than five minutes into an archive that cannot be signed.
+# An "Apple Development" certificate is not enough: it is for running a build on
+# your own machines, and Gatekeeper on somebody else's rejects what it signs.
+check-signing:
+	@security find-identity -v -p codesigning | grep -q "Developer ID Application" || ( \
+		echo "No 'Developer ID Application' certificate in the keychain."; \
+		echo "A paid developer account has one available, but it has to be created once:"; \
+		echo "  Xcode -> Settings -> Accounts -> your team -> Manage Certificates"; \
+		echo "  -> + -> Developer ID Application   (Account Holder role required)"; \
+		exit 1)
+
 # The published build: Developer ID signed, hardened, notarised, stapled, and
 # advertised in the appcast Sparkle polls.
 release: SIGN_IDENTITY = Developer ID Application
 release: SIGN_FLAGS = CODE_SIGN_IDENTITY="Developer ID Application" ENABLE_HARDENED_RUNTIME=YES
-release: notarize verify-release verify-appcast
+release: check-signing notarize verify-release verify-appcast
 	@echo "Notarized: $(DMG)"
 
 # One-time: the key pair Sparkle signs updates with. The private half goes into

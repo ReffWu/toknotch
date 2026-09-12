@@ -37,10 +37,42 @@ make release       # Developer ID, notarised, stapled, verified, appcast
 make publish       # creates the GitHub release with both assets
 ```
 
-`make release` needs a **Developer ID Application** certificate and a stored
-`notarytool` keychain profile. Without those, `make dmg` still produces an
-installable disk image — ad-hoc signed, which Gatekeeper will warn about on
-first open and which the user has to right-click → Open to get past.
+## What `make release` needs, once
+
+A paid developer account makes both of these available, but neither exists on a
+Mac until it is created. `make check-signing` says so before an archive starts.
+
+**1. A Developer ID Application certificate.** Not "Apple Development" — that one
+signs builds for your own machines, and Gatekeeper on somebody else's rejects
+what it signs.
+
+> Xcode → Settings → Accounts → your team → Manage Certificates → **+** →
+> **Developer ID Application**
+
+Only the Account Holder can create one. On developer.apple.com the same thing
+lives under Certificates, Identifiers & Profiles → Certificates → + → Developer
+ID Application, which wants a CSR from Keychain Access.
+
+**2. A stored notarytool credential**, labelled to match `NOTARY_PROFILE`:
+
+```sh
+xcrun notarytool store-credentials TokNotch     --apple-id <your-apple-id>     --team-id <your-team-id>     --password <app-specific-password>
+```
+
+The password is an **app-specific password** from appleid.apple.com, not your
+account password. It is stored in the login keychain and never appears in the
+Makefile.
+
+Without both, `make dmg` still produces an installable disk image — ad-hoc
+signed, which Gatekeeper warns about on first open and which the user has to
+right-click → Open to get past.
+
+**Sign the first public release properly.** Changing signing identity between
+releases is the classic way to strand installed copies: Sparkle checks the code
+signature of an update against the running app, and an ad-hoc 1.0.0 that later
+tries to update itself to a Developer ID 1.1.0 is exactly the case that gets
+refused. Getting the certificate in place before the first release avoids the
+question entirely.
 
 ## Why the version only appears once
 
