@@ -7,22 +7,27 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
-## [Unreleased]
-
-### Changed
-- Documentation rewritten from the reader's side, in English
-  ([README.md](README.md)) and Simplified Chinese ([README.zh-CN.md](README.zh-CN.md)).
-- `docs/ARCHITECTURE.md` added; `CONTRIBUTING.md` brought back in line with the
-  code after the local-usage rewrite.
-
 ## [1.0.0]
 
-The first TokNotch release: tokscale, in the notch. Three rings, at a glance.
+The first TokNotch release. What every plan has paid back, at a glance.
 
 ### Added
-- **Today · This month · All time.** Three rings that stay on screen, each
-  showing tokens used over that stretch. Hover for equivalent value, the
-  input/output split, request count and the models used most.
+
+- **Subscription payback.** Tell TokNotch what a plan costs and when it renews,
+  and its card shows how many times over your usage has repaid it — *13.4× paid
+  back*, or *$18 to go*. Priced at what the same work would have cost on the
+  published API rates.
+- **Plans recognised for you.** Claude Code's plan comes from `~/.claude.json`;
+  the ChatGPT plan behind Codex comes from its sign-in. Only the plan name and
+  the billing dates are read, never the credentials beside them. Everything else
+  is one menu away, picked by name rather than looked up by price.
+- **Counted by the real billing period.** A plan billed on the 3rd paid for the
+  3rd through the 2nd, and that is the stretch it judges — not the calendar
+  month, which on the 2nd would be almost entirely usage the last payment
+  already covered.
+- **Today · This month · All time.** Three rings that stay at the edge of the
+  screen. Under each is the token count; the card adds equivalent value, the
+  input and output split, request count and the models used most.
 - **Arcs that mean something.** Today is measured against your best day in the
   last thirty, this month against the same days last month, all time against
   the next milestone. Every card says what it is comparing against — a full
@@ -33,18 +38,15 @@ The first TokNotch release: tokscale, in the notch. Three rings, at a glance.
 - **Attribution by model maker.** The same model reached through different
   routes collapses into one row, a locally-run Qwen still counts as Qwen, and a
   plan-billed GLM is no longer credited to somebody else.
-- **Subscription payback.** Enter a vendor's monthly cost and renewal day, and
-  its card shows how many times over the equivalent API value has repaid the
-  subscription this billing period, and how far there is to go. Counted by the
-  real billing period, not the calendar month.
 - **Nothing to install.** tokscale ships inside the app (MIT). No Homebrew, no
-  npm, no node. Entirely local: no keychain, no password prompts, nothing
-  leaves the machine.
+  npm, no node. Entirely local: it never opens the keychain, never asks for a
+  password, and nothing leaves the machine.
 - **Four edges, or the hardware notch.** Left and right as a slim column, top
   and bottom as a wide bar. On a Mac with a notch of its own, the top edge runs
   up to meet it so the two read as one shape.
 - **Nine languages,** with each language's own conventions for numbers, money
-  and dates.
+  and dates — 万 and 亿 in Chinese, k/M/B in English, Mrd. in German.
+- **Updates that install themselves,** signed with an EdDSA key so nothing
+  unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
-[Unreleased]: https://github.com/ReffWu/toknotch/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.0.0
