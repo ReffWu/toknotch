@@ -43,7 +43,7 @@ APP_NAME    := TokNotch
 NOTARY_PROFILE := UsageNotch
 DMG := $(RELEASE_DIR)/$(APP_NAME).dmg
 
-.PHONY: archive dmg notarize release verify-release
+.PHONY: archive dmg notarize release verify-release appcast verify-appcast tag publish
 
 # How the build is signed.
 #
@@ -106,39 +106,76 @@ notarize: dmg
 # Sparkle ships its tools inside the resolved package artifacts.
 SPARKLE_BIN = $(shell dirname $$(find $$HOME/Library/Developer/Xcode/DerivedData/TokNotch-*/SourcePackages/artifacts/sparkle -name generate_appcast 2>/dev/null | head -1))
 
-# The feed customers' copies poll. Signs each update with the EdDSA private key
-# in the login keychain — Sparkle installs nothing that key did not sign, so a
-# compromised host cannot push code.
+# --- The update feed ---------------------------------------------------------
 #
-# Writes into docs/, which GitHub Pages serves. The dmg goes there too, so the
-# URL the appcast advertises is the one the file actually sits at — a mismatch
-# is the usual reason an update downloads and then fails to verify.
-# NOT docs/ — that holds the design frames and specs, and GitHub Pages serves
-# whatever it is pointed at. Publishing from there would put the whole design
-# history on the public web alongside the download.
-PAGES_DIR := site
-# Where the dmg actually sits. The enclosure URL the appcast advertises has to
-# match it exactly, or an update downloads and then fails to verify.
-DOWNLOAD_PREFIX := https://hivinz.com/
+# Both the feed and the dmg are assets on a GitHub release. Nothing is hosted,
+# nothing is committed, and no domain has to stay pointed anywhere — publishing
+# a release is what publishes the update.
+#
+# Read from project.yml rather than repeated here, so a version bump happens in
+# one place. The tag has to be `v$(VERSION)` for the enclosure URL below to
+# resolve, which `make tag` is there to get right.
+VERSION := $(shell awk -F'"' '/MARKETING_VERSION:/ {print $$2}' project.yml)
+TAG     := v$(VERSION)
 
-appcast: $(DMG)
+# Staged, never committed: a dmg in git is a dmg in git forever.
+FEED_DIR := $(RELEASE_DIR)/feed
+
+# Where the dmg will actually sit once the release exists. The enclosure URL the
+# appcast advertises has to match it exactly, or an update downloads and then
+# fails to verify.
+DOWNLOAD_PREFIX := https://github.com/ReffWu/toknotch/releases/download/$(TAG)/
+
+# Signs each update with the EdDSA private key in the login keychain — Sparkle
+# installs nothing that key did not sign, so neither GitHub nor anybody who
+# reaches the release can push code. That private key is why this runs here and
+# not in CI.
+# `dmg`, not `$(DMG)`: the dmg is built by a phony rule, so naming the file as
+# a prerequisite asks make for a rule that does not exist and the target only
+# ever worked when the file happened to be there already.
+appcast: dmg
 	@test -n "$(SPARKLE_BIN)" || (echo "Sparkle tools not found — run make build first" && exit 1)
-	mkdir -p $(PAGES_DIR)
-	@# Rebuilt from what is actually in the folder, never merged into the old
-	@# one. The dmg keeps a constant name, so only one build can exist at a
+	rm -rf $(FEED_DIR)
+	mkdir -p $(FEED_DIR)
+	@# Generated from an empty folder every time, never merged into an older
+	@# feed. The dmg keeps a constant name, so only one build can exist at a
 	@# time — but generate_appcast preserves entries it already knows, and left
 	@# the previous version advertised at a URL now serving a different file,
 	@# with a signature that could never verify.
-	rm -f $(PAGES_DIR)/appcast.xml
-	cp $(DMG) $(PAGES_DIR)/
-	$(SPARKLE_BIN)/generate_appcast $(PAGES_DIR) --download-url-prefix $(DOWNLOAD_PREFIX)
-	@echo "Publish by committing $(PAGES_DIR)/ and pushing."
+	cp $(DMG) $(FEED_DIR)/
+	$(SPARKLE_BIN)/generate_appcast $(FEED_DIR) --download-url-prefix $(DOWNLOAD_PREFIX)
+	@echo
+	@echo "Feed staged for $(TAG):"
+	@ls -1 $(FEED_DIR)
+	@echo "Publish it with: make publish"
+
+# What the running copies will actually be told, checked before anybody is told
+# it. Verifies the feed parses, advertises the version this build is, carries a
+# signature, and points at the URL the dmg is about to occupy.
+verify-appcast: appcast
+	@python3 Scripts/verify-appcast.py $(FEED_DIR)/appcast.xml $(FEED_DIR)/$(APP_NAME).dmg \
+		$(VERSION) $(DOWNLOAD_PREFIX)
+
+# The tag the enclosure URL above resolves against. Separate from `publish` so a
+# tag is never created by something that might fail halfway.
+tag:
+	@git diff --quiet || (echo "working tree is dirty — commit first" && exit 1)
+	git tag -a $(TAG) -m "TokNotch $(VERSION)"
+	git push origin $(TAG)
+
+# Creates the release the feed URL points at, with the dmg and the appcast on
+# it. Uploading both together is what keeps them consistent: Sparkle reads the
+# appcast from the newest release and downloads the dmg beside it.
+publish: verify-appcast
+	gh release create $(TAG) \
+		$(FEED_DIR)/$(APP_NAME).dmg $(FEED_DIR)/appcast.xml \
+		--title "TokNotch $(VERSION)" --notes-file CHANGELOG.md --verify-tag
 
 # The published build: Developer ID signed, hardened, notarised, stapled, and
 # advertised in the appcast Sparkle polls.
 release: SIGN_IDENTITY = Developer ID Application
 release: SIGN_FLAGS = CODE_SIGN_IDENTITY="Developer ID Application" ENABLE_HARDENED_RUNTIME=YES
-release: notarize verify-release appcast
+release: notarize verify-release verify-appcast
 	@echo "Notarized: $(DMG)"
 
 # One-time: the key pair Sparkle signs updates with. The private half goes into

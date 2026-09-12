@@ -36,7 +36,7 @@ final class ReleaseNotesTests: XCTestCase {
     // MARK: - What ships
 
     func testEveryShippedNoteSaysSomething() {
-        for note in ReleaseNotes.all {
+        for note in ReleaseNotes.all(in: .english) {
             XCTAssertFalse(note.version.isEmpty, "a note with no version")
             XCTAssertFalse(note.headline.isEmpty, "\(note.version) has no headline")
             XCTAssertFalse(note.changes.isEmpty, "\(note.version) lists no changes")
@@ -46,8 +46,27 @@ final class ReleaseNotesTests: XCTestCase {
         }
     }
 
+    /// The release notes are the one screen a person is shown on the launch
+    /// after an update, and the only place a key leaking through would greet
+    /// somebody by name. `LocalizationTests` proves the keys exist; this proves
+    /// the notes are actually built out of them.
+    func testEveryShippedNoteReadsInEveryLanguage() {
+        for language in AppLanguage.available where language != .system {
+            for note in ReleaseNotes.all(in: language) {
+                XCTAssertFalse(note.headline.contains("whatsNew."),
+                               "\(language.rawValue): \(note.version) headline is a raw key")
+                for change in note.changes {
+                    XCTAssertFalse(change.title.contains("whatsNew."),
+                                   "\(language.rawValue): a title is a raw key")
+                    XCTAssertFalse(change.detail.contains("whatsNew."),
+                                   "\(language.rawValue): a detail is a raw key")
+                }
+            }
+        }
+    }
+
     func testNoVersionIsListedTwice() {
-        let versions = ReleaseNotes.all.map(\.version)
+        let versions = ReleaseNotes.all(in: .english).map(\.version)
         XCTAssertEqual(Set(versions).count, versions.count,
                        "two notes claim the same version; only one would ever show")
     }
@@ -58,7 +77,7 @@ final class ReleaseNotesTests: XCTestCase {
         let version = Bundle(for: ReleaseNotesTests.self)
             .object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         guard let version, !version.isEmpty else { return }
-        XCTAssertNotNil(ReleaseNotes.note(for: version),
+        XCTAssertNotNil(ReleaseNotes.note(for: version, in: .english),
                         "version \(version) ships with no What's New entry")
     }
 }
@@ -102,7 +121,7 @@ final class WhatsNewMemoryTests: XCTestCase {
     /// crash in between would swallow the one launch it was going to appear on.
     func testItRecordsOnlyOnceItHasBeenDismissed() {
         let preferences = preferences()
-        let version = ReleaseNotes.all.first!.version
+        let version = ReleaseNotes.all(in: .english).first!.version
         let controller = WhatsNewWindowController(preferences: preferences, version: version)
 
         XCTAssertTrue(controller.showIfNeeded())
@@ -119,7 +138,7 @@ final class WhatsNewMemoryTests: XCTestCase {
     /// re-entry called itself until the stack ran out.
     func testDismissingTwiceIsHarmless() {
         let preferences = preferences()
-        let version = ReleaseNotes.all.first!.version
+        let version = ReleaseNotes.all(in: .english).first!.version
         let controller = WhatsNewWindowController(preferences: preferences, version: version)
 
         XCTAssertTrue(controller.showIfNeeded())
@@ -131,7 +150,7 @@ final class WhatsNewMemoryTests: XCTestCase {
     /// And it does not come back on the next launch.
     func testItDoesNotReturnOnTheNextLaunch() {
         let preferences = preferences()
-        let version = ReleaseNotes.all.first!.version
+        let version = ReleaseNotes.all(in: .english).first!.version
 
         let first = WhatsNewWindowController(preferences: preferences, version: version)
         XCTAssertTrue(first.showIfNeeded())

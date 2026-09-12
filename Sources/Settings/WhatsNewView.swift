@@ -4,6 +4,9 @@ import SwiftUI
 /// What changed in this version, shown once when you first run it.
 struct WhatsNewView: View {
     let note: ReleaseNote
+    /// Defaulted so a render test can make one without picking a language;
+    /// the app always passes the one in settings.
+    var language: AppLanguage = .english
     let onContinue: () -> Void
 
     var body: some View {
@@ -18,7 +21,7 @@ struct WhatsNewView: View {
             Divider()
             HStack {
                 Spacer(minLength: 0)
-                Button("Continue", action: onContinue)
+                Button(language.t("whatsNew.continue"), action: onContinue)
                     .keyboardShortcut(.defaultAction)
             }
             .padding(.horizontal, 24)
@@ -35,10 +38,10 @@ struct WhatsNewView: View {
                     .frame(width: 60, height: 60)
                     .padding(.bottom, 8)
             }
-            Text("欢迎使用 TokNotch")
+            Text(language.t("whatsNew.welcome"))
                 .font(.system(size: 19, weight: .semibold))
                 .multilineTextAlignment(.center)
-            Text("Version \(note.version)")
+            Text(language.t("whatsNew.version", note.version))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
             Text(note.headline)

@@ -57,7 +57,13 @@ targets:
         # SUPublicEDKey is the public half of the key pair made by
         # `make sparkle-keys`; the private half stays in the login keychain.
         # Without both of these the app deliberately never starts the updater.
-        SUFeedURL: https://hivinz.com/appcast.xml
+        # Served as an asset on the newest GitHub release, so publishing a
+        # release publishes the feed — there is no server to keep alive and
+        # nothing to point a domain at. `releases/latest/download/` always
+        # redirects to the newest release, and appcast.xml and the dmg are
+        # assets of the *same* release, so the feed can never advertise a build
+        # that is not sitting beside it.
+        SUFeedURL: https://github.com/ReffWu/toknotch/releases/latest/download/appcast.xml
         SUPublicEDKey: wpcSIsJIvvZPj3jAoJuw8wl0+fVXS3K3ChODZ0W8EBI=
         # Answers Sparkle's first-run question for the user. Without it the
         # very first launch opens a dialogue asking permission to check for

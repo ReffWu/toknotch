@@ -16,6 +16,10 @@ final class WhatsNewWindowController {
     private let preferences: Preferences
     private let version: String
 
+    /// Read at the moment the dialogue is put up rather than held, so a
+    /// language changed in settings is the one the next release is read in.
+    private var language: AppLanguage { preferences.appLanguage }
+
     init(preferences: Preferences, version: String) {
         self.preferences = preferences
         self.version = version
@@ -32,7 +36,8 @@ final class WhatsNewWindowController {
     @discardableResult
     func showIfNeeded() -> Bool {
         guard let note = ReleaseNotes.unseen(
-            in: version, lastSeen: preferences.lastSeenVersion
+            in: version, lastSeen: preferences.lastSeenVersion,
+            notes: ReleaseNotes.all(in: language)
         ) else {
             preferences.lastSeenVersion = version
             return false
@@ -49,9 +54,11 @@ final class WhatsNewWindowController {
             backing: .buffered,
             defer: false
         )
-        window.title = "What's New"
+        window.title = language.t("whatsNew.title")
         window.contentView = NSHostingView(
-            rootView: WhatsNewView(note: note) { [weak self] in self?.dismiss() }
+            rootView: WhatsNewView(note: note, language: language) { [weak self] in
+                self?.dismiss()
+            }
         )
         window.center()
         window.isReleasedWhenClosed = false
