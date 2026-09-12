@@ -1,4 +1,7 @@
 # `?=` rather than `:=` so a CI runner that selects its own Xcode wins.
+# Release steps rely on prerequisites running in the order they are listed.
+.NOTPARALLEL:
+
 export DEVELOPER_DIR ?= /Applications/Xcode.app/Contents/Developer
 
 PROJECT := TokNotch.xcodeproj
@@ -97,12 +100,19 @@ dmg: sign-app
 	ln -s /Applications $(RELEASE_DIR)/stage/Applications
 	hdiutil create -volname "$(APP_NAME)" -srcfolder $(RELEASE_DIR)/stage \
 		-ov -format UDZO $(DMG)
-	codesign --force --sign - $(DMG)
+	@# The same identity as the app inside, or a notarised app ships in a disk
+	@# image Gatekeeper rejects on its own account.
+	@if [ "$(SIGN_IDENTITY)" = "-" ]; then \
+		codesign --force --sign - $(DMG); \
+	else \
+		codesign --force --timestamp --sign "$(SIGN_IDENTITY)" $(DMG); \
+	fi
 	rm -rf $(RELEASE_DIR)/stage
 
 # Submits and waits. `--wait` blocks until Apple answers, which is usually a
 # couple of minutes; on rejection, the log says which binary failed and why.
-notarize: dmg
+notarize:
+	@test -f $(DMG) || (echo "no $(DMG) to notarise — make release builds one" && exit 1)
 	xcrun notarytool submit $(DMG) --keychain-profile $(NOTARY_PROFILE) --wait
 	xcrun stapler staple $(DMG)
 
@@ -133,10 +143,12 @@ DOWNLOAD_PREFIX := https://github.com/ReffWu/toknotch/releases/download/$(TAG)/
 # installs nothing that key did not sign, so neither GitHub nor anybody who
 # reaches the release can push code. That private key is why this runs here and
 # not in CI.
-# `dmg`, not `$(DMG)`: the dmg is built by a phony rule, so naming the file as
-# a prerequisite asks make for a rule that does not exist and the target only
-# ever worked when the file happened to be there already.
-appcast: dmg
+# Describes the dmg already built, and deliberately depends on nothing that
+# builds one: `archive` starts with rm -rf, and the identity a release is signed
+# with is only set on `release`. Chained to `dmg`, `make publish` on its own
+# deleted a notarised build, re-signed it ad-hoc, and shipped that.
+appcast:
+	@test -f $(DMG) || (echo "no $(DMG) — make release first" && exit 1)
 	@test -n "$(SPARKLE_BIN)" || (echo "Sparkle tools not found — run make build first" && exit 1)
 	rm -rf $(FEED_DIR)
 	mkdir -p $(FEED_DIR)
@@ -169,7 +181,7 @@ tag:
 # Creates the release the feed URL points at, with the dmg and the appcast on
 # it. Uploading both together is what keeps them consistent: Sparkle reads the
 # appcast from the newest release and downloads the dmg beside it.
-publish: verify-appcast
+publish: verify-release verify-appcast
 	gh release create $(TAG) \
 		$(FEED_DIR)/$(APP_NAME).dmg $(FEED_DIR)/appcast.xml \
 		--title "TokNotch $(VERSION)" --notes-file CHANGELOG.md --verify-tag
@@ -189,8 +201,9 @@ check-signing:
 # advertised in the appcast Sparkle polls.
 release: SIGN_IDENTITY = Developer ID Application
 release: SIGN_FLAGS = CODE_SIGN_IDENTITY="Developer ID Application" ENABLE_HARDENED_RUNTIME=YES
-release: check-signing notarize verify-release verify-appcast
+release: check-signing dmg notarize verify-release
 	@echo "Notarized: $(DMG)"
+	@echo "Next: make publish"
 
 # One-time: the key pair Sparkle signs updates with. The private half goes into
 # the login keychain and never leaves this Mac; the public half is printed for
