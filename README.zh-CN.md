@@ -32,8 +32,7 @@ TokNotch 把你的编码工具真正跑掉的量全部加起来，按官方 API 
 如果这个套餐还没赚回来，它就说：**还差 $18**。
 
 <p align="center">
-  <img src="docs/assets/preview-tooltip.png" width="48%" alt="展开的用量卡片" />
-  <img src="docs/assets/preview-detail.png" width="48%" alt="停靠在屏幕边缘的 TokNotch" />
+  <img src="docs/assets/demo-zh.gif" width="100%" alt="鼠标移到刘海上的 Anthropic 和 OpenAI 环，卡片展开显示已回本 37.2 倍和 13.6 倍" />
 </p>
 
 ---
