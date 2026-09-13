@@ -70,7 +70,7 @@ type scale and vendor logo outlines they're drawn from.
 
 ### `Sources/Settings/` and `Sources/App/`
 
-The SwiftUI settings window, the nine-language string table, the "what's new"
+The SwiftUI settings window, the sixteen-language string table, the "what's new"
 sheet, and the agent process itself: `AppDelegate`, the optional status item,
 and the Sparkle updater.
 

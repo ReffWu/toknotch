@@ -32,7 +32,7 @@ version:
 | `Sources/Notch/` | Four-edge placement, the notch shape, the panel, the springs |
 | `Sources/Features/` | Rings, arcs, the card that unfolds |
 | `Sources/DesignSystem/` | Palette, type scale, vendor logo outlines |
-| `Sources/Settings/` | Settings window, nine-language strings, what's-new sheet |
+| `Sources/Settings/` | Settings window, sixteen-language strings, what's-new sheet |
 
 ## Before opening a PR
 
@@ -70,7 +70,7 @@ Model attribution is by **maker**, not by billing route. To add one:
    honest letters.
 4. If its name has a genuine local form a reader would expect (通义千问 where
    English writes Qwen), route `title(_:)` through the strings file and add the
-   key to **all nine** `.lproj` files. Brand names that don't get translated
+   key to **all sixteen** `.lproj` files. Brand names that don't get translated
    stay inline.
 5. If it sells a subscription, add its plans to `PlanCatalog` at published list
    price in USD.
@@ -78,7 +78,7 @@ Model attribution is by **maker**, not by billing route. To add one:
 ## Adding or changing a string
 
 Every user-visible string lives in `Sources/Resources/*.lproj/Localizable.strings`,
-and all nine files carry the same keys. A key missing from one language is a
+and all sixteen files carry the same keys. A key missing from one language is a
 bug, not a fallback.
 
 Numbers, money and dates go through `UsageFormat`, which follows each language's

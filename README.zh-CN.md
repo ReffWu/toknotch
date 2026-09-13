@@ -8,11 +8,11 @@
 
 Claude Code、Codex 等等 —— 按官方 API 公开价折算，就摆在屏幕边上。
 
-[English](README.md) · 简体中文
+[English](README.md) · 简体中文 · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 [![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![9 种语言](https://img.shields.io/badge/languages-9-cyan?style=flat-square)](#它说你的语言)
+[![16 种语言](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#它说你的语言)
 
 </div>
 
@@ -107,7 +107,8 @@ refresh token 和 API Key 一概不读、不复制、不记录。
 
 ## 它说你的语言
 
-English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español · Русский
+English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español · Italiano ·
+Português (Brasil) · Nederlands · Polski · Русский · Türkçe · Tiếng Việt · العربية
 
 不只是文字。数字、金额和日期都按各自语言的习惯来 —— 中文里是万和亿，英文里是 k/M/B，
 德文里是 Mrd.。
@@ -116,8 +117,10 @@ English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · 
 
 ## 装上它
 
-构建版本发布在 [Releases 页面](https://github.com/ReffWu/toknotch/releases)。
-把 TokNotch 拖进「应用程序」打开即可，之后它会自己更新。
+[下载 TokNotch.dmg](https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg)，
+打开后把 TokNotch 拖进「应用程序」。App 使用 Developer ID 签名并经过 Apple 公证，像其他
+App 一样直接打开，之后会随 Mac 自动启动，也会自己保持最新。历次版本都在
+[Releases 页面](https://github.com/ReffWu/toknotch/releases)。
 
 **需要 macOS 14 (Sonoma) 或更新版本。**
 

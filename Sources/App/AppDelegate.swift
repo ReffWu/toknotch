@@ -30,6 +30,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // replaces this a moment later, once preferences exist.
         NSApp.setActivationPolicy(.regular)
         guard !isRunningTests else { return }
+        AppIconStyle.restore()
 
         let controller = NotchWindowController()
 
@@ -47,6 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Preferences.migrateFromPreviousName()
         let preferences = Preferences()
         self.preferences = preferences
+        preferences.addLoginItemOnce()
 
         let store = UsageStore()
         store.language = preferences.appLanguage
@@ -96,7 +98,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.statusItem = statusItem
 
         DistributedNotificationCenter.default().addObserver(
-            forName: NSNotification.Name("com.reff.toknotch.openSettings"),
+            forName: NSNotification.Name("com.reffwu.toknotch.openSettings"),
             object: nil, queue: .main
         ) { [weak settings] _ in settings?.show() }
 

@@ -7,6 +7,29 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.1.0]
+
+Keeps itself up to date, and speaks your language.
+
+### Added
+
+- **Automatic updates that actually arrive.** Every release is now signed with a
+  Developer ID, notarized by Apple and published on GitHub with its update feed,
+  so TokNotch checks for new versions on its own and installs them in place.
+- **Sixteen languages.** Arabic, Italian, Dutch, Polish, Brazilian Portuguese,
+  Turkish and Vietnamese join the nine already here, each writing numbers, money
+  and dates its own way.
+- **Pick your icon.** The app icon comes with a dark or a light frame, chosen
+  under Appearance. The frame now carries the TokNotch and REFFWU engraving.
+
+### Changed
+
+- **Fewer things to set.** TokNotch opens with your Mac the first time it runs,
+  update checks are always on, and the General page only shows where the
+  numbers come from unless something needs attention.
+- **New bundle identifier** `com.reffwu.toknotch`. Settings, plans and choices
+  from earlier builds are carried over automatically on first launch.
+
 ## [1.0.0]
 
 The first TokNotch release. What every plan has paid back, at a glance.

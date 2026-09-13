@@ -1,6 +1,6 @@
 name: TokNotch
 options:
-  bundleIdPrefix: com.reff
+  bundleIdPrefix: com.reffwu
   deploymentTarget:
     macOS: "14.0"
   createIntermediateGroups: true
@@ -9,8 +9,8 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     SWIFT_STRICT_CONCURRENCY: minimal
-    MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "1.1.0"
+    CURRENT_PROJECT_VERSION: "2"
     CODE_SIGN_IDENTITY: "-"
     CODE_SIGN_STYLE: Manual
     DEVELOPMENT_TEAM: ""
@@ -72,7 +72,7 @@ targets:
         SUEnableAutomaticChecks: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.reff.toknotch
+        PRODUCT_BUNDLE_IDENTIFIER: com.reffwu.toknotch
         GENERATE_INFOPLIST_FILE: "NO"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
@@ -85,7 +85,7 @@ targets:
       - target: TokNotch
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.reff.toknotch.tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.reffwu.toknotch.tests
         GENERATE_INFOPLIST_FILE: "YES"
 
 schemes:

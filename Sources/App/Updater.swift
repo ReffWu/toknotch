@@ -3,9 +3,11 @@ import Sparkle
 
 /// Checking for, and installing, new versions.
 ///
-/// Wraps Sparkle rather than exposing it: the settings screen needs three
-/// things — a state to describe, a switch, and a button — and everything else
-/// Sparkle offers would only be a way to get the update flow wrong.
+/// Wraps Sparkle rather than exposing it: the settings screen needs two
+/// things — a state to describe and a button — and everything else Sparkle
+/// offers would only be a way to get the update flow wrong. Checking runs on
+/// its own schedule, always: an app nobody updates is an app that quietly
+/// stops matching the tools it reads.
 @MainActor
 final class Updater: NSObject, ObservableObject {
     enum Outcome: Equatable {
@@ -22,13 +24,6 @@ final class Updater: NSObject, ObservableObject {
     }
 
     @Published private(set) var outcome: Outcome = .idle
-
-    @Published var automatic: Bool {
-        didSet {
-            guard automatic != oldValue else { return }
-            controller?.updater.automaticallyChecksForUpdates = automatic
-        }
-    }
 
     var currentVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
@@ -51,13 +46,6 @@ final class Updater: NSObject, ObservableObject {
 
     private var controller: SPUStandardUpdaterController?
 
-    override init() {
-        // Sparkle's own preference, read before the controller exists so the
-        // switch shows the truth on the first frame.
-        automatic = UserDefaults.standard.object(forKey: "SUEnableAutomaticChecks") as? Bool ?? true
-        super.init()
-    }
-
     /// Starts checking. Call once, at launch.
     func start() {
         guard Self.isConfigured else {
@@ -69,7 +57,7 @@ final class Updater: NSObject, ObservableObject {
         controller = SPUStandardUpdaterController(startingUpdater: true,
                                                   updaterDelegate: self,
                                                   userDriverDelegate: nil)
-        controller?.updater.automaticallyChecksForUpdates = automatic
+        controller?.updater.automaticallyChecksForUpdates = true
     }
 
     /// The Check Now button. Shows Sparkle's own dialogue, which is the part

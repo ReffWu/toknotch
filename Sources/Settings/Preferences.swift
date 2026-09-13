@@ -19,7 +19,14 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     case german = "de"
     case french = "fr"
     case spanish = "es"
+    case italian = "it"
+    case brazilianPortuguese = "pt-BR"
+    case dutch = "nl"
+    case polish = "pl"
     case russian = "ru"
+    case turkish = "tr"
+    case vietnamese = "vi"
+    case arabic = "ar"
 
     var id: String { rawValue }
 
@@ -40,7 +47,14 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .german:             return "Deutsch"
         case .french:             return "Français"
         case .spanish:            return "Español"
+        case .italian:            return "Italiano"
+        case .brazilianPortuguese: return "Português (Brasil)"
+        case .dutch:              return "Nederlands"
+        case .polish:             return "Polski"
         case .russian:            return "Русский"
+        case .turkish:            return "Türkçe"
+        case .vietnamese:         return "Tiếng Việt"
+        case .arabic:             return "العربية"
         }
     }
 
@@ -56,7 +70,13 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     /// conversion on every single glance, which is exactly what a readout on a
     /// screen edge must never do.
     var locale: Locale {
-        self == .system ? .autoupdatingCurrent : Locale(identifier: rawValue)
+        switch self {
+        case .system: return .autoupdatingCurrent
+        // Western digits: token counts and prices read at a glance on a screen
+        // edge, and they sit beside model names and prices that are Latin anyway.
+        case .arabic: return Locale(identifier: "ar@numbers=latn")
+        default: return Locale(identifier: rawValue)
+        }
     }
 
     /// The best match among the languages we actually ship, for `.system`.
@@ -146,17 +166,6 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(lastSeenVersion, forKey: Keys.lastSeenVersion) }
     }
 
-    @Published var launchAtLogin: Bool {
-        didSet {
-            guard launchAtLogin != Self.isRegisteredForLogin else { return }
-            applyLaunchAtLogin()
-        }
-    }
-
-    /// Set when the login-item request was refused, so the UI can say so rather
-    /// than quietly flipping the switch back.
-    @Published private(set) var launchAtLoginProblem: String?
-
     private let defaults: UserDefaults
     private enum Keys {
         static let enabledVendors = "enabledVendors"
@@ -169,22 +178,28 @@ final class Preferences: ObservableObject {
         static let edge = "notchEdge"
         static let lastSeenVersion = "lastSeenVersion"
         static let language = "appLanguage"
+        static let addedLoginItem = "addedLoginItem"
     }
 
     /// True the very first time this copy runs, and never again.
     let isFirstLaunch: Bool
 
-    /// The bundle identifier before the app was renamed.
+    /// The bundle identifiers this app has had before, newest first.
     ///
     /// A bundle id is the name of the defaults domain, so renaming the app
     /// silently moved every setting to a new, empty one — connection choices,
     /// the notch's mode, the archived readings, all apparently lost. Copying
-    /// the old domain across once is the difference between a rename and what
-    /// looks like a reset.
-    nonisolated private static let previousDomain = "com.reff.usagenotch"
+    /// the most recent old domain across once is the difference between a
+    /// rename and what looks like a reset.
+    nonisolated private static let previousDomains = ["com.reff.toknotch", "com.reff.usagenotch"]
 
-    static func migrateFromPreviousName(into defaults: UserDefaults = .standard,
-                                        from domain: String = previousDomain) {
+    static func migrateFromPreviousName(into defaults: UserDefaults = .standard) {
+        for domain in previousDomains where defaults.object(forKey: Keys.hasLaunched) == nil {
+            migrateFromPreviousName(into: defaults, from: domain)
+        }
+    }
+
+    static func migrateFromPreviousName(into defaults: UserDefaults, from domain: String) {
         // The emptiness test has to be about the object being written to, not
         // about `Bundle.main` — under test those are different domains, and the
         // first version happily copied real settings into a test's scratch
@@ -226,9 +241,6 @@ final class Preferences: ObservableObject {
         // Absent means nothing has been shown yet, which is true of a fresh
         // install — so the current release reads as new to it.
         self.lastSeenVersion = defaults.string(forKey: Keys.lastSeenVersion)
-        // Read from the system rather than from our own store: the user can turn
-        // this off in System Settings, and a remembered `true` would then be a lie.
-        self.launchAtLogin = Self.isRegisteredForLogin
         self.autoEnabledVendors = Set((defaults.stringArray(forKey: Keys.autoEnabled) ?? [])
             .compactMap(Vendor.init(rawValue:)))
         self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "rings"
@@ -279,7 +291,7 @@ final class Preferences: ObservableObject {
     /// update, and wiping data on every Sparkle update would be catastrophic.
     /// It has to be something the user asks for.
     static func eraseAllData() {
-        let bundleID = Bundle.main.bundleIdentifier ?? "com.reff.toknotch"
+        let bundleID = Bundle.main.bundleIdentifier ?? "com.reffwu.toknotch"
         UserDefaults.standard.removePersistentDomain(forName: bundleID)
         UserDefaults.standard.synchronize()
 
@@ -297,24 +309,20 @@ final class Preferences: ObservableObject {
 
     // MARK: - Login item
 
-    static var isRegisteredForLogin: Bool {
-        SMAppService.mainApp.status == .enabled
-    }
-
-    private func applyLaunchAtLogin() {
+    /// Starts TokNotch with the Mac, once, without asking.
+    ///
+    /// A readout that lives on the screen edge is only useful if it is there
+    /// every day, so opening at login is the right behaviour rather than a
+    /// preference. It is done a single time: somebody who later removes it in
+    /// System Settings has made a choice, and every launch re-adding it would
+    /// overrule them.
+    func addLoginItemOnce() {
+        guard !defaults.bool(forKey: Keys.addedLoginItem) else { return }
+        defaults.set(true, forKey: Keys.addedLoginItem)
         do {
-            if launchAtLogin {
-                try SMAppService.mainApp.register()
-            } else {
-                try SMAppService.mainApp.unregister()
-            }
-            launchAtLoginProblem = nil
+            try SMAppService.mainApp.register()
         } catch {
-            // Commonly refused for an app running from a build directory rather
-            // than /Applications, which is worth saying plainly.
-            Log.usage.error("launch at login failed: \(error.localizedDescription, privacy: .public)")
-            launchAtLoginProblem = "macOS refused this — try moving TokNotch to /Applications."
-            launchAtLogin = Self.isRegisteredForLogin
+            Log.usage.error("adding the login item failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

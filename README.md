@@ -9,11 +9,11 @@
 Claude Code, Codex and the rest — priced against the published API rates,
 sitting at the edge of your screen.
 
-English · [简体中文](README.zh-CN.md)
+English · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 [![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![9 languages](https://img.shields.io/badge/languages-9-cyan?style=flat-square)](#it-speaks-your-language)
+[![16 languages](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#it-speaks-your-language)
 
 </div>
 
@@ -121,7 +121,8 @@ It knows about your Dock and your menu bar, and moves when they do.
 
 ## It speaks your language
 
-English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español · Русский
+English · 简体中文 · 繁體中文 · 日本語 · 한국어 · Deutsch · Français · Español · Italiano ·
+Português (Brasil) · Nederlands · Polski · Русский · Türkçe · Tiếng Việt · العربية
 
 Not just the words. Numbers, money and dates follow each language's own
 conventions — 万 and 亿 in Chinese, k/M/B in English, Mrd. in German.
@@ -130,8 +131,11 @@ conventions — 万 and 亿 in Chinese, k/M/B in English, Mrd. in German.
 
 ## Getting it
 
-Builds are published on the [Releases page](https://github.com/ReffWu/toknotch/releases).
-Drag TokNotch to Applications and open it; it updates itself after that.
+[Download TokNotch.dmg](https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg),
+open it and drag TokNotch to Applications. It is signed with a Developer ID and
+notarized by Apple, opens like any other app, starts with your Mac, and keeps
+itself up to date after that. Every build is on the
+[Releases page](https://github.com/ReffWu/toknotch/releases).
 
 **Requires macOS 14 (Sonoma) or newer.**
 

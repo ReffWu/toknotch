@@ -117,11 +117,12 @@ enum UsageFormat {
     /// exactly right (1st/2nd/3rd, 1./2./3., 1.º/2.º/3.º) because those
     /// languages mark a plain ordinal the same way a calendar day is spoken.
     /// Chinese, Japanese and Korean do not — their ordinal formatter answers
-    /// "the Nth in a sequence" (第3 / 3番目), not "the 3rd of the month", so
-    /// those keep the calendar-day phrase from the strings table instead.
+    /// "the Nth in a sequence" (第3 / 3番目), not "the 3rd of the month", and
+    /// Arabic and Vietnamese spell the ordinal out as a word, so those keep the
+    /// calendar-day phrase from the strings table instead.
     static func dayOfMonth(_ day: Int, _ language: AppLanguage) -> String {
         switch language.resolved {
-        case .simplifiedChinese, .traditionalChinese, .japanese, .korean:
+        case .simplifiedChinese, .traditionalChinese, .japanese, .korean, .arabic, .vietnamese:
             return language.t("settings.dayOfMonth", day)
         default:
             let formatter = NumberFormatter()

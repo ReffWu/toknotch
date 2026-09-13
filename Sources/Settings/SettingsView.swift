@@ -586,6 +586,10 @@ struct AppearancePage: View {
                     label: { $0.title(language) },
                     symbol: "macwindow", tint: .indigo
                 )
+                SettingsDivider()
+                SettingsRow("app.badge", tint: .blue, title: language.t("settings.appIcon")) {
+                    AppIconPicker(language: language)
+                }
             }
         }
     }
@@ -616,54 +620,32 @@ struct GeneralPage: View {
                 )
             }
 
-            SettingsGroup(title: language.t("settings.startup")) {
-                SettingsRow("power", tint: .blue,
-                            title: language.t("settings.openAtLogin"),
-                            subtitle: preferences.launchAtLoginProblem) {
-                    Toggle("", isOn: $preferences.launchAtLogin)
-                        .toggleStyle(.switch).controlSize(.small).labelsHidden()
-                }
-            }
-
             SettingsGroup(
                 title: language.t("settings.whereTheNumbersComeFrom"),
                 footnote: language.t("settings.usageComesFromTokscaleReading")
             ) {
-                SettingsRow(store.problem == nil ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
-                            tint: store.problem == nil ? .green : .orange,
-                            title: status, subtitle: source) {
-                    Button(language.t("settings.refresh")) { store.refreshNow() }
-                        .controlSize(.small)
-                        .disabled(store.isRefreshing)
+                SettingsRow("shippingbox.fill", tint: .teal, title: source) {
+                    EmptyView()
                 }
-            }
-
-            SettingsGroup(
-                title: language.t("settings.updates"),
-                footnote: Updater.isConfigured ? nil
-                    : language.t("settings.thisIsALocalBuild")
-            ) {
-                SettingsRow("arrow.triangle.2.circlepath", tint: .blue,
-                            title: language.t("settings.checkAutomatically"),
-                            subtitle: updateStatus) {
-                    Toggle("", isOn: $updater.automatic)
-                        .toggleStyle(.switch).controlSize(.small).labelsHidden()
-                        .disabled(!Updater.isConfigured)
-                }
-                SettingsDivider()
-                SettingsRow("square.and.arrow.down", tint: .cyan,
-                            title: language.t("settings.checkNow")) {
-                    Button(language.t("settings.check")) { updater.checkForUpdates() }
-                        .controlSize(.small)
-                        .disabled(!Updater.isConfigured || updater.outcome == .checking)
+                if let problem = store.problem {
+                    SettingsDivider()
+                    SettingsRow("exclamationmark.triangle.fill", tint: .orange, title: problem) {
+                        Button(language.t("settings.refresh")) { store.refreshNow() }
+                            .controlSize(.small)
+                            .disabled(store.isRefreshing)
+                    }
                 }
             }
 
             SettingsGroup(title: language.t("settings.about")) {
                 SettingsRow("app.badge", tint: .indigo,
                             title: "TokNotch \(updater.currentVersion)",
-                            subtitle: language.t("settings.tokenUsageInTheNotch")) {
-                    EmptyView()
+                            subtitle: updateStatus ?? language.t("settings.tokenUsageInTheNotch")) {
+                    if Updater.isConfigured {
+                        Button(language.t("settings.checkNow")) { updater.checkForUpdates() }
+                            .controlSize(.small)
+                            .disabled(updater.outcome == .checking)
+                    }
                 }
             }
         }
@@ -672,30 +654,13 @@ struct GeneralPage: View {
     /// What the updater is currently able to say for itself.
     private var updateStatus: String? {
         switch updater.outcome {
-        case .unconfigured: return nil
-        case .idle:
-            return updater.lastChecked.map { checked in
-                let f = DateFormatter()
-                f.locale = language.locale
-                f.dateStyle = .medium
-                f.timeStyle = .short
-                return language.t("settings.lastChecked", f.string(from: checked))
-            }
+        case .unconfigured, .idle: return nil
         case .checking:            return language.t("settings.checking")
         case .upToDate:            return language.t("settings.upToDate")
         case .found(let version):  return language.t("settings.updateAvailable", version)
         case .unreachable:         return language.t("settings.couldnTReachTheUpdate")
         case .failed(let why):     return language.t("settings.checkFailed", why)
         }
-    }
-
-    private var status: String {
-        if let problem = store.problem { return problem }
-        guard let updated = store.lastUpdated else { return language.t("settings.reading") }
-        let formatter = DateFormatter()
-        formatter.timeStyle = .medium
-        formatter.dateStyle = .none
-        return language.t("settings.readingFine", formatter.string(from: updated))
     }
 
     /// Says which copy of tokscale is answering, because "it is built in" is
