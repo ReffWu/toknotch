@@ -44,6 +44,15 @@ struct AppIconPicker: View {
     let language: AppLanguage
     @State private var selection = AppIconStyle.current
 
+    /// How large the icon's frame is drawn.
+    private static let size: CGFloat = 46
+    /// Where that frame sits in the artwork, from `Scripts/make-app-icon.py`:
+    /// the opaque shape spans 980 of the image's 1024 pixels with 262-pixel
+    /// circular corners, and the margin around it is drop shadow. Measured so
+    /// the ring can follow the frame itself rather than the image's bounds.
+    private static let drawn: CGFloat = size * 1024 / 980
+    private static let corner: CGFloat = size * 262 / 980
+
     var body: some View {
         HStack(spacing: 10) {
             ForEach(AppIconStyle.allCases) { style in
@@ -55,12 +64,17 @@ struct AppIconPicker: View {
                     VStack(spacing: 4) {
                         Image(nsImage: style.image ?? NSImage())
                             .resizable()
-                            .frame(width: 48, height: 48)
-                            .padding(3)
+                            .frame(width: Self.drawn, height: Self.drawn)
+                            .frame(width: Self.size, height: Self.size)
+                            // The artwork's shadow is cut away: under a ring it
+                            // only muddies the gap. The hairline keeps the light
+                            // frame from dissolving into a white card.
+                            .clipShape(RoundedRectangle(cornerRadius: Self.corner, style: .circular))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 13, style: .continuous)
-                                    .strokeBorder(selected ? Color.accentColor : .clear, lineWidth: 2.5)
+                                RoundedRectangle(cornerRadius: Self.corner, style: .circular)
+                                    .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
                             )
+                            .selectionRing(selected, cornerRadius: Self.corner, style: .circular)
                         Text(language.t(style == .dark ? "settings.dark" : "settings.light"))
                             .font(.system(size: 11, weight: selected ? .semibold : .regular))
                             .foregroundStyle(selected ? .primary : .secondary)

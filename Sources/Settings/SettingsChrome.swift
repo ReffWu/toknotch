@@ -23,6 +23,29 @@ enum SettingsMetrics {
     static let dividerInset: CGFloat = rowPaddingH + iconSize + 11
 }
 
+extension View {
+    /// The accent ring around a chosen picture, the way System Settings rings
+    /// Light and Dark.
+    ///
+    /// Concentric with the picture: the ring's inner corner is the picture's
+    /// own corner plus the gap, so the space between them is the same along
+    /// the sides and round the corners. A ring with a corner radius of its own
+    /// runs tighter at the corners than the picture inside it, which is what
+    /// made every rounded edge look slightly different.
+    ///
+    /// Outside the picture, so choosing does not appear to shrink it, and the
+    /// room is kept while unselected, so choosing does not move anything.
+    func selectionRing(_ isOn: Bool, cornerRadius: CGFloat,
+                       style: RoundedCornerStyle = .continuous) -> some View {
+        let gap: CGFloat = 2.5, width: CGFloat = 2.5
+        return padding(gap + width)
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius + gap + width, style: style)
+                    .strokeBorder(isOn ? Color.accentColor : .clear, lineWidth: width)
+            )
+    }
+}
+
 /// A titled group of rows on one card.
 struct SettingsGroup<Content: View>: View {
     let title: String
@@ -235,15 +258,7 @@ struct SettingsPictureRow<T: Hashable & Identifiable, Preview: View>: View {
                                     RoundedRectangle(cornerRadius: 5, style: .continuous)
                                         .strokeBorder(Color.primary.opacity(0.12), lineWidth: 1)
                                 )
-                                // The accent ring sits outside the artwork, as
-                                // the system's does, so selecting something does
-                                // not appear to shrink it.
-                                .padding(2)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .strokeBorder(selection == option ? Color.accentColor : .clear,
-                                                      lineWidth: 2.5)
-                                )
+                                .selectionRing(selection == option, cornerRadius: 5)
                             Text(caption(option))
                                 .font(.system(size: 10.5))
                                 .foregroundStyle(selection == option ? .primary : .secondary)
