@@ -67,28 +67,30 @@ struct NotchEdgePreview: View {
 /// How much of itself the notch shows at rest.
 struct NotchVisibilityPreview: View {
     let visibility: NotchVisibility
+    /// Drawn on the edge the notch is actually on, so the two pictures above
+    /// and below each other describe the same notch.
+    let edge: NotchEdge
 
     var body: some View {
         ScreenPreview {
             GeometryReader { proxy in
-                let full = proxy.size.height * 0.52
-                switch visibility {
-                case .alwaysShow:
-                    bar(height: full, thick: Self.openThick, in: proxy.size)
-                case .onHover:
-                    // Folding away shrinks the notch's *depth*, not its
-                    // length — the collapsed pill stands nearly as tall as the
-                    // open shape, just a sliver of how far it reaches off the
-                    // edge. A shorter bar drew the wrong axis shrinking.
-                    bar(height: full, thick: Self.restingThick, in: proxy.size)
-                }
+                // Folding away shrinks the notch's *depth*, not its length —
+                // the collapsed pill stands nearly as long as the open shape,
+                // just a sliver of how far it reaches off the edge.
+                let thick = visibility == .alwaysShow ? Self.openThick : Self.restingThick
+                let long = min(proxy.size.height, proxy.size.width) * 0.52
+                let size = edge.isVertical
+                    ? CGSize(width: thick, height: long)
+                    : CGSize(width: long, height: thick)
+                SideNotchShape(edge: edge, curlRadius: min(3, thick / 2),
+                               cornerRadius: min(2.5, thick / 2))
+                    .fill(.black)
+                    .frame(width: size.width, height: size.height)
+                    .position(centre(in: proxy.size, size: size))
             }
         }
     }
 
-    /// This preview is always the right edge, whatever "貼在哪条边" is set to
-    /// — it is showing how *much* shows, not where, so one fixed edge is the
-    /// right constant to hold.
     private static let openThick: CGFloat = 7
     /// The real pill is about a sixth of the open notch's depth
     /// (`NotchLayout.pillWidth` against `sideBodyDepth`); a sixth of 7pt reads
@@ -96,11 +98,12 @@ struct NotchVisibilityPreview: View {
     /// than drawn to the literal ratio.
     private static let restingThick: CGFloat = 3
 
-    private func bar(height: CGFloat, thick: CGFloat, in bounds: CGSize) -> some View {
-        SideNotchShape(edge: .right, curlRadius: min(3, thick / 2), cornerRadius: min(2.5, thick / 2))
-            .fill(.black)
-            .frame(width: thick, height: height)
-            .position(x: bounds.width - thick / 2, y: bounds.height / 2)
+    private func centre(in bounds: CGSize, size: CGSize) -> CGPoint {
+        switch edge {
+        case .right:  return CGPoint(x: bounds.width - size.width / 2, y: bounds.height / 2)
+        case .left:   return CGPoint(x: size.width / 2, y: bounds.height / 2)
+        case .top:    return CGPoint(x: bounds.width / 2, y: size.height / 2)
+        case .bottom: return CGPoint(x: bounds.width / 2, y: bounds.height - size.height / 2)
+        }
     }
-
 }

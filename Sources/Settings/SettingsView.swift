@@ -116,7 +116,7 @@ struct SettingsView: View {
     // the vendor rows, which carry a plan menu, a renewal day, a multiple and
     // a switch on one line.
     static let sidebarWidth: CGFloat = 180
-    static let width: CGFloat = 740
+    static let width: CGFloat = 800
     static let height: CGFloat = 620
 }
 
@@ -344,7 +344,9 @@ private struct VendorRow: View {
                         .monospacedDigit()
                     Spacer(minLength: 6)
                 } else {
-                    Spacer(minLength: 6)
+                    // Wide enough for a plan and its price written the local
+                    // way — "ChatGPT Plus · US$20" in Chinese — and fixed, so
+                    // every row's menu starts and ends in the same place.
                     Picker("", selection: selection) {
                         ForEach(PlanCatalog.menu(for: vendor)) { Text(caption(for: $0)).tag($0) }
                     }
@@ -364,6 +366,7 @@ private struct VendorRow: View {
                     .frame(width: Self.dayWidth)
 
                     verdict.frame(width: Self.verdictWidth, alignment: .trailing)
+                    Spacer(minLength: 6)
                 }
 
                 Toggle("", isOn: Binding(
@@ -412,10 +415,7 @@ private struct VendorRow: View {
     }
 
     private static let nameWidth: CGFloat = 104
-    /// Wide enough for the longest plan name and its price together —
-    /// "ChatGPT Plus · $20" truncated to "ChatGPT Plus ·…", which reads as
-    /// though something is missing.
-    private static let menuWidth: CGFloat = 150
+    private static let menuWidth: CGFloat = 196
     private static let dayWidth: CGFloat = 68
     private static let verdictWidth: CGFloat = 44
 
@@ -487,7 +487,7 @@ struct PreferencesPage: View {
                         selection: $preferences.notchVisibility,
                         options: NotchVisibility.allCases,
                         caption: { $0.title(language) },
-                        preview: { NotchVisibilityPreview(visibility: $0) }
+                        preview: { NotchVisibilityPreview(visibility: $0, edge: preferences.notchEdge) }
                     )
                     SettingsDivider(inset: 0)
                     SettingsPictureRow(

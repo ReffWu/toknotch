@@ -17,9 +17,9 @@
 "notchEdge.right.title" = "屏幕右侧";
 "notchEdge.top.explanation" = "吸附于 MacBook 顶部原生刘海或屏幕正上方，与系统刘海浑然一体。";
 "notchEdge.top.title" = "顶部刘海";
-"notchVisibility.alwaysShow.explanation" = "刘海常驻展开，所有指标环始终在屏幕顶部可见。";
+"notchVisibility.alwaysShow.explanation" = "刘海一直展开，所有数值始终可见。";
 "notchVisibility.alwaysShow.title" = "始终展开";
-"notchVisibility.onHover.explanation" = "屏幕顶部纯黑精致小胶囊，鼠标悬停时平滑物理展开。";
+"notchVisibility.onHover.explanation" = "平时只是屏幕边缘的一枚小胶囊，鼠标靠近时展开。";
 "notchVisibility.onHover.title" = "悬停展开";
 "payback.hero" = "%1$@ · 本期 %2$@ / 订阅 %3$@";
 "payback.onTheWay" = "回本进行中";

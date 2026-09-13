@@ -18,6 +18,8 @@ What's New sheet after an update.
 - **Menu bar instead of Dock.** TokNotch now always lives in the menu bar and
   never takes a Dock slot. Its menu shows this period's payback and today's
   tokens at a glance.
+- **A menu bar icon drawn for the menu bar.** A MacBook screen with three rings
+  in its notch, with a separate pixel-aligned drawing for 1x displays.
 - **A better first edge.** On a Mac with a notch, a new install starts on the
   top edge; everywhere else, on the right.
 - **Straight to Payback on first launch.** A fresh install opens settings on the

@@ -29,6 +29,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         item.button?.image = Self.icon()
         item.button?.toolTip = "TokNotch"
+        item.button?.setAccessibilityLabel("TokNotch")
 
         let menu = NSMenu()
         menu.delegate = self
@@ -81,8 +82,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     /// none of it: it would fight every system item beside it and ignore the
     /// user's appearance entirely.
     ///
-    /// Vector, so it is drawn at whatever the bar asks for rather than scaled
-    /// from a fixed bitmap.
+    /// A MacBook screen with three rings in its notch, drawn separately for
+    /// 1x and 2x by `Scripts/make-menu-bar-icon.py`: at 18 pixels a ring has
+    /// no hole, so the 1x has square cut-outs on whole pixels instead.
     static func icon() -> NSImage? {
         guard let image = NSImage(named: "MenuBarIcon") else { return nil }
         // Menu bar items are laid out on an 18pt square; taller and macOS
