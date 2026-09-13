@@ -12,6 +12,9 @@
 "menu.open" = "TokNotch を開く…";
 "menu.payback" = "今期 %@ 回収";
 "menu.quit" = "TokNotch を終了";
+"moreApps.get" = "入手";
+"moreApps.open" = "開く";
+"moreApps.title" = "Reff Wu のほかの App";
 "notchEdge.bottom.explanation" = "Dock の上に横長のバーとして置き、リングを横並びに表示します。";
 "notchEdge.bottom.title" = "下";
 "notchEdge.left.explanation" = "画面の左端に沿って配置します。その側の Dock は避けます。";

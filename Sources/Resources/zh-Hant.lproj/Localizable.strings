@@ -12,6 +12,9 @@
 "menu.open" = "打開 TokNotch…";
 "menu.payback" = "本期回本 %@";
 "menu.quit" = "結束 TokNotch";
+"moreApps.get" = "取得";
+"moreApps.open" = "打開";
+"moreApps.title" = "更多 Reff Wu 的 App";
 "notchEdge.bottom.explanation" = "以橫條停在 Dock 上方，各環並排顯示。";
 "notchEdge.bottom.title" = "螢幕底部";
 "notchEdge.left.explanation" = "沿螢幕左側邊緣垂直排列，避開該側的 Dock。";

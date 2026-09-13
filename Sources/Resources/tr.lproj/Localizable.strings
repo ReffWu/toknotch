@@ -12,6 +12,9 @@
 "menu.open" = "TokNotch’u Aç…";
 "menu.payback" = "Bu dönem %@ amorti";
 "menu.quit" = "TokNotch’tan Çık";
+"moreApps.get" = "Al";
+"moreApps.open" = "Aç";
+"moreApps.title" = "Reff Wu’dan daha fazlası";
 "notchEdge.bottom.explanation" = "Dock’un üstünde duran geniş bir çubuk, değerler yan yana.";
 "notchEdge.bottom.title" = "Alt";
 "notchEdge.left.explanation" = "Sol kenar boyunca, o taraftaki Dock’un dışında.";

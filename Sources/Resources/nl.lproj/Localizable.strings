@@ -12,6 +12,9 @@
 "menu.open" = "Open TokNotch…";
 "menu.payback" = "%@ terugverdiend deze periode";
 "menu.quit" = "Stop TokNotch";
+"moreApps.get" = "Download";
+"moreApps.open" = "Open";
+"moreApps.title" = "Meer van Reff Wu";
 "notchEdge.bottom.explanation" = "Een brede balk boven op het Dock, met de waarden naast elkaar.";
 "notchEdge.bottom.title" = "Onder";
 "notchEdge.left.explanation" = "Langs de linkerrand, vrij van een Dock aan die kant.";

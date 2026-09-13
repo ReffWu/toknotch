@@ -12,6 +12,9 @@
 "menu.open" = "Открыть TokNotch…";
 "menu.payback" = "Окупилось %@ за период";
 "menu.quit" = "Завершить TokNotch";
+"moreApps.get" = "Загрузить";
+"moreApps.open" = "Открыть";
+"moreApps.title" = "Другие приложения Reff Wu";
 "notchEdge.bottom.explanation" = "Широкая полоса над Dock, кольца в ряд.";
 "notchEdge.bottom.title" = "Снизу";
 "notchEdge.left.explanation" = "Вдоль левого края экрана, в стороне от Dock с этой стороны.";

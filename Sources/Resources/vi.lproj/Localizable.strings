@@ -12,6 +12,9 @@
 "menu.open" = "Mở TokNotch…";
 "menu.payback" = "Kỳ này hoàn vốn %@";
 "menu.quit" = "Thoát TokNotch";
+"moreApps.get" = "Tải về";
+"moreApps.open" = "Mở";
+"moreApps.title" = "Thêm ứng dụng của Reff Wu";
 "notchEdge.bottom.explanation" = "Một thanh rộng nằm trên Dock, các chỉ số xếp cạnh nhau.";
 "notchEdge.bottom.title" = "Dưới";
 "notchEdge.left.explanation" = "Dọc theo mép trái, tránh Dock ở phía đó.";

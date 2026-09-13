@@ -12,6 +12,9 @@
 "menu.open" = "TokNotch 열기…";
 "menu.payback" = "이번 기간 %@ 회수";
 "menu.quit" = "TokNotch 종료";
+"moreApps.get" = "받기";
+"moreApps.open" = "열기";
+"moreApps.title" = "Reff Wu의 다른 앱";
 "notchEdge.bottom.explanation" = "Dock 위에 가로 막대로 놓고 링을 나란히 표시합니다.";
 "notchEdge.bottom.title" = "아래";
 "notchEdge.left.explanation" = "화면 왼쪽 가장자리를 따라 배치하며, 그쪽의 Dock은 피합니다.";

@@ -12,6 +12,9 @@
 "menu.open" = "TokNotch öffnen …";
 "menu.payback" = "%@ amortisiert in diesem Zeitraum";
 "menu.quit" = "TokNotch beenden";
+"moreApps.get" = "Laden";
+"moreApps.open" = "Öffnen";
+"moreApps.title" = "Mehr von Reff Wu";
 "notchEdge.bottom.explanation" = "Ein breiter Balken über dem Dock, die Ringe nebeneinander.";
 "notchEdge.bottom.title" = "Unten";
 "notchEdge.left.explanation" = "Am linken Bildschirmrand entlang, am dortigen Dock vorbei.";

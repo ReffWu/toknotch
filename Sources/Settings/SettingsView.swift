@@ -520,12 +520,15 @@ struct PreferencesPage: View {
                         AppIconPicker(language: language)
                     }
                 }
+
+                MoreAppsGroup(language: language)
             }
 
             footer
                 .padding(.top, 8)
                 .padding(.bottom, 16)
         }
+        .onAppear { MoreApps.shared.refreshIfStale() }
     }
 
     /// Version, updates and source in one quiet line: none of it is a setting,

@@ -12,6 +12,9 @@
 "menu.open" = "打开 TokNotch…";
 "menu.payback" = "本期回本 %@";
 "menu.quit" = "退出 TokNotch";
+"moreApps.get" = "获取";
+"moreApps.open" = "打开";
+"moreApps.title" = "更多 Reff Wu 的 App";
 "notchEdge.bottom.explanation" = "吸附于屏幕底部边缘水平排列。";
 "notchEdge.bottom.title" = "屏幕底部";
 "notchEdge.left.explanation" = "吸附于屏幕左侧边缘垂直排列。";

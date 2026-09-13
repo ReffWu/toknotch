@@ -12,6 +12,9 @@
 "menu.open" = "Open TokNotch…";
 "menu.payback" = "%@ paid back this period";
 "menu.quit" = "Quit TokNotch";
+"moreApps.get" = "Get";
+"moreApps.open" = "Open";
+"moreApps.title" = "More from Reff Wu";
 "notchEdge.bottom.explanation" = "A wide bar resting on top of the Dock, readings side by side.";
 "notchEdge.bottom.title" = "Bottom";
 "notchEdge.left.explanation" = "Down the left-hand edge, clear of a Dock on that side.";
