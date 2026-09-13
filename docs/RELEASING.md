@@ -125,3 +125,24 @@ Sparkle gives up quietly. Check, in this order:
    `generate_keys` prints. A mismatch rejects every update.
 4. The installed copy's log:
    `/usr/bin/log show --last 1h --predicate 'subsystem == "org.sparkle-project.Sparkle"' --info`
+
+## Moving to a new tokscale
+
+tokscale is not stored in git. `Vendor/tokscale/tokscale.lock` pins the version
+and the npm integrity hash of both platform packages, and every build fetches
+exactly those bytes (`make vendor`, which `make gen` runs first) and refuses
+anything that does not match.
+
+A weekly workflow (`.github/workflows/tokscale.yml`) opens an issue when tokscale
+publishes a release, after running the whole test suite against it. The
+`TokscaleContractTests` feed it Claude Code and Codex session logs with known
+token counts, so a release that changes the JSON or counts a field differently
+fails there first. To move the pin:
+
+```sh
+make tokscale VERSION=4.16.0
+make test
+git add Vendor/tokscale/tokscale.lock Vendor/tokscale/VERSION
+```
+
+then release as usual.

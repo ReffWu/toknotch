@@ -7,6 +7,28 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.3]
+
+Every tool, kept current.
+
+### Fixed
+
+- **Antigravity usage stopped updating.** tokscale only reports Antigravity
+  after `tokscale antigravity sync` copies it out of the running language
+  servers, and TokNotch never ran it. It now syncs at most every five minutes,
+  and on every manual refresh, on Macs with Antigravity installed.
+- **A hung tokscale froze the readings.** Every tokscale call now has a
+  deadline.
+
+### Changed
+
+- **tokscale 4.16.0,** with its Antigravity and pricing fixes.
+- **tokscale is pinned and verified instead of stored in git.**
+  `Vendor/tokscale/tokscale.lock` holds the version and npm integrity hashes;
+  builds fetch and check exactly those bytes. Contract tests run the bundled
+  binary on session logs with known token counts, and a weekly workflow opens
+  an issue when a new tokscale passes (or fails) the suite.
+
 ## [1.2.2]
 
 Meet the other apps.
@@ -130,6 +152,7 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.2.3]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.3
 [1.2.2]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.2
 [1.2.1]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.0

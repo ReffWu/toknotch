@@ -7,3 +7,7 @@ DerivedData/
 xcuserdata/
 *.xcuserstate
 .swiftpm/
+
+# Fetched and verified by Scripts/fetch-tokscale.sh from tokscale.lock
+Vendor/tokscale/tokscale
+Vendor/tokscale/libFoundationModels.dylib

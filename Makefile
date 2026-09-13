@@ -8,15 +8,20 @@ PROJECT := TokNotch.xcodeproj
 SCHEME  := TokNotch
 DEST    := platform=macOS,arch=arm64
 
-.PHONY: gen build test run clean tokscale
+.PHONY: gen vendor build test run clean tokscale
 
-gen:
+# The pinned, verified tokscale is fetched before anything builds; it is not
+# kept in git. A no-op when the right version is already in place.
+gen: vendor
 	xcodegen generate
 
-# Refresh the tokscale build that ships inside the app. Pass a version to pin
-# one: `make tokscale VERSION=4.15.1`.
+vendor:
+	./Scripts/fetch-tokscale.sh
+
+# Move the pin to a new tokscale: `make tokscale VERSION=4.16.0`, or
+# `VERSION=latest`. Run the tests after, then commit tokscale.lock.
 tokscale:
-	./Scripts/fetch-tokscale.sh $(VERSION)
+	./Scripts/fetch-tokscale.sh $(or $(VERSION),latest)
 
 build: gen
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \

@@ -82,6 +82,7 @@
 "status.notInstalled" = "tokscale が見つかりません。Homebrew でインストールしてください：brew install tokscale";
 "status.readFailed" = "読み取りに失敗しました — %@";
 "status.reading" = "tokscale のデータを読み込んでいます…";
+"status.timedOut" = "tokscale の応答がタイムアウトしました。まもなく再試行します。";
 "status.undecodable" = "tokscale の出力を解析できません。アップデートをお試しください：brew upgrade tokscale";
 "vendor.allTime" = "累計";
 "vendor.name.alibaba" = "Qwen";
@@ -130,5 +131,9 @@
 "whatsNew.v122.headline" = "ほかの App もどうぞ";
 "whatsNew.v122.more.detail" = "設定の下に Reff Wu のほかの App が並び、そのまま入手したり開いたりできます。";
 "whatsNew.v122.more.title" = "Reff Wu のほかの App";
+"whatsNew.v123.antigravity.detail" = "TokNotch が数分ごとに Antigravity を同期するようになり、Gemini の使用量が更新されないままになることはなくなりました。";
+"whatsNew.v123.antigravity.title" = "Antigravity の使用量が止まらない";
+"whatsNew.v123.headline" = "どのツールの使用量も最新に";
+"whatsNew.v123.tokscale.title" = "tokscale 4.16 を内蔵";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

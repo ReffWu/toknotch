@@ -82,6 +82,7 @@
 "status.notInstalled" = "未找到 tokscale。用 Homebrew 安装即可读取用量：brew install tokscale";
 "status.readFailed" = "读取失败：%@";
 "status.reading" = "正在读取 tokscale 数据…";
+"status.timedOut" = "tokscale 响应超时，稍后会自动重试。";
 "status.undecodable" = "无法解析 tokscale 的输出，可能是版本不兼容。试试升级：brew upgrade tokscale";
 "vendor.allTime" = "累计";
 "vendor.name.alibaba" = "通义千问";
@@ -130,5 +131,9 @@
 "whatsNew.v122.headline" = "认识一下其他 App";
 "whatsNew.v122.more.detail" = "设置页底部现在会列出 Reff Wu 做的其他 App，可以直接获取或打开。";
 "whatsNew.v122.more.title" = "更多 Reff Wu 的 App";
+"whatsNew.v123.antigravity.detail" = "TokNotch 现在每隔几分钟同步一次 Antigravity，里面的 Gemini 用量不会再停在旧数字上。";
+"whatsNew.v123.antigravity.title" = "Antigravity 的用量不再停更";
+"whatsNew.v123.headline" = "每个工具的用量都保持最新";
+"whatsNew.v123.tokscale.title" = "内置 tokscale 升级到 4.16";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

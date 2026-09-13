@@ -170,7 +170,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .sink { [weak controller] in controller?.model.isRefreshing = $0 }
             .store(in: &cancellables)
 
-        controller.onRefresh = { [weak store] in store?.refreshNow() }
+        controller.onRefresh = { [weak store] in store?.refreshNow(byHand: true) }
         store.start()
 
         controller.show()

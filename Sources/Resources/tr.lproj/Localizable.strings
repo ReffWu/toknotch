@@ -82,6 +82,7 @@
 "status.notInstalled" = "tokscale kurulu değil. Şununla kurun: brew install tokscale";
 "status.readFailed" = "Kullanım okunamadı — %@";
 "status.reading" = "tokscale verileri okunuyor…";
+"status.timedOut" = "tokscale yanıt vermekte çok gecikti. Birazdan yeniden denenecek.";
 "status.undecodable" = "tokscale çıktısı çözümlenemedi — şunu deneyin: brew upgrade tokscale";
 "vendor.allTime" = "Tüm zamanlar";
 "vendor.name.alibaba" = "Qwen";
@@ -130,5 +131,9 @@
 "whatsNew.v122.headline" = "Diğer uygulamaları tanıyın";
 "whatsNew.v122.more.detail" = "Ayarlar’ın altında artık Reff Wu’nun diğer uygulamaları var; hemen alabilir ya da açabilirsiniz.";
 "whatsNew.v122.more.title" = "Reff Wu’dan daha fazlası";
+"whatsNew.v123.antigravity.detail" = "TokNotch artık Antigravity’yi birkaç dakikada bir eşitliyor; Gemini kullanımı artık takılı kalmıyor.";
+"whatsNew.v123.antigravity.title" = "Antigravity kullanımı geride kalmıyor";
+"whatsNew.v123.headline" = "Her araç güncel";
+"whatsNew.v123.tokscale.title" = "tokscale 4.16 ile";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

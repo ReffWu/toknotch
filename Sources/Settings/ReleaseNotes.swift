@@ -33,6 +33,15 @@ enum ReleaseNotes {
     static func all(in language: AppLanguage) -> [ReleaseNote] {
         [
             ReleaseNote(
+                version: "1.2.3",
+                headline: language.t("whatsNew.v123.headline"),
+                changes: [
+                    ReleaseNote.Change(title: language.t("whatsNew.v123.antigravity.title"),
+                                       detail: language.t("whatsNew.v123.antigravity.detail")),
+                    ReleaseNote.Change(title: language.t("whatsNew.v123.tokscale.title"))
+                ]
+            ),
+            ReleaseNote(
                 version: "1.2.2",
                 headline: language.t("whatsNew.v122.headline"),
                 changes: [

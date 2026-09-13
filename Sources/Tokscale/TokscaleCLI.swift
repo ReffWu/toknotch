@@ -77,6 +77,7 @@ enum TokscaleCLI {
         case notInstalled
         case exited(code: Int32)
         case undecodable(String)
+        case timedOut
 
         var errorDescription: String? {
             switch self {
@@ -84,6 +85,7 @@ enum TokscaleCLI {
             case .exited(127):       return "tokscale could not start — node was not found"
             case .exited(let code):  return "tokscale exited \(code)"
             case .undecodable(let w): return "unreadable tokscale output — \(w)"
+            case .timedOut:          return "tokscale did not finish in time"
             }
         }
     }
@@ -92,15 +94,33 @@ enum TokscaleCLI {
     /// window tokscale keeps day-level history over (~96 days). Everything the
     /// today and month rings need — including their baselines — comes from this
     /// one call.
-    static func graph() async throws -> GraphReport {
-        try await run(["graph", "--no-spinner"], as: GraphReport.self)
+    ///
+    /// `home` points tokscale at another home directory, which is how the
+    /// contract tests feed it session logs with known token counts.
+    static func graph(home: String? = nil) async throws -> GraphReport {
+        try await run(["graph", "--no-spinner"] + homeArguments(home), as: GraphReport.self)
     }
 
     /// Every session tokscale can see, grouped by model. The lifetime ring's
     /// source, and the only one that reaches past the day-level window.
-    static func lifetime() async throws -> UsageReport {
-        try await run(["--json", "--no-spinner", "--group-by", "client,provider,model"],
+    static func lifetime(home: String? = nil) async throws -> UsageReport {
+        try await run(["--json", "--no-spinner", "--group-by", "client,provider,model"]
+                          + homeArguments(home),
                       as: UsageReport.self)
+    }
+
+    /// Antigravity keeps no session log tokscale can scan. Its usage lives in
+    /// the language servers the running app starts, and tokscale only reports
+    /// it after `antigravity sync` has copied it into tokscale's own cache —
+    /// so without this, Antigravity's Gemini usage simply stopped at whenever
+    /// that command was last run by hand. Local only: it talks to the language
+    /// server on this Mac, not to any account.
+    static func syncAntigravity() async throws {
+        _ = try await launch(["antigravity", "sync"], timeout: 90)
+    }
+
+    private static func homeArguments(_ home: String?) -> [String] {
+        home.map { ["--home", $0] } ?? []
     }
 
     private static func run<T: Decodable>(_ arguments: [String], as: T.Type) async throws -> T {
@@ -112,7 +132,13 @@ enum TokscaleCLI {
         }
     }
 
-    private static func launch(_ arguments: [String]) async throws -> Data {
+    /// Runs tokscale and returns what it printed.
+    ///
+    /// With a deadline: a tokscale that hangs (a stuck language server, a
+    /// wedged file system) would otherwise hold the refresh forever, and since
+    /// only one refresh runs at a time the numbers would silently stop moving.
+    private static func launch(_ arguments: [String],
+                               timeout: TimeInterval = 120) async throws -> Data {
         try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 let process = Process()
@@ -135,11 +161,25 @@ enum TokscaleCLI {
                     continuation.resume(throwing: Failure.notInstalled)
                     return
                 }
+                var timedOut = false
+                let deadline = DispatchWorkItem {
+                    if process.isRunning {
+                        timedOut = true
+                        process.terminate()
+                    }
+                }
+                DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + timeout,
+                                                               execute: deadline)
                 // Read before waiting: a report large enough to fill the pipe
                 // buffer deadlocks a process that is waited on first.
                 let data = output.fileHandleForReading.readDataToEndOfFile()
                 process.waitUntilExit()
+                deadline.cancel()
 
+                guard !timedOut else {
+                    continuation.resume(throwing: Failure.timedOut)
+                    return
+                }
                 guard process.terminationStatus == 0 else {
                     continuation.resume(throwing: Failure.exited(code: process.terminationStatus))
                     return

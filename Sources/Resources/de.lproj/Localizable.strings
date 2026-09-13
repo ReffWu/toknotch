@@ -82,6 +82,7 @@
 "status.notInstalled" = "tokscale ist nicht installiert. Installiere es mit: brew install tokscale";
 "status.readFailed" = "Verbrauch konnte nicht gelesen werden — %@";
 "status.reading" = "tokscale-Daten werden gelesen …";
+"status.timedOut" = "tokscale hat zu lange gebraucht. Gleich wird es erneut versucht.";
 "status.undecodable" = "Die Ausgabe von tokscale ließ sich nicht lesen — versuche: brew upgrade tokscale";
 "vendor.allTime" = "Gesamt";
 "vendor.name.alibaba" = "Qwen";
@@ -130,5 +131,9 @@
 "whatsNew.v122.headline" = "Lerne die anderen Apps kennen";
 "whatsNew.v122.more.detail" = "Unten in den Einstellungen stehen jetzt die anderen Apps von Reff Wu, jeweils zum Laden oder Öffnen.";
 "whatsNew.v122.more.title" = "Mehr von Reff Wu";
+"whatsNew.v123.antigravity.detail" = "TokNotch synchronisiert Antigravity jetzt alle paar Minuten, damit die Gemini-Nutzung nicht mehr stehen bleibt.";
+"whatsNew.v123.antigravity.title" = "Antigravity bleibt aktuell";
+"whatsNew.v123.headline" = "Jedes Werkzeug auf dem neuesten Stand";
+"whatsNew.v123.tokscale.title" = "Mit tokscale 4.16";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

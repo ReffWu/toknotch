@@ -82,6 +82,7 @@
 "status.notInstalled" = "Chưa cài tokscale. Cài bằng lệnh: brew install tokscale";
 "status.readFailed" = "Không đọc được mức sử dụng — %@";
 "status.reading" = "Đang đọc dữ liệu tokscale…";
+"status.timedOut" = "tokscale phản hồi quá lâu. Sẽ thử lại ngay sau đây.";
 "status.undecodable" = "Không phân tích được đầu ra của tokscale — hãy thử: brew upgrade tokscale";
 "vendor.allTime" = "Toàn thời gian";
 "vendor.name.alibaba" = "Qwen";
@@ -130,5 +131,9 @@
 "whatsNew.v122.headline" = "Làm quen với các ứng dụng khác";
 "whatsNew.v122.more.detail" = "Cuối phần Cài đặt giờ hiển thị các ứng dụng khác của Reff Wu, có thể tải về hoặc mở ngay.";
 "whatsNew.v122.more.title" = "Thêm ứng dụng của Reff Wu";
+"whatsNew.v123.antigravity.detail" = "TokNotch giờ đồng bộ Antigravity vài phút một lần, nên mức dùng Gemini không còn đứng yên.";
+"whatsNew.v123.antigravity.title" = "Mức dùng Antigravity luôn mới";
+"whatsNew.v123.headline" = "Mọi công cụ luôn cập nhật";
+"whatsNew.v123.tokscale.title" = "Dựa trên tokscale 4.16";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

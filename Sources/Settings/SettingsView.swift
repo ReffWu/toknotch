@@ -160,7 +160,7 @@ struct PaybackPage: View {
                 // to say for itself.
                 if let problem = store.problem {
                     SettingsRow("exclamationmark.triangle.fill", tint: .orange, title: problem) {
-                        Button(language.t("settings.refresh")) { store.refreshNow() }
+                        Button(language.t("settings.refresh")) { store.refreshNow(byHand: true) }
                             .controlSize(.small)
                             .disabled(store.isRefreshing)
                     }

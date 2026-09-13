@@ -56,6 +56,11 @@ final class UsageStore: ObservableObject {
     private var timer: Timer?
     private var task: Task<Void, Never>?
     private var wakeObserver: NSObjectProtocol?
+    /// When Antigravity's usage was last copied into tokscale's cache.
+    private var lastAntigravitySync: Date?
+    /// A sync takes several seconds of CPU, so it runs at most this often,
+    /// plus whenever somebody asks for a refresh by hand.
+    private static let antigravitySyncInterval: TimeInterval = 5 * 60
 
     init(interval: TimeInterval = 60) {
         self.interval = interval
@@ -100,13 +105,29 @@ final class UsageStore: ObservableObject {
         render()
     }
 
-    func refreshNow() {
+    func refreshNow(byHand: Bool = false) {
         guard task == nil else { return }
         isRefreshing = true
         task = Task { [weak self] in
+            await self?.syncAntigravityIfDue(force: byHand)
             await self?.refresh()
             self?.task = nil
             self?.isRefreshing = false
+        }
+    }
+
+    /// Only on a Mac that has Antigravity. A failed sync is logged and
+    /// otherwise ignored: the other tools' numbers must not wait on it.
+    private func syncAntigravityIfDue(force: Bool) async {
+        guard NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.google.antigravity") != nil
+        else { return }
+        if !force, let last = lastAntigravitySync,
+           Date().timeIntervalSince(last) < Self.antigravitySyncInterval { return }
+        lastAntigravitySync = Date()
+        do {
+            try await TokscaleCLI.syncAntigravity()
+        } catch {
+            Log.usage.error("antigravity sync failed: \(String(describing: error), privacy: .public)")
         }
     }
 
@@ -207,6 +228,8 @@ final class UsageStore: ObservableObject {
             return language.t("status.exited", code)
         case .undecodable:
             return language.t("status.undecodable")
+        case .timedOut:
+            return language.t("status.timedOut")
         }
     }
 }
