@@ -368,16 +368,6 @@ final class AlwaysShowTests: XCTestCase {
         XCTAssertFalse(controller.model.staysOpen)
     }
 
-    /// And so does hiding — a pinned notch that is ordered out still counts as
-    /// held open, and would refuse to fold if it came back.
-    func testHidingClearsBothHolds() {
-        let controller = NotchWindowController()
-        controller.apply(.alwaysShow)
-        controller.apply(.hidden)
-        XCTAssertFalse(controller.model.staysOpen)
-        XCTAssertFalse(controller.model.isExpanded)
-    }
-
     /// Coming back from hover to always-on, with a stale pin in between.
     func testAlwaysShowOutlastsAPinAndAnUnpin() {
         let controller = NotchWindowController()

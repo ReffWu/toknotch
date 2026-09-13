@@ -108,12 +108,13 @@ logged.
 
 **Any of the four edges.** Left or right as a slim column; top or bottom as a
 wide bar. On a MacBook with a notch, the top edge runs up to meet it so the two
-read as one shape.
+read as one shape — which is why that is where it starts on a Mac that has one.
 
 **Out of the way until you want it.** At rest it's a small pill at the edge —
-reach for it and it opens. Or keep it open always, or hide it completely.
+reach for it and it opens. Or keep it open always.
 
-**Or barely there at all.** A Dock icon, a menu bar item, or neither.
+**Never in your Dock.** Just a small icon in the menu bar, with this period's
+payback and today's tokens one click away.
 
 It knows about your Dock and your menu bar, and moves when they do.
 

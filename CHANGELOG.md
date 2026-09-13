@@ -7,6 +7,26 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [Unreleased]
+
+### Changed
+
+- **Settings is two pages.** Payback lists every vendor once, with its plan,
+  renewal day, payback multiple and ring switch on one line; Settings holds the
+  notch, language and icon, with the version and update check in a single line
+  at the bottom.
+- **Menu bar instead of Dock.** TokNotch now always lives in the menu bar and
+  never takes a Dock slot. Its menu shows this period's payback and today's
+  tokens at a glance.
+- **A better first edge.** On a Mac with a notch, a new install starts on the
+  top edge; everywhere else, on the right.
+- **Straight to Payback on first launch.** A fresh install opens settings on the
+  Payback page; What's New only appears after later updates.
+
+### Removed
+
+- The "hidden" notch mode and the Dock / menu bar / neither choice.
+
 ## [1.1.0]
 
 Keeps itself up to date, and speaks your language.

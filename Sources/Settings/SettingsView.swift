@@ -1,41 +1,37 @@
 import AppKit
 import SwiftUI
 
-/// The settings window, reached from the orb below the notch.
+/// The settings window, reached from the orb below the notch or the menu bar.
 ///
-/// Four pages behind a sidebar rather than one long scroll: the decisions here
-/// fall into genuinely different kinds — what the notch shows, what the plans
-/// cost, how it looks, and how the app behaves — and stacking them into a
-/// single form made every one of them look equally important and equally dull.
+/// Two pages, because there are two questions. Payback is the reason the app
+/// exists — what each plan costs and what it has returned — and it is where
+/// the window opens. Everything else is how the notch looks and behaves, and it
+/// is short enough to sit on one page.
 struct SettingsView: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
     @ObservedObject var updater: Updater
 
-    @State private var page: Page = .rings
+    @State private var page: Page = .payback
     /// Which page to open on. Only set by the render tests, which have to be
     /// able to photograph each one.
     var startingPage: Page? = nil
 
     enum Page: String, CaseIterable, Identifiable {
-        case rings, plans, appearance, general
+        case payback, settings
         var id: String { rawValue }
 
         var symbol: String {
             switch self {
-            case .rings:      return "circle.dashed"
-            case .plans:      return "creditcard.fill"
-            case .appearance: return "paintbrush.fill"
-            case .general:    return "gearshape.fill"
+            case .payback:  return "creditcard.fill"
+            case .settings: return "gearshape.fill"
             }
         }
 
         var tint: Color {
             switch self {
-            case .rings:      return .orange
-            case .plans:      return .green
-            case .appearance: return .pink
-            case .general:    return .gray
+            case .payback:  return .green
+            case .settings: return .gray
             }
         }
 
@@ -66,9 +62,11 @@ struct SettingsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()
         .onAppear {
+            // Anything stored by the four-page window, or nothing at all,
+            // opens on Payback.
             page = startingPage
                 ?? Page(rawValue: preferences.lastSettingsPage)
-                ?? .rings
+                ?? .payback
         }
         .onChange(of: page) { _, new in preferences.lastSettingsPage = new.rawValue }
     }
@@ -109,179 +107,82 @@ struct SettingsView: View {
     @ViewBuilder
     private var detail: some View {
         switch page {
-        case .rings:      RingsPage(preferences: preferences, store: store)
-        case .plans:      PlansPage(preferences: preferences, store: store)
-        case .appearance: AppearancePage(preferences: preferences)
-        case .general:    GeneralPage(preferences: preferences, store: store, updater: updater)
+        case .payback:  PaybackPage(preferences: preferences, store: store)
+        case .settings: PreferencesPage(preferences: preferences, updater: updater)
         }
     }
 
-    // Wide enough that the longest translated label — German's
-    // "Abos & Amortisation" — sits on one line; a language longer still
-    // wraps onto a second rather than being cut off.
-    static let sidebarWidth: CGFloat = 208
-    static let width: CGFloat = 720
-    static let height: CGFloat = 650
+    // Two short page names need far less than the four did; the room goes to
+    // the vendor rows, which carry a plan menu, a renewal day, a multiple and
+    // a switch on one line.
+    static let sidebarWidth: CGFloat = 180
+    static let width: CGFloat = 740
+    static let height: CGFloat = 620
 }
 
-// MARK: - What the notch shows
+// MARK: - Payback
 
-struct RingsPage: View {
+struct PaybackPage: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
 
     private var language: AppLanguage { preferences.appLanguage }
 
-    var body: some View {
-        SettingsPage {
-
-            SettingsGroup(
-                title: language.t("settings.alwaysShown"),
-                footnote: language.t("settings.theseThreeAreAlwaysOn")
-            ) {
-                ForEach(Array(RingKind.primaries.enumerated()), id: \.element.id) { index, kind in
-                    if index > 0 { SettingsDivider() }
-                    SettingsRow(
-                        title: primaryTitle(kind),
-                        subtitle: primaryNote(kind),
-                        leading: { RingGlyphView(glyph: glyph(for: kind), size: 17)
-                            .foregroundStyle(.primary) },
-                        trailing: { headline(for: kind) }
-                    )
-                }
-            }
-
-            SettingsGroup(
-                title: language.t("settings.byVendor"),
-                footnote: store.availableVendors.isEmpty ? nil
-                    : language.t("settings.oneRingEachShowingThat")
-            ) {
-                if store.availableVendors.isEmpty {
-                    SettingsRow("hourglass", tint: .gray,
-                                title: language.t("settings.scanningThisMacSUsage")) { EmptyView() }
-                } else {
-                    ForEach(Array(store.availableVendors.enumerated()), id: \.element.rawValue) { index, vendor in
-                        if index > 0 { SettingsDivider() }
-                        SettingsRow(
-                            title: vendor.title(language),
-                            subtitle: subtitle(for: vendor),
-                            leading: { RingGlyphView(glyph: .vendor(vendor), size: 17)
-                                .foregroundStyle(vendor.ringTint) },
-                            trailing: {
-                                Toggle("", isOn: Binding(
-                                    get: { preferences.showsRing(for: vendor) },
-                                    set: { preferences.setRing($0, for: vendor) }
-                                ))
-                                .toggleStyle(.switch)
-                                .controlSize(.small)
-                                .labelsHidden()
-                            }
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private func subtitle(for vendor: Vendor) -> String? {
-        guard let totals = store.lifetime(for: vendor) else { return nil }
-        return "\(UsageFormat.tokens(totals.tokens, language)) · \(UsageFormat.money(totals.cost, language))"
-    }
-
-    @ViewBuilder
-    private func headline(for kind: RingKind) -> some View {
-        if let ring = store.rings.first(where: { $0.kind == kind }), ring.hasReading {
-            Text(ring.headline)
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundStyle(.secondary)
-                .monospacedDigit()
-        }
-    }
-
-    private func glyph(for kind: RingKind) -> RingGlyph {
-        switch kind {
-        case .today:         return .today
-        case .month:         return .month
-        case .lifetime:      return .lifetime
-        case .vendor(let v): return .vendor(v)
-        }
-    }
-
-    private func primaryTitle(_ kind: RingKind) -> String {
-        switch kind {
-        case .today:    return language.t("settings.today")
-        case .month:    return language.t("settings.thisMonth")
-        case .lifetime: return language.t("settings.allTime")
-        case .vendor(let v): return v.title(language)
-        }
-    }
-
-    private func primaryNote(_ kind: RingKind) -> String {
-        switch kind {
-        case .today:    return language.t("settings.againstYourBestDayIn")
-        case .month:    return language.t("settings.againstTheSameDaysLast")
-        case .lifetime: return language.t("settings.towardTheNextMilestone")
-        case .vendor:   return language.t("settings.shareOfEverything")
-        }
-    }
-}
-
-// MARK: - Plans & payback
-
-struct PlansPage: View {
-    @ObservedObject var preferences: Preferences
-    @ObservedObject var store: UsageStore
-
-    private var language: AppLanguage { preferences.appLanguage }
-
-    /// Vendors you can actually hold a plan with, and that this Mac has used.
+    /// Vendors with a plan first, then everything else busiest first.
     ///
-    /// Deliberately not every vendor in the stack: DeepSeek, MiniMax, Qwen and
-    /// the rest are billed by the token here, so a row asking what their
-    /// subscription costs is a question with no answer — and nine such rows
-    /// bury the two that matter.
+    /// One list rather than a page of ring switches beside a page of plans:
+    /// both were lists of the same companies, and whether a vendor gets a ring
+    /// is a question asked about exactly the thing whose plan is on that row.
     private var vendors: [Vendor] {
-        store.availableVendors.filter { !PlanCatalog.plans(for: $0).isEmpty }
-    }
-
-    private var configured: [(Vendor, Subscription)] {
-        vendors.compactMap { vendor in store.plan(for: vendor).map { (vendor, $0) } }
-    }
-
-    private var totalMonthly: Double { configured.reduce(0) { $0 + $1.1.monthlyUSD } }
-    private var totalEarned: Double {
-        configured.reduce(0) { $0 + (store.payback(for: $1.0, plan: $1.1)?.earned ?? 0) }
+        let all = store.availableVendors
+        return all.filter { store.plan(for: $0) != nil } + all.filter { store.plan(for: $0) == nil }
     }
 
     var body: some View {
         SettingsPage {
 
-            if !configured.isEmpty {
-                SettingsGroup(title: language.t("settings.thisPeriod")) {
-                    PaybackSummary(paid: totalMonthly, earned: totalEarned, language: language)
+            SettingsGroup(title: language.t("settings.thisPeriod")) {
+                if let total = store.periodPayback() {
+                    PaybackSummary(paid: total.paid, earned: total.earned, language: language)
+                } else {
+                    // Not a zero: nothing has been paid for yet, so there is
+                    // nothing to have paid back.
+                    SettingsRow("creditcard", tint: .green,
+                                title: language.t("settings.pickAPlanToSeePayback")) { EmptyView() }
                 }
             }
 
-            SettingsGroup(
-                title: language.t("settings.yourPlans"),
-                footnote: language.t("settings.plansAreRecognisedForYou")
-            ) {
+            SettingsGroup(title: language.t("settings.vendors"),
+                          footnote: language.t("settings.privacy")) {
+                // Only when something is wrong. A source that works has nothing
+                // to say for itself.
+                if let problem = store.problem {
+                    SettingsRow("exclamationmark.triangle.fill", tint: .orange, title: problem) {
+                        Button(language.t("settings.refresh")) { store.refreshNow() }
+                            .controlSize(.small)
+                            .disabled(store.isRefreshing)
+                    }
+                    if !vendors.isEmpty { SettingsDivider(inset: 0) }
+                }
                 if vendors.isEmpty {
-                    SettingsRow("hourglass", tint: .gray,
-                                title: language.t("settings.scanningThisMacSUsage")) { EmptyView() }
+                    if store.problem == nil {
+                        SettingsRow("hourglass", tint: .gray,
+                                    title: language.t("settings.scanningThisMacSUsage")) { EmptyView() }
+                    }
                 } else {
                     ForEach(Array(vendors.enumerated()), id: \.element.rawValue) { index, vendor in
                         if index > 0 { SettingsDivider(inset: 0) }
-                        PlanRow(vendor: vendor, preferences: preferences,
-                                store: store, language: language)
+                        VendorRow(vendor: vendor, preferences: preferences,
+                                  store: store, language: language)
                     }
                 }
             }
+            .animation(.snappy, value: vendors)
         }
     }
 }
 
-/// The one line the plans page exists to produce.
+/// The one line the payback page exists to produce.
 private struct PaybackSummary: View {
     let paid: Double
     let earned: Double
@@ -337,13 +238,18 @@ private struct PaybackSummary: View {
     }
 }
 
-/// One vendor's plan: what it is, when it renews, and how it is doing.
+/// One vendor: its plan, when that renews, what it has returned, and whether
+/// the notch gives it a ring.
 ///
 /// A menu of the vendor's own plans rather than a box to type a number into.
 /// Nobody holds "20" — they hold Claude Pro — and looking a list price up is
 /// work the app can do once for everybody. Where the plan can be read out of
 /// the tool's own configuration it is simply already selected.
-private struct PlanRow: View {
+///
+/// Everything that only matters sometimes stays off the main line until it
+/// does: the renewal day once there is a plan to renew, the price field once
+/// the plan is custom, and where a plan was read from only on hover.
+private struct VendorRow: View {
     let vendor: Vendor
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
@@ -356,13 +262,13 @@ private struct PlanRow: View {
     @State private var draft: String = ""
     @FocusState private var editing: Bool
 
-
     private var detected: DetectedPlan? { store.detectedPlans[vendor] }
     private var plan: Subscription? { store.plan(for: vendor) }
-    private var isDetected: Bool { store.isDetected(vendor) }
     private var isCustom: Bool { plan != nil && plan?.planID == nil }
 
-    private var menu: [PlanCatalog.Plan] { PlanCatalog.menu(for: vendor) }
+    /// DeepSeek, MiniMax, Qwen and the rest are billed by the token, so asking
+    /// what their subscription costs is a question with no answer.
+    private var isUsageBilled: Bool { PlanCatalog.plans(for: vendor).isEmpty }
 
     private var selected: PlanCatalog.Plan {
         guard let plan else { return .none }
@@ -426,35 +332,51 @@ private struct PlanRow: View {
                 Text(vendor.title(language))
                     .font(.system(size: 13))
                     .lineLimit(1)
-                    // Without this the name is the one flexible thing in a full
-                    // row, so it is what gets squeezed away to nothing. The
-                    // minimum width is a second guard under the same idea —
-                    // layoutPriority alone still let "Anthropic" truncate to
-                    // "Ant…" once the pickers beside it needed more room for a
-                    // longer language.
-                    .layoutPriority(1)
-                    .frame(minWidth: 92, alignment: .leading)
-                Spacer(minLength: 6)
+                    // A fixed column, so the usage line on a pay-as-you-go row
+                    // starts exactly where the plan menus above it do.
+                    .frame(width: Self.nameWidth, alignment: .leading)
 
-                Picker("", selection: selection) {
-                    ForEach(menu) { Text(caption(for: $0)).tag($0) }
-                }
-                .labelsHidden()
-                .frame(width: menuWidth)
-
-                Picker("", selection: renewalDay) {
-                    ForEach(1...31, id: \.self) { day in
-                        Text(UsageFormat.dayOfMonth(day, language)).tag(day)
+                if isUsageBilled {
+                    Text(usageLine)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .monospacedDigit()
+                    Spacer(minLength: 6)
+                } else {
+                    Spacer(minLength: 6)
+                    Picker("", selection: selection) {
+                        ForEach(PlanCatalog.menu(for: vendor)) { Text(caption(for: $0)).tag($0) }
                     }
-                }
-                .labelsHidden()
-                .frame(width: 78)
-                .disabled(plan == nil)
+                    .labelsHidden()
+                    .frame(width: Self.menuWidth)
 
-                verdict.frame(width: 86, alignment: .trailing)
+                    Group {
+                        if plan != nil {
+                            Picker("", selection: renewalDay) {
+                                ForEach(1...31, id: \.self) { day in
+                                    Text(UsageFormat.dayOfMonth(day, language)).tag(day)
+                                }
+                            }
+                            .labelsHidden()
+                        }
+                    }
+                    .frame(width: Self.dayWidth)
+
+                    verdict.frame(width: Self.verdictWidth, alignment: .trailing)
+                }
+
+                Toggle("", isOn: Binding(
+                    get: { preferences.showsRing(for: vendor) },
+                    set: { preferences.setRing($0, for: vendor) }
+                ))
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .labelsHidden()
+                .help(language.t("settings.showRing"))
             }
 
-            if isCustom || provenance != nil {
+            if isCustom || store.isDetected(vendor) {
                 HStack(spacing: 6) {
                     if isCustom {
                         Text("$").font(.system(size: 11)).foregroundStyle(.secondary)
@@ -468,13 +390,20 @@ private struct PlanRow: View {
                             .onChange(of: editing) { _, focused in if !focused { commit() } }
                         Text(language.t("settings.perMonth"))
                             .font(.system(size: 11)).foregroundStyle(.secondary)
-                    }
-                    if let note = provenance {
-                        Text(note).font(.system(size: 10.5)).foregroundStyle(.tertiary)
+                    } else if let detected {
+                        // A number that appeared without being typed has to be
+                        // able to account for itself — but only when asked.
+                        Text(language.t("settings.autoDetected"))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 1.5)
+                            .background(Capsule().fill(Color.primary.opacity(0.07)))
+                            .help(language.t("settings.detected", detected.name, detected.source))
                     }
                     Spacer(minLength: 0)
                 }
-                .padding(.leading, SettingsMetrics.iconSize + 9)
+                .padding(.leading, SettingsMetrics.iconSize + 9 + Self.nameWidth + 9)
             }
         }
         .padding(.horizontal, SettingsMetrics.rowPaddingH)
@@ -482,12 +411,23 @@ private struct PlanRow: View {
         .onAppear { draft = plan.map { trimmed($0.monthlyUSD) } ?? "" }
     }
 
-    /// Menus of long plan names need room; a vendor with no plans at all only
-    /// ever shows "—" and "…".
+    private static let nameWidth: CGFloat = 104
     /// Wide enough for the longest plan name and its price together —
     /// "ChatGPT Plus · $20" truncated to "ChatGPT Plus ·…", which reads as
     /// though something is missing.
-    private var menuWidth: CGFloat { PlanCatalog.plans(for: vendor).isEmpty ? 84 : 156 }
+    private static let menuWidth: CGFloat = 150
+    private static let dayWidth: CGFloat = 68
+    private static let verdictWidth: CGFloat = 44
+
+    /// Everything this Mac has run on the vendor, and what it would have cost.
+    private var usageLine: String {
+        var parts = [language.t("settings.payAsYouGo")]
+        if let totals = store.lifetime(for: vendor) {
+            parts.append(UsageFormat.tokens(totals.tokens, language))
+            parts.append(UsageFormat.money(totals.cost, language))
+        }
+        return parts.joined(separator: " · ")
+    }
 
     private func caption(for option: PlanCatalog.Plan) -> String {
         switch option.id {
@@ -498,19 +438,6 @@ private struct PlanRow: View {
                 ? "\(option.name) · \(UsageFormat.moneyShort(option.monthlyUSD, language))"
                 : option.name
         }
-    }
-
-    /// Says where a figure came from. The detected case is the one worth
-    /// stating: a number that appeared without being typed needs to account
-    /// for itself.
-    private var provenance: String? {
-        if isDetected, let detected {
-            return language.t("settings.detected", detected.name, detected.source)
-        }
-        if let detected, detected.subscription != nil, !isDetected {
-            return language.t("settings.overridden", detected.name)
-        }
-        return nil
     }
 
     private func commit() {
@@ -529,145 +456,102 @@ private struct PlanRow: View {
         value == value.rounded() ? String(Int(value)) : String(format: "%.2f", value)
     }
 
-
     @ViewBuilder
     private var verdict: some View {
         if let payback {
-            VStack(alignment: .trailing, spacing: 0) {
-                Text(String(format: "%.1f×", payback.multiple))
-                    .font(.system(size: 13, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                Text(payback.hasPaidBack ? language.t("settings.paidBack") : language.t("settings.onTheWay"))
-                    .font(.system(size: 10))
-            }
-            .foregroundStyle(payback.hasPaidBack ? Color.green : Color.orange)
-        } else {
-            Text("—").font(.system(size: 13)).foregroundStyle(.quaternary)
+            Text(String(format: "%.1f×", payback.multiple))
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(payback.hasPaidBack ? Color.green : Color.orange)
+                .help(language.t(payback.hasPaidBack ? "settings.paidBack" : "settings.onTheWay"))
         }
     }
 }
 
-// MARK: - Appearance
+// MARK: - Settings
 
-struct AppearancePage: View {
+struct PreferencesPage: View {
     @ObservedObject var preferences: Preferences
-
-    private var language: AppLanguage { preferences.appLanguage }
-
-    var body: some View {
-        SettingsPage {
-
-            SettingsGroup(title: language.t("settings.theNotch")) {
-                SettingsPictureRow(
-                    title: language.t("settings.show"),
-                    subtitle: preferences.notchVisibility.explanation(language),
-                    selection: $preferences.notchVisibility,
-                    options: NotchVisibility.allCases,
-                    caption: { $0.title(language) },
-                    preview: { NotchVisibilityPreview(visibility: $0) }
-                )
-                SettingsDivider(inset: 0)
-                SettingsPictureRow(
-                    title: language.t("settings.edge"),
-                    subtitle: preferences.notchEdge.explanation(language),
-                    selection: $preferences.notchEdge,
-                    options: NotchEdge.allCases,
-                    caption: { $0.title(language) },
-                    preview: { NotchEdgePreview(edge: $0) }
-                )
-            }
-
-            SettingsGroup(title: language.t("settings.theAppItself"),
-                          footnote: preferences.appPresence.explanation(language)) {
-                SettingsMenuRow(
-                    title: language.t("settings.whereItShowsUp"),
-                    selection: $preferences.appPresence,
-                    options: AppPresence.allCases,
-                    label: { $0.title(language) },
-                    symbol: "macwindow", tint: .indigo
-                )
-                SettingsDivider()
-                SettingsRow("app.badge", tint: .blue, title: language.t("settings.appIcon")) {
-                    AppIconPicker(language: language)
-                }
-            }
-        }
-    }
-}
-
-// MARK: - General
-
-struct GeneralPage: View {
-    @ObservedObject var preferences: Preferences
-    @ObservedObject var store: UsageStore
     @ObservedObject var updater: Updater
 
     private var language: AppLanguage { preferences.appLanguage }
 
     var body: some View {
-        SettingsPage {
+        VStack(spacing: 0) {
+            SettingsPage {
 
-            SettingsGroup(title: language.t("settings.language"),
-                          footnote: language.t("settings.languageNote")) {
-                SettingsMenuRow(
-                    title: language.t("settings.language"),
-                    selection: $preferences.appLanguage,
-                    options: AppLanguage.available,
-                    // Each language named in itself; only "system" is written
-                    // in whatever the reader is currently using.
-                    label: { $0 == .system ? language.t("settings.systemLanguage") : $0.endonym },
-                    symbol: "globe", tint: .teal
-                )
-            }
-
-            SettingsGroup(
-                title: language.t("settings.whereTheNumbersComeFrom"),
-                footnote: language.t("settings.usageComesFromTokscaleReading")
-            ) {
-                SettingsRow("shippingbox.fill", tint: .teal, title: source) {
-                    EmptyView()
+                SettingsGroup(title: language.t("settings.theNotch")) {
+                    SettingsPictureRow(
+                        title: language.t("settings.show"),
+                        subtitle: preferences.notchVisibility.explanation(language),
+                        selection: $preferences.notchVisibility,
+                        options: NotchVisibility.allCases,
+                        caption: { $0.title(language) },
+                        preview: { NotchVisibilityPreview(visibility: $0) }
+                    )
+                    SettingsDivider(inset: 0)
+                    SettingsPictureRow(
+                        title: language.t("settings.edge"),
+                        subtitle: preferences.notchEdge.explanation(language),
+                        selection: $preferences.notchEdge,
+                        options: NotchEdge.allCases,
+                        caption: { $0.title(language) },
+                        preview: { NotchEdgePreview(edge: $0) }
+                    )
                 }
-                if let problem = store.problem {
+
+                SettingsGroup(title: language.t("settings.theAppItself")) {
+                    SettingsMenuRow(
+                        title: language.t("settings.language"),
+                        selection: $preferences.appLanguage,
+                        options: AppLanguage.available,
+                        // Each language named in itself; only "system" is
+                        // written in whatever the reader is currently using.
+                        label: { $0 == .system ? language.t("settings.systemLanguage") : $0.endonym },
+                        symbol: "globe", tint: .teal
+                    )
                     SettingsDivider()
-                    SettingsRow("exclamationmark.triangle.fill", tint: .orange, title: problem) {
-                        Button(language.t("settings.refresh")) { store.refreshNow() }
-                            .controlSize(.small)
-                            .disabled(store.isRefreshing)
+                    SettingsRow("app.badge", tint: .blue, title: language.t("settings.appIcon")) {
+                        AppIconPicker(language: language)
                     }
                 }
             }
 
-            SettingsGroup(title: language.t("settings.about")) {
-                SettingsRow("app.badge", tint: .indigo,
-                            title: "TokNotch \(updater.currentVersion)",
-                            subtitle: updateStatus ?? language.t("settings.tokenUsageInTheNotch")) {
-                    if Updater.isConfigured {
-                        Button(language.t("settings.checkNow")) { updater.checkForUpdates() }
-                            .controlSize(.small)
-                            .disabled(updater.outcome == .checking)
-                    }
-                }
-            }
+            footer
+                .padding(.top, 8)
+                .padding(.bottom, 16)
         }
     }
 
-    /// What the updater is currently able to say for itself.
-    private var updateStatus: String? {
+    /// Version, updates and source in one quiet line: none of it is a setting,
+    /// and all of it is occasionally wanted.
+    private var footer: some View {
+        HStack(spacing: 6) {
+            Text(verbatim: "TokNotch \(updater.currentVersion)")
+            if Updater.isConfigured {
+                Text(verbatim: "·")
+                Button(updateLabel) { updater.checkForUpdates() }
+                    .buttonStyle(.link)
+                    .disabled(updater.outcome == .checking)
+            }
+            Text(verbatim: "·")
+            Link("GitHub", destination: URL(string: "https://github.com/ReffWu/toknotch")!)
+        }
+        .font(.system(size: 11))
+        .foregroundStyle(.secondary)
+        .frame(maxWidth: .infinity)
+    }
+
+    /// The button says what the updater last found, so checking needs no
+    /// second place to report back to.
+    private var updateLabel: String {
         switch updater.outcome {
-        case .unconfigured, .idle: return nil
+        case .unconfigured, .idle: return language.t("settings.checkForUpdates")
         case .checking:            return language.t("settings.checking")
         case .upToDate:            return language.t("settings.upToDate")
         case .found(let version):  return language.t("settings.updateAvailable", version)
         case .unreachable:         return language.t("settings.couldnTReachTheUpdate")
         case .failed(let why):     return language.t("settings.checkFailed", why)
         }
-    }
-
-    /// Says which copy of tokscale is answering, because "it is built in" is
-    /// the whole reason this app needs no setup.
-    private var source: String {
-        TokscaleCLI.isUsingBundledBinary
-            ? language.t("settings.builtInTokscale", TokscaleCLI.bundledVersion ?? "")
-            : language.t("settings.usingTheTokscaleInstalledOn")
     }
 }

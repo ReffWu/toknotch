@@ -8,10 +8,6 @@ import SwiftUI
 /// first.
 @MainActor
 final class WhatsNewWindowController {
-    /// Called after it has been dismissed, so the caller can decide what
-    /// follows — on a first launch, the settings window does.
-    var onDismiss: (() -> Void)?
-
     private var window: NSWindow?
     private let preferences: Preferences
     private let version: String
@@ -30,9 +26,6 @@ final class WhatsNewWindowController {
     /// A version with nothing written for it is still recorded as seen. Left
     /// unrecorded it would surface later — long after it was current — the
     /// first time a note happened to exist for it.
-    ///
-    /// Returns whether anything was put on screen, so the caller can sequence
-    /// what comes next rather than racing it.
     @discardableResult
     func showIfNeeded() -> Bool {
         guard let note = ReleaseNotes.unseen(
@@ -90,7 +83,6 @@ final class WhatsNewWindowController {
         preferences.lastSeenVersion = version
         window.delegate = nil
         window.close()
-        onDismiss?()
     }
 
     private lazy var closeWatcher = CloseWatcher { [weak self] in self?.dismiss() }

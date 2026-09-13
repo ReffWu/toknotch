@@ -41,17 +41,6 @@ enum TokscaleCLI {
         return FileManager.default.isExecutableFile(atPath: path) ? path : nil
     }
 
-    /// Which copy is in use, for the settings screen to be honest about.
-    static var isUsingBundledBinary: Bool { bundledExecutable != nil }
-
-    /// The bundled binary's version, recorded beside it at build time so the
-    /// settings screen does not have to launch a process to say what it ships.
-    static var bundledVersion: String? {
-        guard let resources = Bundle.main.resourceURL else { return nil }
-        return (try? String(contentsOf: resources.appendingPathComponent("tokscale/VERSION"),
-                            encoding: .utf8))?.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
     /// The `PATH` the subprocess gets, which cannot be the one we inherit.
     ///
     /// A GUI app launched from Finder inherits a minimal environment —

@@ -157,6 +157,19 @@ final class UsageStore: ObservableObject {
                        earned: digest.totals(for: vendor, in: period, calendar: calendar).cost)
     }
 
+    /// Every plan in force, added up over each one's own current period: what
+    /// they cost together and what the same usage would have cost at API
+    /// prices. Nil while no plan is set, so callers can say so instead of
+    /// showing a zero.
+    func periodPayback() -> (paid: Double, earned: Double)? {
+        let plans = effectivePlans
+        guard !plans.isEmpty else { return nil }
+        return plans.reduce((paid: 0, earned: 0)) { sum, entry in
+            (sum.paid + entry.value.monthlyUSD,
+             sum.earned + (payback(for: entry.key, plan: entry.value)?.earned ?? 0))
+        }
+    }
+
     /// One vendor's lifetime totals, for the settings list to show what each
     /// row is actually about.
     func lifetime(for vendor: Vendor) -> UsageDigest.Totals? {

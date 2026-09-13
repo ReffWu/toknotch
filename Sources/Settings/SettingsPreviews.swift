@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The little pictures on the Appearance page.
+/// The little pictures on the Settings page.
 ///
 /// Both settings there are about *where a thing sits on your screen*, which is
 /// the one kind of choice a word cannot make obvious — "屏幕右侧" and "顶部刘海"
@@ -81,13 +81,6 @@ struct NotchVisibilityPreview: View {
                     // open shape, just a sliver of how far it reaches off the
                     // edge. A shorter bar drew the wrong axis shrinking.
                     bar(height: full, thick: Self.restingThick, in: proxy.size)
-                case .hidden:
-                    // Not simply blank: a blank box looks identical whether or
-                    // not the click landed, and gave no way to tell the option
-                    // had actually been picked. An outline of where the pill
-                    // would sit, with nothing filling it, reads as "gone" while
-                    // still confirming a choice was drawn.
-                    outline(height: full, thick: Self.restingThick, in: proxy.size)
                 }
             }
         }
@@ -110,10 +103,4 @@ struct NotchVisibilityPreview: View {
             .position(x: bounds.width - thick / 2, y: bounds.height / 2)
     }
 
-    private func outline(height: CGFloat, thick: CGFloat, in bounds: CGSize) -> some View {
-        SideNotchShape(edge: .right, curlRadius: min(3, thick / 2), cornerRadius: min(2.5, thick / 2))
-            .stroke(Color.black.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
-            .frame(width: thick, height: height)
-            .position(x: bounds.width - thick / 2, y: bounds.height / 2)
-    }
 }

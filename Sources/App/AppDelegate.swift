@@ -23,12 +23,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // Set here, not in the Info.plist: this call is applied at launch and
-        // overrides `LSUIElement` either way. Removing the plist key alone left
-        // the app registered as a UIElement with no Dock tile, which looked
-        // exactly like the icon having failed to install. The user's choice
-        // replaces this a moment later, once preferences exist.
-        NSApp.setActivationPolicy(.regular)
+        // No Dock tile: the notch and the menu bar icon are how TokNotch is
+        // reached. `LSUIElement` in the Info.plist keeps the tile from flashing
+        // up at launch; this keeps a copy registered before that key existed
+        // from holding on to one.
+        NSApp.setActivationPolicy(.accessory)
         guard !isRunningTests else { return }
         AppIconStyle.restore()
 
@@ -73,42 +72,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.settings = settings
         setupMainMenu()
 
-        // What changed, once per version — including on a fresh install, where
-        // it is the introduction.
         let whatsNew = WhatsNewWindowController(preferences: preferences,
                                                 version: updater.currentVersion)
         self.whatsNew = whatsNew
 
-        // With no dock icon and no window, a fresh install shows three rings on
-        // a screen edge and no reason to look at them. Once, on the very first
-        // run, it opens the one place that explains them.
-        //
-        // Sequenced behind What's New rather than beside it: two windows
-        // arriving together is one to dismiss before you can read either.
-        let introduce = { [weak settings] in
-            guard preferences.isFirstLaunch else { return }
-            settings?.show()
-        }
-        whatsNew.onDismiss = introduce
-        if !whatsNew.showIfNeeded() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: introduce)
+        if preferences.isFirstLaunch {
+            // A fresh install has nothing to be told has changed. It opens
+            // straight on Payback, the page that says what the rings are for,
+            // and this version counts as seen so What's New waits for the next.
+            preferences.lastSeenVersion = updater.currentVersion
+            Task { @MainActor [weak settings] in
+                try? await Task.sleep(for: .milliseconds(600))
+                settings?.show()
+            }
+        } else {
+            whatsNew.showIfNeeded()
         }
 
-        let statusItem = StatusItemController { [weak settings] in settings?.show() }
+        let statusItem = StatusItemController(preferences: preferences, store: store,
+                                              updater: updater) { [weak settings] in settings?.show() }
+        statusItem.show()
         self.statusItem = statusItem
 
         DistributedNotificationCenter.default().addObserver(
             forName: NSNotification.Name("com.reffwu.toknotch.openSettings"),
             object: nil, queue: .main
         ) { [weak settings] _ in settings?.show() }
-
-        preferences.$appPresence
-            .receive(on: RunLoop.main)
-            .sink { presence in
-                NSApp.setActivationPolicy(presence.activationPolicy)
-                if presence.wantsStatusItem { statusItem.show() } else { statusItem.hide() }
-            }
-            .store(in: &cancellables)
 
         preferences.$notchVisibility
             .receive(on: RunLoop.main)
@@ -176,10 +165,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         false
     }
 
-    /// The way back in when the notch is hidden.
-    ///
-    /// With no dock icon, no menu bar item and no notch on screen, there is
-    /// otherwise nothing left to click — choosing Hide would be a one-way door.
     /// Launching the app again while it is already running lands here, so
     /// opening it from Applications or Spotlight reopens settings.
     func applicationShouldHandleReopen(_ sender: NSApplication,

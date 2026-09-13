@@ -48,6 +48,8 @@ targets:
         CFBundleName: TokNotch
         CFBundleDisplayName: TokNotch
         LSMinimumSystemVersion: "14.0"
+        # No Dock tile. The notch and the menu bar icon are how it is reached.
+        LSUIElement: true
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         # Sparkle. These have to live here rather than in Sources/Info.plist:

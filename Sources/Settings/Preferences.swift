@@ -1,3 +1,4 @@
+import AppKit
 import Combine
 import Foundation
 import ServiceManagement
@@ -152,11 +153,6 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(notchEdge.rawValue, forKey: Keys.edge) }
     }
 
-    /// Where the app itself shows up: Dock, menu bar, or nowhere.
-    @Published var appPresence: AppPresence {
-        didSet { defaults.set(appPresence.rawValue, forKey: Keys.presence) }
-    }
-
     /// The version whose changes have already been shown.
     ///
     /// Written when the What's New dialogue is dismissed rather than when it
@@ -174,7 +170,6 @@ final class Preferences: ObservableObject {
         static let autoEnabled = "autoEnabledVendors"
         static let hasLaunched = "hasLaunchedBefore"
         static let visibility = "notchVisibility"
-        static let presence = "appPresence"
         static let edge = "notchEdge"
         static let lastSeenVersion = "lastSeenVersion"
         static let language = "appLanguage"
@@ -225,25 +220,31 @@ final class Preferences: ObservableObject {
             Vendor(rawValue: key).map { ($0, plan) }
         })
         // Absent means never chosen, which is the hover behaviour the app was
-        // designed around — not hidden, which would make a fresh install look
-        // like it failed to start.
+        // designed around. A "hidden" left by an older version lands here too.
         self.notchVisibility = defaults.string(forKey: Keys.visibility)
             .flatMap(NotchVisibility.init(rawValue:)) ?? .onHover
-        // Absent means never chosen. The Dock is the default because it is the
-        // findable one — a new user who cannot see the app anywhere has no way
-        // to learn it is running.
-        self.appPresence = defaults.string(forKey: Keys.presence)
-            .flatMap(AppPresence.init(rawValue:)) ?? .dock
-        // The right edge is where the notch has always been, and it is the one
-        // side of a Mac that no system chrome claims by default.
-        self.notchEdge = defaults.string(forKey: Keys.edge)
-            .flatMap(NotchEdge.init(rawValue:)) ?? .right
+        if let stored = defaults.string(forKey: Keys.edge).flatMap(NotchEdge.init(rawValue:)) {
+            self.notchEdge = stored
+        } else if isFirstLaunch {
+            // A Mac with a notch already has a black shape at the top of the
+            // screen, and TokNotch grows out of it as if it had always been
+            // there. Everywhere else the right edge is the one side no system
+            // chrome claims. Decided once and kept, so plugging in a display
+            // later cannot move it.
+            let notched = NotchGeometry.preferredScreen(from: NSScreen.screens)?.hardwareNotch != nil
+            let edge: NotchEdge = notched ? .top : .right
+            self.notchEdge = edge
+            defaults.set(edge.rawValue, forKey: Keys.edge)
+        } else {
+            // Somebody who never chose has been looking at the right edge.
+            self.notchEdge = .right
+        }
         // Absent means nothing has been shown yet, which is true of a fresh
         // install — so the current release reads as new to it.
         self.lastSeenVersion = defaults.string(forKey: Keys.lastSeenVersion)
         self.autoEnabledVendors = Set((defaults.stringArray(forKey: Keys.autoEnabled) ?? [])
             .compactMap(Vendor.init(rawValue:)))
-        self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "rings"
+        self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "payback"
         // Follows the Mac until somebody says otherwise, which is the right
         // default for a language: an app that opens in the wrong one is worse
         // than one that opens in the same language as everything else.

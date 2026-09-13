@@ -486,23 +486,20 @@ final class NotchVisibilityTests: XCTestCase {
         XCTAssertEqual(Preferences(defaults: defaults).notchVisibility, .alwaysShow)
     }
 
-    /// A value written by a future version, or corrupted, must not hide the
-    /// notch — it falls back to the visible default.
+    /// A value written by a future version, corrupted, or the "hidden" older
+    /// versions offered, must not hide the notch — it falls back to the
+    /// visible default.
     @MainActor
     func testAnUnknownStoredValueFallsBackToVisible() {
         let defaults = defaults()
         defaults.set("teleport", forKey: "notchVisibility")
         XCTAssertEqual(Preferences(defaults: defaults).notchVisibility, .onHover)
-    }
-
-    /// Hiding removes every other way back into the app, so the option itself
-    /// has to say where the door is.
-    func testHidingExplainsHowToGetBack() {
-        XCTAssertTrue(NotchVisibility.hidden.explanation(.english).contains("Applications"))
+        defaults.set("hidden", forKey: "notchVisibility")
+        XCTAssertEqual(Preferences(defaults: defaults).notchVisibility, .onHover)
     }
 
     func testEveryModeIsOfferedAndNamed() {
-        XCTAssertEqual(NotchVisibility.allCases.count, 3)
+        XCTAssertEqual(NotchVisibility.allCases.count, 2)
         for mode in NotchVisibility.allCases {
             XCTAssertFalse(mode.title(.english).isEmpty)
             XCTAssertFalse(mode.explanation(.english).isEmpty)

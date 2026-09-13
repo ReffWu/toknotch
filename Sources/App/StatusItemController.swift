@@ -1,20 +1,27 @@
 import AppKit
 
-/// The menu bar icon, present only while `AppPresence.menuBar` is chosen.
+/// The menu bar icon, always there.
 ///
-/// It exists to be a way *into* the app, so it opens settings and offers Quit —
-/// with no Dock tile there is otherwise nothing to right-click, and an app you
-/// cannot quit is a worse problem than one you cannot see.
+/// TokNotch keeps no Dock tile, so this is the way into the app: a glance at
+/// the numbers, settings, updates and Quit. An app you cannot find or quit is
+/// a worse problem than one more icon in the menu bar.
 @MainActor
-final class StatusItemController {
+final class StatusItemController: NSObject, NSMenuDelegate {
     private var item: NSStatusItem?
+    private let preferences: Preferences
+    private let store: UsageStore
+    private let updater: Updater
     private let onOpenSettings: () -> Void
 
-    init(onOpenSettings: @escaping () -> Void) {
+    private var language: AppLanguage { preferences.appLanguage }
+
+    init(preferences: Preferences, store: UsageStore, updater: Updater,
+         onOpenSettings: @escaping () -> Void) {
+        self.preferences = preferences
+        self.store = store
+        self.updater = updater
         self.onOpenSettings = onOpenSettings
     }
-
-    var isShowing: Bool { item != nil }
 
     func show() {
         guard item == nil else { return }
@@ -24,22 +31,46 @@ final class StatusItemController {
         item.button?.toolTip = "TokNotch"
 
         let menu = NSMenu()
-        menu.addItem(
-            withTitle: "Settings…", action: #selector(openSettings), keyEquivalent: ","
-        ).target = self
-        menu.addItem(.separator())
-        menu.addItem(
-            withTitle: "Quit TokNotch", action: #selector(quit), keyEquivalent: "q"
-        ).target = self
+        menu.delegate = self
         item.menu = menu
 
         self.item = item
     }
 
-    func hide() {
-        guard let item else { return }
-        NSStatusBar.system.removeStatusItem(item)
-        self.item = nil
+    /// Built as it opens, so the summary is current and every item is in the
+    /// language chosen a moment ago.
+    func menuNeedsUpdate(_ menu: NSMenu) {
+        menu.removeAllItems()
+
+        if let summary = summary() {
+            let line = NSMenuItem(title: summary, action: nil, keyEquivalent: "")
+            line.isEnabled = false
+            menu.addItem(line)
+            menu.addItem(.separator())
+        }
+
+        menu.addItem(withTitle: language.t("menu.open"),
+                     action: #selector(openSettings), keyEquivalent: ",").target = self
+        if Updater.isConfigured {
+            menu.addItem(withTitle: language.t("settings.checkForUpdates"),
+                         action: #selector(checkForUpdates), keyEquivalent: "").target = self
+        }
+        menu.addItem(.separator())
+        menu.addItem(withTitle: language.t("menu.quit"),
+                     action: #selector(quit), keyEquivalent: "q").target = self
+    }
+
+    /// "13.4× paid back this period · Today 120M": the two numbers worth a
+    /// glance, each only once there is something to say.
+    private func summary() -> String? {
+        var parts: [String] = []
+        if let total = store.periodPayback(), total.paid > 0 {
+            parts.append(language.t("menu.payback", String(format: "%.1f×", total.earned / total.paid)))
+        }
+        if let today = store.rings.first(where: { $0.kind == .today }), today.hasReading {
+            parts.append("\(language.t("settings.today")) \(today.headline)")
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 
     /// The menu bar mark: its own drawing, not the app icon shrunk down.
@@ -62,5 +93,6 @@ final class StatusItemController {
     }
 
     @objc private func openSettings() { onOpenSettings() }
+    @objc private func checkForUpdates() { updater.checkForUpdates() }
     @objc private func quit() { NSApp.terminate(nil) }
 }

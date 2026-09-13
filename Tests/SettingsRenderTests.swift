@@ -35,11 +35,8 @@ final class SettingsRenderTests: XCTestCase {
         store.enabledVendors = preferences.enabledVendors
 
         let pages: [(String, AnyView)] = [
-            ("rings", AnyView(RingsPage(preferences: preferences, store: store))),
-            ("plans", AnyView(PlansPage(preferences: preferences, store: store))),
-            ("appearance", AnyView(AppearancePage(preferences: preferences))),
-            ("general", AnyView(GeneralPage(preferences: preferences, store: store,
-                                            updater: Updater())))
+            ("payback", AnyView(PaybackPage(preferences: preferences, store: store))),
+            ("settings", AnyView(PreferencesPage(preferences: preferences, updater: Updater())))
         ]
 
         for (name, page) in pages {

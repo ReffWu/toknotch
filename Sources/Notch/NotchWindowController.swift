@@ -513,14 +513,6 @@ final class NotchWindowController {
                 model.isExpanded = false
                 model.hoveredIndex = nil
             }
-        case .hidden:
-            model.isAlwaysOn = false
-            model.isPinned = false
-            model.isExpanded = false
-            model.hoveredIndex = nil
-            // Ordered out rather than made transparent. An invisible panel that
-            // still takes the screen edge would keep swallowing the pointer.
-            panel?.orderOut(nil)
         }
         setPointing(false)
         updateInteractiveRects()
