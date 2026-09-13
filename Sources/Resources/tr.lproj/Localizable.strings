@@ -42,6 +42,7 @@
 "row.requests" = "İstekler";
 "settings.appIcon" = "Uygulama simgesi";
 "settings.autoDetected" = "Otomatik algılandı";
+"settings.autoUpdate" = "Güncellemeleri otomatik yükle";
 "settings.checkFailed" = "Denetim başarısız oldu — %@";
 "settings.checkForUpdates" = "Güncellemeleri Denetle…";
 "settings.checking" = "Denetleniyor…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Antigravity kullanımı geride kalmıyor";
 "whatsNew.v123.headline" = "Her araç güncel";
 "whatsNew.v123.tokscale.title" = "tokscale 4.16 ile";
+"whatsNew.v124.headline" = "Güncellemeler kendi başının çaresine bakıyor";
+"whatsNew.v124.updates.detail" = "Yeni sürümler artık sormadan kendiliğinden indirilip yükleniyor. Kendiniz karar vermek mi istiyorsunuz? Ayarlar’dan kapatın.";
+"whatsNew.v124.updates.title" = "Sizin için yükleniyor";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

@@ -519,6 +519,16 @@ struct PreferencesPage: View {
                     SettingsRow("app.badge", tint: .blue, title: language.t("settings.appIcon")) {
                         AppIconPicker(language: language)
                     }
+                    if Updater.isConfigured {
+                        SettingsDivider()
+                        SettingsRow("arrow.triangle.2.circlepath", tint: .green,
+                                    title: language.t("settings.autoUpdate")) {
+                            Toggle("", isOn: $updater.installsAutomatically)
+                                .toggleStyle(.switch)
+                                .controlSize(.small)
+                                .labelsHidden()
+                        }
+                    }
                 }
 
                 MoreAppsGroup(language: language)

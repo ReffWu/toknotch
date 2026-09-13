@@ -24,11 +24,15 @@
 	<string>14.0</string>
 	<key>LSUIElement</key>
 	<true/>
+	<key>SUAutomaticallyUpdate</key>
+	<true/>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://github.com/ReffWu/toknotch/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>wpcSIsJIvvZPj3jAoJuw8wl0+fVXS3K3ChODZ0W8EBI=</string>
+	<key>SUScheduledCheckInterval</key>
+	<integer>21600</integer>
 </dict>
 </plist>

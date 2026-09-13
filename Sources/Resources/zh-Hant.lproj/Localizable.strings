@@ -42,6 +42,7 @@
 "row.requests" = "請求次數";
 "settings.appIcon" = "App 圖像";
 "settings.autoDetected" = "已自動辨識";
+"settings.autoUpdate" = "自動安裝更新";
 "settings.checkFailed" = "檢查失敗：%@";
 "settings.checkForUpdates" = "檢查更新項目…";
 "settings.checking" = "檢查中…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Antigravity 的用量不再停更";
 "whatsNew.v123.headline" = "每個工具的用量都保持最新";
 "whatsNew.v123.tokscale.title" = "內建 tokscale 升級到 4.16";
+"whatsNew.v124.headline" = "更新，交給它自己";
+"whatsNew.v124.updates.detail" = "新版本現在會自己下載、自己安裝，不用再點任何提示。想自己決定？可以在設定裡關掉。";
+"whatsNew.v124.updates.title" = "自動下載並安裝";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";

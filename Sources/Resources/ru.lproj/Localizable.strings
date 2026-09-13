@@ -42,6 +42,7 @@
 "row.requests" = "Запросов";
 "settings.appIcon" = "Значок приложения";
 "settings.autoDetected" = "Определено автоматически";
+"settings.autoUpdate" = "Устанавливать обновления автоматически";
 "settings.checkFailed" = "Не удалось проверить — %@";
 "settings.checkForUpdates" = "Проверить обновления…";
 "settings.checking" = "Проверка…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Использование Antigravity не отстаёт";
 "whatsNew.v123.headline" = "Каждый инструмент в актуальном виде";
 "whatsNew.v123.tokscale.title" = "На базе tokscale 4.16";
+"whatsNew.v124.headline" = "Обновления сами о себе позаботятся";
+"whatsNew.v124.updates.detail" = "Новые версии теперь сами загружаются и устанавливаются, без запросов. Хотите решать сами? Отключите это в настройках.";
+"whatsNew.v124.updates.title" = "Устанавливаются сами";
 "whatsNew.version" = "Версия %@";
 "whatsNew.welcome" = "Добро пожаловать в TokNotch";

@@ -7,6 +7,17 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.4]
+
+Updates take care of themselves.
+
+### Changed
+
+- **Updates download and install on their own by default,** checked every six
+  hours and installed as soon as they are ready instead of waiting for a quit
+  that a login app never does. Settings has an Install updates automatically
+  switch to turn it off.
+
 ## [1.2.3]
 
 Every tool, kept current.
@@ -152,6 +163,7 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.2.4]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.4
 [1.2.3]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.3
 [1.2.2]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.2
 [1.2.1]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.1

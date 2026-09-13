@@ -42,6 +42,7 @@
 "row.requests" = "Verzoeken";
 "settings.appIcon" = "Appsymbool";
 "settings.autoDetected" = "Automatisch herkend";
+"settings.autoUpdate" = "Updates automatisch installeren";
 "settings.checkFailed" = "Controle mislukt — %@";
 "settings.checkForUpdates" = "Controleer op updates…";
 "settings.checking" = "Controleren…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Antigravity-gebruik blijft bij";
 "whatsNew.v123.headline" = "Elk hulpmiddel actueel";
 "whatsNew.v123.tokscale.title" = "Gebouwd op tokscale 4.16";
+"whatsNew.v124.headline" = "Updates regelen zichzelf";
+"whatsNew.v124.updates.detail" = "Nieuwe versies worden nu vanzelf gedownload en geïnstalleerd, zonder vraag. Liever zelf beslissen? Zet het uit in Instellingen.";
+"whatsNew.v124.updates.title" = "Voor je geïnstalleerd";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

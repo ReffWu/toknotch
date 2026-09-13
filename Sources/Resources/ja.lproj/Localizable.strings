@@ -42,6 +42,7 @@
 "row.requests" = "リクエスト数";
 "settings.appIcon" = "アプリアイコン";
 "settings.autoDetected" = "自動検出";
+"settings.autoUpdate" = "アップデートを自動でインストール";
 "settings.checkFailed" = "確認できませんでした — %@";
 "settings.checkForUpdates" = "アップデートを確認…";
 "settings.checking" = "確認中…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Antigravity の使用量が止まらない";
 "whatsNew.v123.headline" = "どのツールの使用量も最新に";
 "whatsNew.v123.tokscale.title" = "tokscale 4.16 を内蔵";
+"whatsNew.v124.headline" = "アップデートはおまかせ";
+"whatsNew.v124.updates.detail" = "新しいバージョンは確認なしで自動的にダウンロードとインストールが行われます。自分で決めたい場合は設定でオフにできます。";
+"whatsNew.v124.updates.title" = "自動でダウンロードしてインストール";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

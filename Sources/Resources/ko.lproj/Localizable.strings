@@ -42,6 +42,7 @@
 "row.requests" = "요청 수";
 "settings.appIcon" = "앱 아이콘";
 "settings.autoDetected" = "자동 인식됨";
+"settings.autoUpdate" = "업데이트 자동 설치";
 "settings.checkFailed" = "확인 실패 — %@";
 "settings.checkForUpdates" = "업데이트 확인…";
 "settings.checking" = "확인 중…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Antigravity 사용량이 멈추지 않습니다";
 "whatsNew.v123.headline" = "모든 도구의 사용량을 최신으로";
 "whatsNew.v123.tokscale.title" = "tokscale 4.16 내장";
+"whatsNew.v124.headline" = "업데이트는 알아서";
+"whatsNew.v124.updates.detail" = "새 버전은 이제 묻지 않고 알아서 다운로드하고 설치합니다. 직접 정하고 싶다면 설정에서 끌 수 있습니다.";
+"whatsNew.v124.updates.title" = "자동으로 다운로드하고 설치";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

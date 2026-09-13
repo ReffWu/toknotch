@@ -25,6 +25,13 @@ final class Updater: NSObject, ObservableObject {
 
     @Published private(set) var outcome: Outcome = .idle
 
+    /// Whether updates download and install on their own. On by default (the
+    /// Info.plist sets `SUAutomaticallyUpdate`); Sparkle stores the choice once
+    /// somebody changes it in Settings.
+    @Published var installsAutomatically = true {
+        didSet { controller?.updater.automaticallyDownloadsUpdates = installsAutomatically }
+    }
+
     var currentVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
     }
@@ -58,6 +65,7 @@ final class Updater: NSObject, ObservableObject {
                                                   updaterDelegate: self,
                                                   userDriverDelegate: nil)
         controller?.updater.automaticallyChecksForUpdates = true
+        installsAutomatically = controller?.updater.automaticallyDownloadsUpdates ?? true
     }
 
     /// The Check Now button. Shows Sparkle's own dialogue, which is the part
@@ -75,6 +83,19 @@ final class Updater: NSObject, ObservableObject {
 // MARK: - Sparkle's side
 
 extension Updater: SPUUpdaterDelegate {
+    /// Install a downloaded update now instead of waiting for the app to quit.
+    ///
+    /// Sparkle's automatic updates otherwise install on quit, and TokNotch
+    /// starts at login and never quits, so an update would wait indefinitely.
+    /// Installing relaunches the app, which takes a moment and puts the notch
+    /// straight back where it was.
+    nonisolated func updater(_ updater: SPUUpdater,
+                             willInstallUpdateOnQuit item: SUAppcastItem,
+                             immediateInstallationBlock: @escaping () -> Void) -> Bool {
+        DispatchQueue.main.async { immediateInstallationBlock() }
+        return true
+    }
+
     nonisolated func updater(_ updater: SPUUpdater,
                              didFindValidUpdate item: SUAppcastItem) {
         let version = item.displayVersionString

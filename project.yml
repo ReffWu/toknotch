@@ -9,8 +9,8 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     SWIFT_STRICT_CONCURRENCY: minimal
-    MARKETING_VERSION: "1.2.3"
-    CURRENT_PROJECT_VERSION: "6"
+    MARKETING_VERSION: "1.2.4"
+    CURRENT_PROJECT_VERSION: "7"
     CODE_SIGN_IDENTITY: "-"
     CODE_SIGN_STYLE: Manual
     DEVELOPMENT_TEAM: ""
@@ -72,6 +72,12 @@ targets:
         # updates — a poor thing to greet somebody with before they have seen
         # the app do anything.
         SUEnableAutomaticChecks: true
+        # Downloaded and installed without asking, by default. People can turn
+        # it off in Settings, which Sparkle then remembers over this value.
+        SUAutomaticallyUpdate: true
+        # Every six hours rather than Sparkle's daily default, so a fix reaches
+        # a Mac that is never restarted within the same working day.
+        SUScheduledCheckInterval: 21600
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.reffwu.toknotch

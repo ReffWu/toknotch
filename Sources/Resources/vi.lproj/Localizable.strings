@@ -42,6 +42,7 @@
 "row.requests" = "Yêu cầu";
 "settings.appIcon" = "Biểu tượng ứng dụng";
 "settings.autoDetected" = "Tự động nhận diện";
+"settings.autoUpdate" = "Tự động cài bản cập nhật";
 "settings.checkFailed" = "Kiểm tra thất bại — %@";
 "settings.checkForUpdates" = "Kiểm tra bản cập nhật…";
 "settings.checking" = "Đang kiểm tra…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "Mức dùng Antigravity luôn mới";
 "whatsNew.v123.headline" = "Mọi công cụ luôn cập nhật";
 "whatsNew.v123.tokscale.title" = "Dựa trên tokscale 4.16";
+"whatsNew.v124.headline" = "Cập nhật tự lo liệu";
+"whatsNew.v124.updates.detail" = "Phiên bản mới giờ tự tải về và tự cài, không cần bấm gì. Muốn tự quyết định? Tắt trong Cài đặt.";
+"whatsNew.v124.updates.title" = "Tự cài cho bạn";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

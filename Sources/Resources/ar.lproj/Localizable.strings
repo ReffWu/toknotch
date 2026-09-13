@@ -42,6 +42,7 @@
 "row.requests" = "الطلبات";
 "settings.appIcon" = "أيقونة التطبيق";
 "settings.autoDetected" = "اكتُشف تلقائيًا";
+"settings.autoUpdate" = "تثبيت التحديثات تلقائيًا";
 "settings.checkFailed" = "فشل التحقق — %@";
 "settings.checkForUpdates" = "التحقق من وجود تحديثات…";
 "settings.checking" = "جارٍ التحقق…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "استخدام Antigravity يواكب";
 "whatsNew.v123.headline" = "كل أداة محدَّثة دائمًا";
 "whatsNew.v123.tokscale.title" = "مبني على tokscale 4.16";
+"whatsNew.v124.headline" = "التحديثات تتولى أمرها بنفسها";
+"whatsNew.v124.updates.detail" = "تُنزَّل الإصدارات الجديدة الآن وتُثبَّت تلقائيًا دون أي تنبيه. تفضّل أن تقرّر بنفسك؟ أوقفها من الإعدادات.";
+"whatsNew.v124.updates.title" = "تُثبَّت نيابةً عنك";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";

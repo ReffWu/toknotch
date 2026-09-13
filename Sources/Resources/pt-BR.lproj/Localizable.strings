@@ -42,6 +42,7 @@
 "row.requests" = "Solicitações";
 "settings.appIcon" = "Ícone do app";
 "settings.autoDetected" = "Detectado automaticamente";
+"settings.autoUpdate" = "Instalar atualizações automaticamente";
 "settings.checkFailed" = "Falha na verificação — %@";
 "settings.checkForUpdates" = "Buscar Atualizações…";
 "settings.checking" = "Verificando…";
@@ -135,5 +136,8 @@
 "whatsNew.v123.antigravity.title" = "O uso do Antigravity acompanha";
 "whatsNew.v123.headline" = "Cada ferramenta sempre atualizada";
 "whatsNew.v123.tokscale.title" = "Com tokscale 4.16";
+"whatsNew.v124.headline" = "As atualizações cuidam de si";
+"whatsNew.v124.updates.detail" = "As novas versões agora baixam e instalam sozinhas, sem avisos para clicar. Prefere decidir? Desative nos Ajustes.";
+"whatsNew.v124.updates.title" = "Instaladas para você";
 "whatsNew.version" = "Versão %@";
 "whatsNew.welcome" = "Boas-vindas ao TokNotch";
