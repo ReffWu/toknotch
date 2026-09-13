@@ -7,6 +7,17 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.5]
+
+WorkBuddy counts again.
+
+### Fixed
+
+- **WorkBuddy usage is counted again.** WorkBuddy AI 5.5 keeps its sessions in
+  `~/.workbuddy-ai`, while tokscale 4.16 only reads `~/.workbuddy`, so its
+  tokens were missing. TokNotch now shows tokscale the new folder for
+  WorkBuddy alone and adds the result to every ring.
+
 ## [1.2.4]
 
 Updates take care of themselves.
@@ -163,6 +174,7 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.2.5]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.5
 [1.2.4]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.4
 [1.2.3]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.3
 [1.2.2]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.2

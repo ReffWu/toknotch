@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "アップデートはおまかせ";
 "whatsNew.v124.updates.detail" = "新しいバージョンは確認なしで自動的にダウンロードとインストールが行われます。自分で決めたい場合は設定でオフにできます。";
 "whatsNew.v124.updates.title" = "自動でダウンロードしてインストール";
+"whatsNew.v125.headline" = "WorkBuddy の使用量が戻りました";
+"whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 がセッションを新しいフォルダに移したため、トークンが集計されていませんでした。TokNotch は新しい場所から読み取るようになりました。";
+"whatsNew.v125.workbuddy.title" = "WorkBuddy の使用量を集計";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "Cập nhật tự lo liệu";
 "whatsNew.v124.updates.detail" = "Phiên bản mới giờ tự tải về và tự cài, không cần bấm gì. Muốn tự quyết định? Tắt trong Cài đặt.";
 "whatsNew.v124.updates.title" = "Tự cài cho bạn";
+"whatsNew.v125.headline" = "WorkBuddy được tính lại";
+"whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 đã chuyển phiên làm việc sang thư mục mới nên token của nó bị thiếu. TokNotch giờ đọc chúng từ đó.";
+"whatsNew.v125.workbuddy.title" = "Đã tính mức dùng WorkBuddy";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

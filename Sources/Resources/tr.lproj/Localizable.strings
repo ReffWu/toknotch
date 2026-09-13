@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "Güncellemeler kendi başının çaresine bakıyor";
 "whatsNew.v124.updates.detail" = "Yeni sürümler artık sormadan kendiliğinden indirilip yükleniyor. Kendiniz karar vermek mi istiyorsunuz? Ayarlar’dan kapatın.";
 "whatsNew.v124.updates.title" = "Sizin için yükleniyor";
+"whatsNew.v125.headline" = "WorkBuddy yeniden sayılıyor";
+"whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 oturumlarını yeni bir klasöre taşıdığı için token’ları eksikti. TokNotch artık onları oradan okuyor.";
+"whatsNew.v125.workbuddy.title" = "WorkBuddy kullanımı görünüyor";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

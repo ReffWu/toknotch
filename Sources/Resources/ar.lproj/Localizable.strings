@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "التحديثات تتولى أمرها بنفسها";
 "whatsNew.v124.updates.detail" = "تُنزَّل الإصدارات الجديدة الآن وتُثبَّت تلقائيًا دون أي تنبيه. تفضّل أن تقرّر بنفسك؟ أوقفها من الإعدادات.";
 "whatsNew.v124.updates.title" = "تُثبَّت نيابةً عنك";
+"whatsNew.v125.headline" = "عاد احتساب WorkBuddy";
+"whatsNew.v125.workbuddy.detail" = "نقل WorkBuddy AI 5.5 جلساته إلى مجلد جديد، لذلك لم تُحتسب رموزه. يقرأها TokNotch الآن من هناك.";
+"whatsNew.v125.workbuddy.title" = "ظهور استخدام WorkBuddy";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";

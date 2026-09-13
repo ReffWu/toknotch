@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "업데이트는 알아서";
 "whatsNew.v124.updates.detail" = "새 버전은 이제 묻지 않고 알아서 다운로드하고 설치합니다. 직접 정하고 싶다면 설정에서 끌 수 있습니다.";
 "whatsNew.v124.updates.title" = "자동으로 다운로드하고 설치";
+"whatsNew.v125.headline" = "WorkBuddy 사용량이 다시 집계됩니다";
+"whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5가 세션을 새 폴더로 옮겨 토큰이 집계되지 않았습니다. 이제 TokNotch가 새 위치에서 읽어옵니다.";
+"whatsNew.v125.workbuddy.title" = "WorkBuddy 사용량 반영";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

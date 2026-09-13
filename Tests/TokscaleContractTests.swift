@@ -35,9 +35,24 @@ final class TokscaleContractTests: XCTestCase {
 
         """.write(to: codex.appendingPathComponent("rollout-\(day)T10-00-00-abc.jsonl"),
                   atomically: true, encoding: .utf8)
+
+        // WorkBuddy 5.5 writes under `.workbuddy-ai`, where tokscale 4.16 does
+        // not look on its own. Input includes the cached part, as WorkBuddy
+        // records it.
+        let workbuddy = home.appendingPathComponent(".workbuddy-ai/projects/Users-demo")
+        try FileManager.default.createDirectory(at: workbuddy, withIntermediateDirectories: true)
+        let noon = ISO8601DateFormatter().date(from: "\(day)T10:00:00Z") ?? Date()
+        let millis = Int64(noon.timeIntervalSince1970 * 1000)
+        try """
+        {"id":"m1","parentId":"p1","timestamp":\(millis),"type":"function_call","providerData":{"messageId":"m1","model":"gpt-5.6-sol","requestModelId":"gpt-5.6-sol","agent":"cli","usage":{"requests":1,"inputTokens":30000,"outputTokens":400,"totalTokens":30400,"inputTokensDetails":[{"cached_tokens":28000}],"outputTokensDetails":[{"reasoning_tokens":90}]}},"callId":"c1","name":"Read","sessionId":"w1","message":{"usage":{"input_tokens":30000,"output_tokens":400,"total_tokens":30400,"cache_read_input_tokens":28000}},"cwd":"/tmp/demo"}
+
+        """.write(to: workbuddy.appendingPathComponent("w1.jsonl"), atomically: true, encoding: .utf8)
     }
 
     override func tearDownWithError() throws {
+        for standIn in TokscaleCLI.standInHomes(for: home.path) {
+            try? FileManager.default.removeItem(atPath: standIn.home)
+        }
         try? FileManager.default.removeItem(at: home)
     }
 
@@ -66,13 +81,20 @@ final class TokscaleContractTests: XCTestCase {
         // tokscale separates both, and TokNotch has to add reasoning back.
         XCTAssertEqual(totals("gpt-5.6-terra"),
                        TokenCounts(input: 1000, output: 300, cacheRead: 2000, reasoning: 100))
+        // WorkBuddy from its new folder, counted once. Twice means tokscale now
+        // finds `.workbuddy-ai` by itself and the relocation should go.
+        XCTAssertEqual(report.entries.filter { $0.model == "gpt-5.6-sol" }.map(\.tokens),
+                       [TokenCounts(input: 2000, output: 400, cacheRead: 28000)])
     }
 
     func testTheDailyGraphAgreesWithTheLifetimeTotal() async throws {
         async let graph = TokscaleCLI.graph(home: home.path)
         async let lifetime = TokscaleCLI.lifetime(home: home.path)
-        let digest = UsageDigest.build(graph: try await graph, lifetime: try await lifetime)
-        XCTAssertEqual(digest.lifetime.totals.tokens, 3365 + 3400)
+        let days = try await graph
+        let digest = UsageDigest.build(graph: days, lifetime: try await lifetime)
+        XCTAssertEqual(digest.lifetime.totals.tokens, 3365 + 3400 + 30400)
+        XCTAssertEqual(days.contributions.map(\.tokenBreakdown.total).reduce(0, +),
+                       3365 + 3400 + 30400)
         XCTAssertEqual(Set(digest.vendors.map(\.vendor)), [.anthropic, .openai])
     }
 }

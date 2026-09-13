@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "更新，交给它自己";
 "whatsNew.v124.updates.detail" = "新版本现在会自己下载、自己安装，不用再点任何提示。想自己决定？可以在设置里关掉。";
 "whatsNew.v124.updates.title" = "自动下载并安装";
+"whatsNew.v125.headline" = "WorkBuddy 的用量回来了";
+"whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 把会话记录搬到了新文件夹，之前它的 token 没有被统计到。TokNotch 现在会从新位置读取。";
+"whatsNew.v125.workbuddy.title" = "WorkBuddy 用量已计入";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

@@ -139,5 +139,8 @@
 "whatsNew.v124.headline" = "Updates erledigen sich selbst";
 "whatsNew.v124.updates.detail" = "Neue Versionen werden jetzt ohne Nachfrage geladen und installiert. Lieber selbst entscheiden? In den Einstellungen abschalten.";
 "whatsNew.v124.updates.title" = "Wird für dich installiert";
+"whatsNew.v125.headline" = "WorkBuddy zählt wieder mit";
+"whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 speichert Sitzungen in einem neuen Ordner, daher fehlten seine Tokens. TokNotch liest sie jetzt von dort.";
+"whatsNew.v125.workbuddy.title" = "WorkBuddy-Nutzung wird erfasst";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

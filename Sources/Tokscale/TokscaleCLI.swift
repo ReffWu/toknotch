@@ -98,15 +98,79 @@ enum TokscaleCLI {
     /// `home` points tokscale at another home directory, which is how the
     /// contract tests feed it session logs with known token counts.
     static func graph(home: String? = nil) async throws -> GraphReport {
-        try await run(["graph", "--no-spinner"] + homeArguments(home), as: GraphReport.self)
+        var report = try await run(["graph", "--no-spinner"] + homeArguments(home),
+                                   as: GraphReport.self)
+        for standIn in standInHomes(for: home) {
+            let arguments = ["graph", "--no-spinner", "--client", standIn.client, "--home", standIn.home]
+            if let moved = try? await run(arguments, as: GraphReport.self) {
+                report = report.merging(moved)
+            }
+        }
+        return report
     }
 
     /// Every session tokscale can see, grouped by model. The lifetime ring's
     /// source, and the only one that reaches past the day-level window.
     static func lifetime(home: String? = nil) async throws -> UsageReport {
-        try await run(["--json", "--no-spinner", "--group-by", "client,provider,model"]
-                          + homeArguments(home),
-                      as: UsageReport.self)
+        let arguments = ["--json", "--no-spinner", "--group-by", "client,provider,model"]
+        var report = try await run(arguments + homeArguments(home), as: UsageReport.self)
+        for standIn in standInHomes(for: home) {
+            if let moved = try? await run(arguments + ["--client", standIn.client, "--home", standIn.home],
+                                          as: UsageReport.self) {
+                report = report.merging(moved)
+            }
+        }
+        return report
+    }
+
+    /// A tool that now keeps its sessions somewhere the pinned tokscale does
+    /// not look.
+    ///
+    /// WorkBuddy 5.5 ("WorkBuddy AI") writes to `~/.workbuddy-ai`, while
+    /// tokscale 4.16 still reads only `~/.workbuddy`, so its usage showed as
+    /// nothing at all. tokscale parses the new folder perfectly once it finds
+    /// it, so each moved folder is shown to tokscale through a stand-in home
+    /// that links the old name to the new place, read for that one tool only,
+    /// and added to the main report.
+    ///
+    /// Remove an entry once tokscale scans the new place itself: the contract
+    /// tests then count that tool twice and fail, which is the signal.
+    struct Relocation {
+        let client: String
+        let expected: String
+        let actual: String
+    }
+
+    static let relocations = [
+        Relocation(client: "workbuddy", expected: ".workbuddy", actual: ".workbuddy-ai")
+    ]
+
+    /// One stand-in home per moved tool that is actually on this Mac.
+    ///
+    /// Kept in the temporary directory under a name derived from the real
+    /// home, so every refresh reuses the same link and a test home never
+    /// shares one with the user's.
+    static func standInHomes(for home: String?) -> [(client: String, home: String)] {
+        let base = home ?? NSHomeDirectory()
+        let files = FileManager.default
+        let key = String(base.utf8.reduce(UInt64(5381)) { ($0 << 5) &+ $0 &+ UInt64($1) }, radix: 36)
+        return relocations.compactMap { relocation in
+            let actual = (base as NSString).appendingPathComponent(relocation.actual)
+            guard files.fileExists(atPath: actual) else { return nil }
+            let standIn = files.temporaryDirectory
+                .appendingPathComponent("TokNotchHome-\(relocation.client)-\(key)")
+            let link = standIn.appendingPathComponent(relocation.expected).path
+            if (try? files.destinationOfSymbolicLink(atPath: link)) != actual {
+                try? files.removeItem(atPath: link)
+                do {
+                    try files.createDirectory(at: standIn, withIntermediateDirectories: true)
+                    try files.createSymbolicLink(atPath: link, withDestinationPath: actual)
+                } catch {
+                    return nil
+                }
+            }
+            return (relocation.client, standIn.path)
+        }
     }
 
     /// Antigravity keeps no session log tokscale can scan. Its usage lives in
@@ -293,6 +357,23 @@ struct GraphReport: Decodable, Equatable {
 
     init(contributions: [Day]) { self.contributions = contributions }
 
+    /// Both reports' days, with a date both have added together.
+    func merging(_ other: GraphReport) -> GraphReport {
+        var days = Dictionary(contributions.map { ($0.date, $0) }, uniquingKeysWith: { a, _ in a })
+        for day in other.contributions {
+            guard let existing = days[day.date] else {
+                days[day.date] = day
+                continue
+            }
+            days[day.date] = Day(date: day.date,
+                                 tokenBreakdown: existing.tokenBreakdown + day.tokenBreakdown,
+                                 clients: existing.clients + day.clients,
+                                 cost: existing.cost + day.cost,
+                                 messages: existing.messages + day.messages)
+        }
+        return GraphReport(contributions: days.values.sorted { $0.date < $1.date })
+    }
+
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         contributions = try c.decodeIfPresent([Day].self, forKey: .contributions) ?? []
@@ -338,6 +419,10 @@ struct UsageReport: Decodable, Equatable {
     enum CodingKeys: String, CodingKey { case entries, totalMessages }
 
     init(entries: [Entry], messages: Int) { self.entries = entries; self.messages = messages }
+
+    func merging(_ other: UsageReport) -> UsageReport {
+        UsageReport(entries: entries + other.entries, messages: messages + other.messages)
+    }
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
