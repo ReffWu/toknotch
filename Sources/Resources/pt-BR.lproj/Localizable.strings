@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "Menos coisas para ajustar";
 "whatsNew.v110.updates.detail" = "O TokNotch agora procura novas versões sozinho e as instala no lugar, assinadas e autenticadas pela Apple, para que os números acompanhem as ferramentas que você usa.";
 "whatsNew.v110.updates.title" = "As atualizações chegam sozinhas";
+"whatsNew.v120.headline" = "O retorno num relance, com menos para ajustar";
+"whatsNew.v120.menuBar.detail" = "O TokNotch não ocupa mais espaço no Dock. O ícone na barra de menus mostra o retorno do período e os tokens de hoje num relance.";
+"whatsNew.v120.menuBar.title" = "Mora na barra de menus";
+"whatsNew.v120.payback.detail" = "Cada provedor fica em uma linha com plano, dia de renovação, múltiplo e chave do anel. Detalhes como um preço personalizado só aparecem quando você precisa.";
+"whatsNew.v120.payback.title" = "Retorno em uma página";
+"whatsNew.v120.simpler.detail" = "Os ajustes agora são uma única página para o notch, o idioma e o ícone. O modo oculto saiu, então o notch está sempre à mão.";
+"whatsNew.v120.simpler.title" = "Menos escolhas";
 "whatsNew.version" = "Versão %@";
 "whatsNew.welcome" = "Boas-vindas ao TokNotch";

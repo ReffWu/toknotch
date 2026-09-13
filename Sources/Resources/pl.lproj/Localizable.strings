@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "Mniej do ustawiania";
 "whatsNew.v110.updates.detail" = "TokNotch sam sprawdza teraz nowe wersje i instaluje je na miejscu, podpisane i poświadczone przez Apple, więc liczby nadążają za narzędziami, których używasz.";
 "whatsNew.v110.updates.title" = "Uaktualnienia przychodzą same";
+"whatsNew.v120.headline" = "Zwrot w jednym spojrzeniu, mniej do ustawiania";
+"whatsNew.v120.menuBar.detail" = "TokNotch nie zajmuje już miejsca w Docku. Ikona na pasku menu pokazuje zwrot w bieżącym okresie i dzisiejsze tokeny w jednym spojrzeniu.";
+"whatsNew.v120.menuBar.title" = "Mieszka na pasku menu";
+"whatsNew.v120.payback.detail" = "Każdy dostawca zajmuje jeden wiersz: plan, dzień odnowienia, krotność i przełącznik pierścienia. Szczegóły, takie jak własna cena, pojawiają się tylko wtedy, gdy są potrzebne.";
+"whatsNew.v120.payback.title" = "Zwrot na jednej stronie";
+"whatsNew.v120.simpler.detail" = "Ustawienia to teraz jedna strona z notchem, językiem i ikoną. Tryb ukrycia zniknął, więc notch jest zawsze pod ręką.";
+"whatsNew.v120.simpler.title" = "Mniej wyborów";
 "whatsNew.version" = "Wersja %@";
 "whatsNew.welcome" = "Witaj w TokNotch";

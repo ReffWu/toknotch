@@ -7,7 +7,9 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
-## [Unreleased]
+## [1.2.0]
+
+Your payback at a glance, with less to set.
 
 ### Changed
 
@@ -22,6 +24,8 @@ What's New sheet after an update.
   in its notch, with a separate pixel-aligned drawing for 1x displays.
 - **A better first edge.** On a Mac with a notch, a new install starts on the
   top edge; everywhere else, on the right.
+- **Cleaner selection rings.** The ring around the chosen app icon and edge
+  picture now follows its shape with an even gap.
 - **Straight to Payback on first launch.** A fresh install opens settings on the
   Payback page; What's New only appears after later updates.
 
@@ -94,4 +98,6 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.2.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.0
+[1.1.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.0.0

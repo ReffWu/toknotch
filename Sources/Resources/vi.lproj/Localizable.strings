@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "Ít thứ phải cài đặt hơn";
 "whatsNew.v110.updates.detail" = "TokNotch giờ tự kiểm tra phiên bản mới và cài đặt ngay tại chỗ, đã được Apple ký và công chứng, để các con số luôn khớp với công cụ bạn dùng.";
 "whatsNew.v110.updates.title" = "Bản cập nhật tự tới";
+"whatsNew.v120.headline" = "Hoàn vốn nhìn là thấy, ít phải cài đặt hơn";
+"whatsNew.v120.menuBar.detail" = "TokNotch không còn chiếm chỗ trên Dock. Biểu tượng trên thanh menu cho thấy ngay kỳ này đã hoàn vốn bao nhiêu lần và hôm nay dùng bao nhiêu token.";
+"whatsNew.v120.menuBar.title" = "Sống trên thanh menu";
+"whatsNew.v120.payback.detail" = "Mỗi nhà cung cấp nằm trên một dòng: gói, ngày gia hạn, hệ số hoàn vốn và công tắc vòng. Chi tiết như giá tùy chỉnh chỉ hiện khi bạn cần.";
+"whatsNew.v120.payback.title" = "Hoàn vốn trên một trang";
+"whatsNew.v120.simpler.detail" = "Cài đặt giờ là một trang cho notch, ngôn ngữ và biểu tượng. Chế độ ẩn đã bị bỏ, nên notch luôn trong tầm tay.";
+"whatsNew.v120.simpler.title" = "Ít lựa chọn hơn";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

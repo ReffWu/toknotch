@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "設定することが減りました";
 "whatsNew.v110.updates.detail" = "TokNotch は新しいバージョンを自分で確認し、その場でインストールします。Apple の署名と公証済みなので、数字はいつも使っているツールに追いつきます。";
 "whatsNew.v110.updates.title" = "アップデートは自動で届きます";
+"whatsNew.v120.headline" = "回収がひと目でわかり、設定はもっと少なく";
+"whatsNew.v120.menuBar.detail" = "TokNotch は Dock を使わなくなりました。メニューバーのアイコンから、今期の回収倍率と今日のトークン数がひと目でわかります。";
+"whatsNew.v120.menuBar.title" = "メニューバーに住みます";
+"whatsNew.v120.payback.detail" = "サービスごとに 1 行：プラン、更新日、回収倍率、リングのスイッチ。カスタム料金のような細かい項目は、必要なときだけ現れます。";
+"whatsNew.v120.payback.title" = "回収を 1 ページに";
+"whatsNew.v120.simpler.detail" = "設定はノッチ、言語、アイコンだけの 1 ページに。完全に隠すモードをなくし、ノッチはいつも手の届くところにあります。";
+"whatsNew.v120.simpler.title" = "選ぶことが減りました";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "Minder in te stellen";
 "whatsNew.v110.updates.detail" = "TokNotch zoekt nu zelf naar nieuwe versies en installeert ze ter plekke, ondertekend en notarieel bekrachtigd door Apple, zodat de getallen blijven kloppen met je tools.";
 "whatsNew.v110.updates.title" = "Updates komen vanzelf";
+"whatsNew.v120.headline" = "Terugverdiend in één oogopslag, minder in te stellen";
+"whatsNew.v120.menuBar.detail" = "TokNotch neemt geen plek meer in het Dock in. Het menubalksymbool toont in één oogopslag wat deze periode is terugverdiend en de tokens van vandaag.";
+"whatsNew.v120.menuBar.title" = "Woont in de menubalk";
+"whatsNew.v120.payback.detail" = "Elke aanbieder staat op één regel met abonnement, verlengdag, factor en ringschakelaar. Details zoals een eigen prijs verschijnen alleen als je ze nodig hebt.";
+"whatsNew.v120.payback.title" = "Terugverdienen op één pagina";
+"whatsNew.v120.simpler.detail" = "Instellingen is nu één pagina voor de notch, taal en het symbool. De verborgen modus is weg, dus de notch is altijd binnen handbereik.";
+"whatsNew.v120.simpler.title" = "Minder te kiezen";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

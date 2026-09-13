@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "Fewer things to set";
 "whatsNew.v110.updates.detail" = "TokNotch now checks for new versions by itself and installs them in place, signed and notarized by Apple, so the numbers keep matching the tools you use.";
 "whatsNew.v110.updates.title" = "Updates arrive on their own";
+"whatsNew.v120.headline" = "Your payback at a glance, with less to set";
+"whatsNew.v120.menuBar.detail" = "TokNotch no longer takes a spot in the Dock. Its menu bar icon shows this period's payback and today's tokens at a glance.";
+"whatsNew.v120.menuBar.title" = "Lives in the menu bar";
+"whatsNew.v120.payback.detail" = "Every vendor sits on one line with its plan, renewal day, payback multiple and ring switch. Details like a custom price appear only when you need them.";
+"whatsNew.v120.payback.title" = "Payback on one page";
+"whatsNew.v120.simpler.detail" = "Settings is now one page for the notch, language and icon. The hidden mode is gone, so the notch is always within reach.";
+"whatsNew.v120.simpler.title" = "Fewer choices to make";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Welcome to TokNotch";

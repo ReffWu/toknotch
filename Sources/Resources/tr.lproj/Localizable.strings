@@ -108,5 +108,12 @@
 "whatsNew.v110.simpler.title" = "Ayarlanacak daha az şey";
 "whatsNew.v110.updates.detail" = "TokNotch artık yeni sürümleri kendisi denetler ve yerinde kurar; Apple tarafından imzalanmış ve onaylanmış olarak, böylece sayılar kullandığınız araçlarla uyumlu kalır.";
 "whatsNew.v110.updates.title" = "Güncellemeler kendiliğinden gelir";
+"whatsNew.v120.headline" = "Amortisman bir bakışta, ayarlanacak şey daha az";
+"whatsNew.v120.menuBar.detail" = "TokNotch artık Dock’ta yer kaplamıyor. Menü çubuğu simgesi bu dönemin amortismanını ve bugünkü token’ları bir bakışta gösterir.";
+"whatsNew.v120.menuBar.title" = "Menü çubuğunda yaşıyor";
+"whatsNew.v120.payback.detail" = "Her sağlayıcı tek satırda: plan, yenileme günü, kat ve halka anahtarı. Özel fiyat gibi ayrıntılar yalnızca gerektiğinde görünür.";
+"whatsNew.v120.payback.title" = "Amortisman tek sayfada";
+"whatsNew.v120.simpler.detail" = "Ayarlar artık çentik, dil ve simge için tek bir sayfa. Gizleme modu kaldırıldı, çentik her zaman el altında.";
+"whatsNew.v120.simpler.title" = "Daha az seçim";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";
