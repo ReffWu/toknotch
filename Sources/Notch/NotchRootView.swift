@@ -23,17 +23,17 @@ struct NotchRootView: View {
                     SettingsOrb(isHovered: model.isHoveringSettings, edge: model.edge,
                                     convex: model.orbHugsCorner,
                                     arcRadius: model.orbArcRadius,
-                                    arcOffset: model.orbArcOffset)
+                                    arcOffset: model.orbArcOffset,
+                                    mergeScale: model.isExpanded ? 1 : model.orbMergeScale)
+                        // Rides the far corner as the notch folds, on the
+                        // fold's own spring, so the two leave as one thing.
                         .position(orbCentre(place))
-                        // Outward, into the black — not inward to nothing.
-                        .scaleEffect(model.isExpanded ? 1 : model.orbMergeScale)
-                        // Full strength the whole way in. The arc is buried in
-                        // the notch before this reaches zero, so the fade is
-                        // only there to guarantee nothing is left on screen
-                        // once the notch has folded — it is never what the eye
-                        // sees the arc leave by.
-                        .opacity(model.isExpanded ? 1 : 0)
                         .animation(motion(orbMotion), value: model.isExpanded)
+                        // Full strength most of the way in. The arc is inside
+                        // the black before this reaches zero, so the fade only
+                        // guarantees nothing is left once the notch has folded.
+                        .opacity(model.isExpanded ? 1 : 0)
+                        .animation(motion(orbFade), value: model.isExpanded)
                 }
 
                 if let ring = model.hoveredRing, let index = model.hoveredIndex,
@@ -64,11 +64,16 @@ struct NotchRootView: View {
         .animation(motion(NotchMotion.unfold), value: model.isExpanded)
     }
 
-    /// Opening and closing are not mirror images. Appearing, the arc waits its
-    /// turn behind the cells before it; hiding, any delay at all lets the notch
-    /// start folding first, and the arc reads as going with the frame rather
-    /// than into it.
+    /// Appearing, the arc waits its turn behind the cells before it. Hiding, it
+    /// takes exactly the notch's spring with no delay: it is riding the corner,
+    /// and any other timing lets the two drift apart mid-fold.
     private var orbMotion: Animation {
+        model.isExpanded
+            ? NotchMotion.stagger(index: model.rings.count)
+            : NotchMotion.unfold
+    }
+
+    private var orbFade: Animation {
         model.isExpanded
             ? NotchMotion.stagger(index: model.rings.count)
             : NotchMotion.merge
@@ -171,9 +176,10 @@ struct NotchRootView: View {
     /// The orb sits on the flare's own centre of curvature, one radius in from
     /// the bezel and level with the far end of the shape.
     private func orbCentre(_ place: NotchPlacement) -> CGPoint {
-        place.point(
-            along: model.slack + model.orbAlong,
-            across: model.orbInset
+        let travel = model.orbFoldTravel
+        return place.point(
+            along: model.slack + model.orbAlong + travel.along,
+            across: model.orbInset + travel.across
         )
     }
 

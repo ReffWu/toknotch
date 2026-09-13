@@ -787,3 +787,56 @@ final class ExpansionShapeTests: XCTestCase {
                                     "the resting corners are squarer than the hardware's")
     }
 }
+
+/// Reported as "the arc flies off the wrong way when the notch folds": the arc
+/// stayed where the open corner had been, and on a flush bar it even slid away
+/// from the notch, while the notch itself folded toward its centre and the
+/// bezel. It has to leave the way the notch leaves, on every edge.
+@MainActor
+final class OrbFoldsWithTheNotchTests: XCTestCase {
+    private func model(edge: NotchEdge, screen: ScreenDescribing) -> NotchViewModel {
+        let model = NotchViewModel()
+        model.edge = edge
+        model.isExpanded = true
+        model.rings = (0..<4).map { index in TestRing.make(index, rows: 0) }
+        model.adopt(screen: screen)
+        return model
+    }
+
+    func testTheArcTravelsWithTheFarCornerOnEveryEdge() {
+        for screen in [notched, plain] as [ScreenDescribing] {
+            for edge in NotchEdge.allCases {
+                let m = model(edge: edge, screen: screen)
+                let label = "\(edge), \(m.isFlushWithHardware ? "flush" : "flared")"
+                XCTAssertEqual(m.orbFoldTravel.along, 0, label)
+                XCTAssertEqual(m.orbFoldTravel.across, 0, label)
+
+                let openEnd = m.shapeLength, openDepth = m.notchDepth
+                let along = m.orbAlong, across = m.orbInset
+                m.isExpanded = false
+                let travel = m.orbFoldTravel
+
+                XCTAssertLessThan(travel.along, 0, "\(label): not toward the notch's centre")
+                XCTAssertLessThan(travel.across, 0, "\(label): not toward the bezel")
+
+                // Where it sat relative to the open corner is where it sits
+                // relative to the folded one.
+                let restingEnd = (m.shapeLength + m.restingLength) / 2
+                XCTAssertEqual(along + travel.along - restingEnd, along - openEnd,
+                               accuracy: 0.001, label)
+                XCTAssertEqual(across + travel.across - m.restingDepth, across - openDepth,
+                               accuracy: 0.001, label)
+            }
+        }
+    }
+
+    /// Scaled about its own circle, the arc has to move into the black: grow
+    /// onto a flare from the pocket outside it, shrink into a convex corner
+    /// whose centre is inside the bar.
+    func testTheArcScalesIntoTheBlack() {
+        XCTAssertGreaterThan(model(edge: .right, screen: plain).orbMergeScale, 1)
+        let flush = model(edge: .top, screen: notched)
+        XCTAssertTrue(flush.isFlushWithHardware)
+        XCTAssertLessThan(flush.orbMergeScale, 1)
+    }
+}

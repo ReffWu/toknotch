@@ -164,7 +164,7 @@ enum RingBuilder {
                                         verdict,
                                         UsageFormat.money(payback.earned, language),
                                         UsageFormat.money(payback.subscription.monthlyUSD, language)),
-                heroTint: payback.hasPaidBack ? IntensityBand.record.color : IntensityBand.strong.color,
+                heroTint: payback.hasPaidBack ? Palette.paidBack : Palette.onTheWay,
                 heroFraction: payback.scale.fill(payback.multiple),
                 heroMarker: payback.scale.breakEven,
                 fraction: share, tint: usage.vendor.ringTint,

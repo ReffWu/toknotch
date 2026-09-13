@@ -24,6 +24,15 @@ enum Palette {
     static let amber         = Color(hex: 0xFFC85C)           // Amber Gold
     static let indigo        = Color(hex: 0x818CF8)           // Cyber Indigo
 
+    /// The payback verdict, and nothing else: green once a plan has paid for
+    /// itself, orange while it is still on the way. The same pair Settings
+    /// uses (the system green and orange, in their dark-appearance values), so
+    /// a multiple means the same thing wherever it is read. Deliberately not
+    /// the intensity bands, whose ember means "past your own best" and made a
+    /// paid-back plan look like a warning.
+    static let paidBack      = Color(hex: 0x30D158)
+    static let onTheWay      = Color(hex: 0xFF9F0A)
+
     static let textPrimary   = Color.white
     static let textSecondary = Color(hex: 0x808080)
 }

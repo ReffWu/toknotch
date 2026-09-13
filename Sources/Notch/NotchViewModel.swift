@@ -157,12 +157,31 @@ final class NotchViewModel: ObservableObject {
         return min(NotchLayout.cornerRadius, hardwareNotch.height / 2)
     }
 
-    /// What the orb scales to as it folds away. Nestled in a flare it grows
-    /// outward along the normal and is swallowed by the notch's black; hanging
-    /// off a corner there is nothing to be swallowed by, so it draws in on
-    /// itself and leaves by the fade.
+    /// What the resting arc scales to, about its own circle, as it folds away.
+    ///
+    /// Always *into* the black. Nestled in a flare the arc's circle is the
+    /// pocket outside the shape, so it grows onto the flare and past it.
+    /// Hanging off a convex corner its circle is the corner's own centre,
+    /// inside the shape, so it shrinks to a stroke inside the corner. The
+    /// corner version used to scale the whole orb about the button instead,
+    /// which sits outside the bar — so the arc slid away from the notch while
+    /// the notch folded the other way.
     var orbMergeScale: CGFloat {
-        orbHugsCorner ? 0.6 : NotchLayout.orbMergeScale
+        guard orbHugsCorner else { return NotchLayout.orbMergeScale }
+        return max(0, drawnCornerRadius - NotchLayout.orbStroke) / orbArcRadius
+    }
+
+    /// How far the orb travels to stay on the notch's far corner as it folds,
+    /// along the stack and across it.
+    ///
+    /// The shape folds toward its own centre and toward the bezel at once, so
+    /// an orb that stayed where the open corner was is left behind, and one
+    /// that scales in place appears to move against the fold. Carried with the
+    /// corner, it goes wherever the notch goes, on every edge.
+    var orbFoldTravel: (along: CGFloat, across: CGFloat) {
+        guard !isExpanded else { return (0, 0) }
+        return (-(shapeLength - restingLength) / 2,
+                -(contentInset + NotchLayout.bodyDepth(for: edge) - restingDepth))
     }
 
     /// The circle the resting arc follows.

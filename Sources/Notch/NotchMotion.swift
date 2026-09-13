@@ -29,15 +29,12 @@ enum NotchMotion {
     /// new value reads as a glitch, one that sweeps reads as a measurement.
     static let reading = Animation.spring(response: 0.9, dampingFraction: 0.9)
 
-    /// The settings arc being taken back into the notch.
+    /// The settings arc fading as the notch takes it back.
     ///
-    /// Quicker than `unfold` and with no delay, which is the whole point: on
-    /// the staggered spring the arc lagged the fold, so the notch began closing
-    /// first and the arc appeared to leave with the screen edge instead of
-    /// being absorbed. It has to be inside the black while there is still black
-    /// to be inside. Eased *in* because a thing being drawn into a mass
-    /// accelerates as it goes.
-    static let merge = Animation.easeIn(duration: 0.2)
+    /// Only the fade: the arc's movement rides the fold's own spring. Eased
+    /// *in*, so it stays at full strength while it travels with the corner and
+    /// is gone by the time the notch has settled.
+    static let merge = Animation.easeIn(duration: 0.3)
 
     /// Each cell trails the one above it, so the stack unfurls rather than
     /// appearing all at once. Capped so a long list never feels sluggish.

@@ -24,6 +24,9 @@ struct SettingsOrb: View {
     /// where the two are the same object; back onto the corner when the button
     /// has had to move clear of the bar.
     var arcOffset: CGSize = .zero
+    /// The resting arc's scale as the notch folds, about its own circle so it
+    /// moves into the black rather than toward the button.
+    var mergeScale: CGFloat = 1
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -72,6 +75,7 @@ struct SettingsOrb: View {
                 .frame(width: arcRadius * 2, height: arcRadius * 2)
                 .opacity(isHovered ? 0 : 1)
                 .scaleEffect(isHovered ? 0.86 : 1)
+                .scaleEffect(mergeScale)
                 .offset(arcOffset)
 
             Circle()

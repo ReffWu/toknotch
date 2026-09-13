@@ -117,7 +117,8 @@ enum NotchLayout {
     /// merely becoming faint.
     ///
     /// Shrinking it instead pulled it toward its own centre, away from the
-    /// notch, which is what read as flying off.
+    /// notch. Its position meanwhile travels with the folding corner, see
+    /// `NotchViewModel.orbFoldTravel`.
     static var orbMergeScale: CGFloat { (curlRadius + orbStroke) / orbArcRadius }
     /// Generous, like the pill's — it is a small target on a screen edge.
     static let orbHotZone  = Design.px(152)
