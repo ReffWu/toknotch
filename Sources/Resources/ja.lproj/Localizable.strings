@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "サービスごとに自分の色";
 "whatsNew.v121.fold.title" = "設定の弧がノッチと一緒にたたまれます";
 "whatsNew.v121.headline" = "小さなところまで、きちんと";
+"whatsNew.v122.headline" = "ほかの App もどうぞ";
+"whatsNew.v122.more.detail" = "設定の下に Reff Wu のほかの App が並び、そのまま入手したり開いたりできます。";
+"whatsNew.v122.more.title" = "Reff Wu のほかの App";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

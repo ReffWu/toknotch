@@ -6,18 +6,27 @@
 
 **How many times over has each AI plan paid for itself?**
 
-Claude Code, Codex and the rest — priced against the published API rates,
-sitting at the edge of your screen.
+<a href="https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/download-en-dark.png">
+    <img src="docs/assets/readme/download-en-light.png" height="52" alt="Download for Mac">
+  </picture>
+</a>
+
+<sub>Free · macOS 14 or later · Signed and notarized by Apple</sub>
 
 English · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-[![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![16 languages](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#it-speaks-your-language)
-
 </div>
 
+<p align="center">
+  <img src="docs/assets/readme/hero-en.png" alt="How many times over has each AI plan paid for itself?">
+</p>
+
 ---
+
+Claude Code, Codex and the rest — priced against the published API rates,
+sitting at the edge of your screen.
 
 You know what you pay every month. You don't know what you got for it.
 
@@ -32,11 +41,6 @@ in front of you:
 </div>
 
 Or, when a plan hasn't earned its keep yet: **$18 to go**.
-
-<p align="center">
-  <img src="docs/assets/preview-tooltip.png" width="48%" alt="A usage card, opened" />
-  <img src="docs/assets/preview-detail.png" width="48%" alt="TokNotch resting at the screen edge" />
-</p>
 
 ---
 

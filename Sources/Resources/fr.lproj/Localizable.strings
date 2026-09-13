@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "Chaque fournisseur dans sa couleur";
 "whatsNew.v121.fold.title" = "L’arc des réglages se replie avec l’encoche";
 "whatsNew.v121.headline" = "Les détails, bien faits";
+"whatsNew.v122.headline" = "Découvrez les autres apps";
+"whatsNew.v122.more.detail" = "En bas des réglages figurent maintenant les autres apps de Reff Wu, à obtenir ou ouvrir d’un clic.";
+"whatsNew.v122.more.title" = "Plus d’apps de Reff Wu";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Bienvenue dans TokNotch";

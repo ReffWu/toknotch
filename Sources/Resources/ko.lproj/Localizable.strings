@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "제공업체마다 자기 색";
 "whatsNew.v121.fold.title" = "설정 호가 노치와 함께 접힙니다";
 "whatsNew.v121.headline" = "작은 부분까지 제대로";
+"whatsNew.v122.headline" = "다른 앱도 만나 보세요";
+"whatsNew.v122.more.detail" = "설정 아래에 Reff Wu가 만든 다른 앱이 표시되며, 바로 받거나 열 수 있습니다.";
+"whatsNew.v122.more.title" = "Reff Wu의 다른 앱";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

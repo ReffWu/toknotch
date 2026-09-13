@@ -35,10 +35,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let controller = NotchWindowController()
 
         // `TOKNOTCH_DEMO=1` puts fixed numbers on screen for screenshots and
-        // for eyeballing the layout without touching tokscale.
-        if ProcessInfo.processInfo.environment["TOKNOTCH_DEMO"] == "1" {
-            controller.model.rings = Fixtures.rings()
+        // for eyeballing the layout without touching tokscale. For the README
+        // and site shots, `TOKNOTCH_DEMO_LANGUAGE`, `TOKNOTCH_DEMO_EDGE` and
+        // `TOKNOTCH_DEMO_HOVER` (a ring index) choose what is on screen.
+        let environment = ProcessInfo.processInfo.environment
+        if environment["TOKNOTCH_DEMO"] == "1" {
+            let language = environment["TOKNOTCH_DEMO_LANGUAGE"]
+                .flatMap(AppLanguage.init(rawValue:)) ?? .simplifiedChinese
+            controller.model.rings = Fixtures.rings(language: language)
+            if let edge = environment["TOKNOTCH_DEMO_EDGE"].flatMap(NotchEdge.init(rawValue:)) {
+                controller.model.edge = edge
+            }
             controller.show()
+            if let hover = environment["TOKNOTCH_DEMO_HOVER"].flatMap(Int.init) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    controller.present(hovering: hover)
+                }
+            }
             notchController = controller
             return
         }

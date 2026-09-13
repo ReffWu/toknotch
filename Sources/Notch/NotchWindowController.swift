@@ -83,6 +83,19 @@ final class NotchWindowController {
             .store(in: &cancellables)
     }
 
+    /// For screenshots: open, with one card showing, and no longer following
+    /// the pointer, which would otherwise fold it again within a moment.
+    func present(hovering index: Int) {
+        cursorTimer?.invalidate()
+        cursorTimer = nil
+        mouseMonitors.forEach(NSEvent.removeMonitor)
+        mouseMonitors.removeAll()
+        model.isAlwaysOn = true
+        model.isExpanded = true
+        model.hoveredIndex = index
+        updateInteractiveRects()
+    }
+
     func stop() {
         setPointing(false)
         foldWork?.cancel()

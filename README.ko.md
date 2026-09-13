@@ -6,17 +6,26 @@
 
 **내 AI 요금제, 몇 배나 본전을 뽑았을까?**
 
-Claude Code, Codex 등을 공개 API 요금으로 환산해 화면 가장자리에.
+<a href="https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/download-ko-dark.png">
+    <img src="docs/assets/readme/download-ko-light.png" height="52" alt="Mac용 다운로드">
+  </picture>
+</a>
+
+<sub>무료 · macOS 14 이상 · Apple 서명 및 공증 완료</sub>
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · 한국어
 
-[![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![16개 언어](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#당신의-언어로)
-
 </div>
 
+<p align="center">
+  <img src="docs/assets/readme/hero-ko.png" alt="내 AI 요금제, 몇 배나 본전을 뽑았을까?">
+</p>
+
 ---
+
+Claude Code, Codex 등을 공개 API 요금으로 환산해 화면 가장자리에.
 
 매달 얼마를 내는지는 압니다. 그만큼 무엇을 얻었는지는 모릅니다.
 
@@ -30,11 +39,6 @@ TokNotch는 코딩 도구가 실제로 돌린 양을 모두 더하고, 같은 �
 </div>
 
 아직 본전을 못 뽑은 요금제라면 이렇게 말합니다: **$18 남음**.
-
-<p align="center">
-  <img src="docs/assets/preview-tooltip.png" width="48%" alt="펼친 사용량 카드" />
-  <img src="docs/assets/preview-detail.png" width="48%" alt="화면 가장자리에 머무는 TokNotch" />
-</p>
 
 ---
 

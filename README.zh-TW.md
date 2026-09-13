@@ -6,17 +6,26 @@
 
 **你的每個 AI 方案，到底回本了幾倍？**
 
-Claude Code、Codex 等等 —— 按官方 API 公開價折算，就擺在螢幕邊上。
+<a href="https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/download-zh-Hant-dark.png">
+    <img src="docs/assets/readme/download-zh-Hant-light.png" height="52" alt="下載 Mac 版">
+  </picture>
+</a>
+
+<sub>免費 · macOS 14 或更新版本 · 經 Apple 簽署與公證</sub>
 
 [English](README.md) · [简体中文](README.zh-CN.md) · 繁體中文 · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-[![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![16 種語言](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#它說你的語言)
-
 </div>
 
+<p align="center">
+  <img src="docs/assets/readme/hero-zh-Hant.png" alt="你的每個 AI 方案，到底回本了幾倍？">
+</p>
+
 ---
+
+Claude Code、Codex 等等 —— 按官方 API 公開價折算，就擺在螢幕邊上。
 
 你知道自己每個月付了多少。你不知道自己到底拿回了多少。
 
@@ -30,11 +39,6 @@ TokNotch 把你的程式工具真正跑掉的量全部加起來，按官方 API 
 </div>
 
 如果這個方案還沒賺回來，它就說：**還差 $18**。
-
-<p align="center">
-  <img src="docs/assets/preview-tooltip.png" width="48%" alt="展開的用量卡片" />
-  <img src="docs/assets/preview-detail.png" width="48%" alt="停在螢幕邊緣的 TokNotch" />
-</p>
 
 ---
 

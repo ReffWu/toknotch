@@ -6,17 +6,26 @@
 
 **その AI プラン、何倍の元が取れていますか？**
 
-Claude Code、Codex などを公開 API 料金で換算して、画面の端に。
+<a href="https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/download-ja-dark.png">
+    <img src="docs/assets/readme/download-ja-light.png" height="52" alt="Mac 版をダウンロード">
+  </picture>
+</a>
+
+<sub>無料 · macOS 14 以降 · Apple による署名と公証済み</sub>
 
 [English](README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · 日本語 · [한국어](README.ko.md)
 
-[![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![16 言語](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#あなたの言語で)
-
 </div>
 
+<p align="center">
+  <img src="docs/assets/readme/hero-ja.png" alt="その AI プラン、何倍の元が取れていますか？">
+</p>
+
 ---
+
+Claude Code、Codex などを公開 API 料金で換算して、画面の端に。
 
 毎月いくら払っているかは知っている。それで何を得たかは知らない。
 
@@ -30,11 +39,6 @@ API 料金でこなしたらいくらになるかで換算して、数字をひ�
 </div>
 
 まだ元が取れていないプランなら、こう言います：**あと $18**。
-
-<p align="center">
-  <img src="docs/assets/preview-tooltip.png" width="48%" alt="開いた使用量カード" />
-  <img src="docs/assets/preview-detail.png" width="48%" alt="画面の端に控える TokNotch" />
-</p>
 
 ---
 

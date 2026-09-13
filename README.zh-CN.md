@@ -6,17 +6,26 @@
 
 **你的每个 AI 套餐，到底回本了几倍？**
 
-Claude Code、Codex 等等 —— 按官方 API 公开价折算，就摆在屏幕边上。
+<a href="https://github.com/ReffWu/toknotch/releases/latest/download/TokNotch.dmg">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/download-zh-Hans-dark.png">
+    <img src="docs/assets/readme/download-zh-Hans-light.png" height="52" alt="下载 Mac 版">
+  </picture>
+</a>
+
+<sub>免费 · macOS 14 或更新版本 · 经 Apple 签名与公证</sub>
 
 [English](README.md) · 简体中文 · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-[![macOS 14.0+](https://img.shields.io/badge/macOS-14.0%2B-blue?logo=apple&style=flat-square)](https://github.com/ReffWu/toknotch)
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](LICENSE)
-[![16 种语言](https://img.shields.io/badge/languages-16-cyan?style=flat-square)](#它说你的语言)
-
 </div>
 
+<p align="center">
+  <img src="docs/assets/readme/hero-zh-Hans.png" alt="你的每个 AI 套餐，到底回本了几倍？">
+</p>
+
 ---
+
+Claude Code、Codex 等等 —— 按官方 API 公开价折算，就摆在屏幕边上。
 
 你知道自己每个月付了多少。你不知道自己到底拿回了多少。
 
@@ -30,10 +39,6 @@ TokNotch 把你的编码工具真正跑掉的量全部加起来，按官方 API 
 </div>
 
 如果这个套餐还没赚回来，它就说：**还差 $18**。
-
-<p align="center">
-  <img src="docs/assets/demo-zh.gif" width="100%" alt="鼠标移到刘海上的 Anthropic 和 OpenAI 环，卡片展开显示已回本 37.2 倍和 13.6 倍" />
-</p>
 
 ---
 

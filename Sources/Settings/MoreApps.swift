@@ -3,7 +3,7 @@ import SwiftUI
 
 /// The other apps Reff Wu makes, for the card at the foot of Settings.
 ///
-/// Read from one list published on the artifacts site, so an app released
+/// Read from one list published on the apps site, so an app released
 /// later appears in every copy of every app already installed, without any of
 /// them having to ship an update. The list is public and fetched as a plain
 /// file: nothing about this Mac or its usage is sent anywhere.
@@ -28,7 +28,7 @@ final class MoreApps: ObservableObject {
         let apps: [Entry]
     }
 
-    static let catalogURL = URL(string: "https://reffwu.github.io/artifacts/apps/catalog.json")!
+    static let catalogURL = URL(string: "https://reffwu.github.io/apps/catalog.json")!
     /// A day: new apps are rare, and a list checked on every open would be a
     /// network request with nothing to show for it.
     private static let freshFor: TimeInterval = 24 * 60 * 60

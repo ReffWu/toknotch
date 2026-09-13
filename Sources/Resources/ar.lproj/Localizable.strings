@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "لكل مزوّد لونه";
 "whatsNew.v121.fold.title" = "ينطوي قوس الإعدادات مع النتوء";
 "whatsNew.v121.headline" = "تفاصيل صغيرة، متقنة";
+"whatsNew.v122.headline" = "تعرّف على التطبيقات الأخرى";
+"whatsNew.v122.more.detail" = "يعرض أسفل الإعدادات الآن تطبيقات Reff Wu الأخرى، لتحصل عليها أو تفتحها مباشرة.";
+"whatsNew.v122.more.title" = "المزيد من Reff Wu";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";

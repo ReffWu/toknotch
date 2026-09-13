@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "每家用自己的颜色";
 "whatsNew.v121.fold.title" = "设置小弧线跟着刘海一起收回";
 "whatsNew.v121.headline" = "小地方，也做到位";
+"whatsNew.v122.headline" = "认识一下其他 App";
+"whatsNew.v122.more.detail" = "设置页底部现在会列出 Reff Wu 做的其他 App，可以直接获取或打开。";
+"whatsNew.v122.more.title" = "更多 Reff Wu 的 App";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

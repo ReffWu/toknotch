@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "У каждого провайдера свой цвет";
 "whatsNew.v121.fold.title" = "Дуга настроек сворачивается вместе с вырезом";
 "whatsNew.v121.headline" = "Мелочи, сделанные как следует";
+"whatsNew.v122.headline" = "Знакомьтесь с другими приложениями";
+"whatsNew.v122.more.detail" = "Внизу настроек теперь есть другие приложения Reff Wu, их можно сразу загрузить или открыть.";
+"whatsNew.v122.more.title" = "Другие приложения Reff Wu";
 "whatsNew.version" = "Версия %@";
 "whatsNew.welcome" = "Добро пожаловать в TokNotch";

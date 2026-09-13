@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "Każdy dostawca we własnym kolorze";
 "whatsNew.v121.fold.title" = "Łuk ustawień chowa się razem z notchem";
 "whatsNew.v121.headline" = "Drobiazgi, zrobione porządnie";
+"whatsNew.v122.headline" = "Poznaj inne aplikacje";
+"whatsNew.v122.more.detail" = "Na dole ustawień są teraz inne aplikacje Reff Wu, gotowe do pobrania lub otwarcia.";
+"whatsNew.v122.more.title" = "Więcej od Reff Wu";
 "whatsNew.version" = "Wersja %@";
 "whatsNew.welcome" = "Witaj w TokNotch";

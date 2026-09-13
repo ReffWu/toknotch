@@ -7,6 +7,21 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.2]
+
+Meet the other apps.
+
+### Added
+
+- **More from Reff Wu.** The foot of Settings lists the other apps Reff Wu
+  makes, read once a day from https://reffwu.github.io/apps/catalog.json, with
+  Get or Open for each.
+
+### Changed
+
+- **A README that starts with the download,** followed by a screenshot in each
+  README's language.
+
 ## [1.2.1]
 
 Small things, done properly.
@@ -115,6 +130,7 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.2.2]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.2
 [1.2.1]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.1.0

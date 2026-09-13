@@ -127,5 +127,8 @@
 "whatsNew.v121.colours.title" = "Her sağlayıcı kendi renginde";
 "whatsNew.v121.fold.title" = "Ayarlar yayı çentikle birlikte kapanıyor";
 "whatsNew.v121.headline" = "Küçük şeyler, doğru yapıldı";
+"whatsNew.v122.headline" = "Diğer uygulamaları tanıyın";
+"whatsNew.v122.more.detail" = "Ayarlar’ın altında artık Reff Wu’nun diğer uygulamaları var; hemen alabilir ya da açabilirsiniz.";
+"whatsNew.v122.more.title" = "Reff Wu’dan daha fazlası";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";
