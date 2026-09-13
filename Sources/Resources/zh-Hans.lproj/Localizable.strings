@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "回本，一页看全";
 "whatsNew.v120.simpler.detail" = "设置合成一页，只管刘海、语言和图标。去掉了完全隐藏，刘海始终在手边。";
 "whatsNew.v120.simpler.title" = "要选的更少了";
+"whatsNew.v121.about.detail" = "从菜单栏或设置页底部的版本号打开，可以看到完整大小的图标。";
+"whatsNew.v121.about.title" = "新增关于窗口";
+"whatsNew.v121.colours.detail" = "回本倍数现在用这家服务商自己的颜色，Claude 和 OpenAI 不会再看起来一样。";
+"whatsNew.v121.colours.title" = "每家用自己的颜色";
+"whatsNew.v121.fold.title" = "设置小弧线跟着刘海一起收回";
+"whatsNew.v121.headline" = "小地方，也做到位";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

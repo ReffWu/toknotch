@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "回本，一頁看全";
 "whatsNew.v120.simpler.detail" = "設定合成一頁，只管瀏海、語言和圖像。拿掉了完全隱藏，瀏海始終在手邊。";
 "whatsNew.v120.simpler.title" = "要選的更少了";
+"whatsNew.v121.about.detail" = "從選單列或設定頁底部的版本號打開，可以看到完整大小的圖像。";
+"whatsNew.v121.about.title" = "新增關於視窗";
+"whatsNew.v121.colours.detail" = "回本倍數現在用這家服務商自己的顏色，Claude 和 OpenAI 不會再看起來一樣。";
+"whatsNew.v121.colours.title" = "每家用自己的顏色";
+"whatsNew.v121.fold.title" = "設定小弧線跟著瀏海一起收回";
+"whatsNew.v121.headline" = "小地方，也做到位";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";

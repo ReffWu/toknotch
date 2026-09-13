@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Terugverdienen op één pagina";
 "whatsNew.v120.simpler.detail" = "Instellingen is nu één pagina voor de notch, taal en het symbool. De verborgen modus is weg, dus de notch is altijd binnen handbereik.";
 "whatsNew.v120.simpler.title" = "Minder te kiezen";
+"whatsNew.v121.about.detail" = "Open het via de menubalk of de versie in Instellingen om het symbool groot te zien.";
+"whatsNew.v121.about.title" = "Een Over-venster";
+"whatsNew.v121.colours.detail" = "De terugverdienfactor staat nu in de kleur van de aanbieder, zodat Claude en OpenAI nooit meer op elkaar lijken.";
+"whatsNew.v121.colours.title" = "Elke aanbieder in eigen kleur";
+"whatsNew.v121.fold.title" = "De instellingenboog vouwt mee met de notch";
+"whatsNew.v121.headline" = "Kleine dingen, goed gedaan";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

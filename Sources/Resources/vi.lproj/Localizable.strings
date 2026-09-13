@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Hoàn vốn trên một trang";
 "whatsNew.v120.simpler.detail" = "Cài đặt giờ là một trang cho notch, ngôn ngữ và biểu tượng. Chế độ ẩn đã bị bỏ, nên notch luôn trong tầm tay.";
 "whatsNew.v120.simpler.title" = "Ít lựa chọn hơn";
+"whatsNew.v121.about.detail" = "Mở từ thanh menu hoặc số phiên bản trong Cài đặt để xem biểu tượng ở kích thước lớn.";
+"whatsNew.v121.about.title" = "Cửa sổ Giới thiệu";
+"whatsNew.v121.colours.detail" = "Hệ số hoàn vốn giờ dùng màu của chính nhà cung cấp, nên Claude và OpenAI không còn trông giống nhau.";
+"whatsNew.v121.colours.title" = "Mỗi nhà cung cấp một màu riêng";
+"whatsNew.v121.fold.title" = "Vòng cung cài đặt thu lại cùng notch";
+"whatsNew.v121.headline" = "Chi tiết nhỏ, làm cho đúng";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

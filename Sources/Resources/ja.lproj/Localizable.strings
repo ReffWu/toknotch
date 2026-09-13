@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "回収を 1 ページに";
 "whatsNew.v120.simpler.detail" = "設定はノッチ、言語、アイコンだけの 1 ページに。完全に隠すモードをなくし、ノッチはいつも手の届くところにあります。";
 "whatsNew.v120.simpler.title" = "選ぶことが減りました";
+"whatsNew.v121.about.detail" = "メニューバーか設定の下にあるバージョンから開くと、アイコンを大きなサイズで見られます。";
+"whatsNew.v121.about.title" = "「TokNotch について」ウインドウ";
+"whatsNew.v121.colours.detail" = "回収倍率はそのサービス自身の色で表示され、Claude と OpenAI が同じに見えることはなくなりました。";
+"whatsNew.v121.colours.title" = "サービスごとに自分の色";
+"whatsNew.v121.fold.title" = "設定の弧がノッチと一緒にたたまれます";
+"whatsNew.v121.headline" = "小さなところまで、きちんと";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

@@ -7,6 +7,23 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.1]
+
+Small things, done properly.
+
+### Added
+
+- **About window.** Shows the app icon at 240 pt with its engraving, from the
+  menu bar menu and the version line in Settings.
+
+### Changed
+
+- **Each vendor in its own colour.** Payback multiples on notch cards and in
+  Settings use the vendor's colour; only the combined total keeps green and
+  orange.
+- **The settings arc folds away with the notch,** travelling with its far
+  corner on every edge instead of drifting the other way.
+
 ## [1.2.0]
 
 Your payback at a glance, with less to set.
@@ -98,6 +115,7 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.2.1]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.1
 [1.2.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.0
 [1.1.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.1.0
 [1.0.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.0.0

@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Payback on one page";
 "whatsNew.v120.simpler.detail" = "Settings is now one page for the notch, language and icon. The hidden mode is gone, so the notch is always within reach.";
 "whatsNew.v120.simpler.title" = "Fewer choices to make";
+"whatsNew.v121.about.detail" = "Open it from the menu bar or the version in Settings to see the icon at full size.";
+"whatsNew.v121.about.title" = "An About window";
+"whatsNew.v121.colours.detail" = "A plan's payback multiple is now drawn in that vendor's colour, so Claude and OpenAI never look alike.";
+"whatsNew.v121.colours.title" = "Each vendor in its own colour";
+"whatsNew.v121.fold.title" = "The settings arc folds away with the notch";
+"whatsNew.v121.headline" = "Small things, done properly";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Welcome to TokNotch";

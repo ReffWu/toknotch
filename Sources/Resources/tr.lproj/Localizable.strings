@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Amortisman tek sayfada";
 "whatsNew.v120.simpler.detail" = "Ayarlar artık çentik, dil ve simge için tek bir sayfa. Gizleme modu kaldırıldı, çentik her zaman el altında.";
 "whatsNew.v120.simpler.title" = "Daha az seçim";
+"whatsNew.v121.about.detail" = "Simgeyi büyük görmek için menü çubuğundan veya Ayarlar’daki sürümden açın.";
+"whatsNew.v121.about.title" = "Hakkında penceresi";
+"whatsNew.v121.colours.detail" = "Amortisman katı artık sağlayıcının kendi renginde, böylece Claude ve OpenAI birbirine benzemiyor.";
+"whatsNew.v121.colours.title" = "Her sağlayıcı kendi renginde";
+"whatsNew.v121.fold.title" = "Ayarlar yayı çentikle birlikte kapanıyor";
+"whatsNew.v121.headline" = "Küçük şeyler, doğru yapıldı";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

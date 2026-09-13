@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Retorno em uma página";
 "whatsNew.v120.simpler.detail" = "Os ajustes agora são uma única página para o notch, o idioma e o ícone. O modo oculto saiu, então o notch está sempre à mão.";
 "whatsNew.v120.simpler.title" = "Menos escolhas";
+"whatsNew.v121.about.detail" = "Abra pela barra de menus ou pela versão nos Ajustes para ver o ícone em tamanho grande.";
+"whatsNew.v121.about.title" = "Uma janela Sobre";
+"whatsNew.v121.colours.detail" = "O múltiplo de retorno agora aparece na cor do provedor, então Claude e OpenAI não ficam mais parecidos.";
+"whatsNew.v121.colours.title" = "Cada provedor com sua cor";
+"whatsNew.v121.fold.title" = "O arco dos ajustes se recolhe junto com o notch";
+"whatsNew.v121.headline" = "Os detalhes, bem feitos";
 "whatsNew.version" = "Versão %@";
 "whatsNew.welcome" = "Boas-vindas ao TokNotch";

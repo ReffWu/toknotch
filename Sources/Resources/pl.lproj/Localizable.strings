@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Zwrot na jednej stronie";
 "whatsNew.v120.simpler.detail" = "Ustawienia to teraz jedna strona z notchem, językiem i ikoną. Tryb ukrycia zniknął, więc notch jest zawsze pod ręką.";
 "whatsNew.v120.simpler.title" = "Mniej wyborów";
+"whatsNew.v121.about.detail" = "Otwórz je z paska menu lub z numeru wersji w ustawieniach, aby zobaczyć ikonę w pełnym rozmiarze.";
+"whatsNew.v121.about.title" = "Okno z informacjami";
+"whatsNew.v121.colours.detail" = "Krotność zwrotu jest teraz w kolorze dostawcy, więc Claude i OpenAI już nie wyglądają tak samo.";
+"whatsNew.v121.colours.title" = "Każdy dostawca we własnym kolorze";
+"whatsNew.v121.fold.title" = "Łuk ustawień chowa się razem z notchem";
+"whatsNew.v121.headline" = "Drobiazgi, zrobione porządnie";
 "whatsNew.version" = "Wersja %@";
 "whatsNew.welcome" = "Witaj w TokNotch";

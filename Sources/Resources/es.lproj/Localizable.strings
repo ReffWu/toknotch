@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Amortización en una página";
 "whatsNew.v120.simpler.detail" = "Los ajustes son ahora una sola página para el notch, el idioma y el icono. Desaparece el modo oculto, así que el notch siempre está a mano.";
 "whatsNew.v120.simpler.title" = "Menos que decidir";
+"whatsNew.v121.about.detail" = "Ábrela desde la barra de menús o la versión en Ajustes para ver el icono a tamaño completo.";
+"whatsNew.v121.about.title" = "Una ventana Acerca de";
+"whatsNew.v121.colours.detail" = "El múltiplo de amortización se muestra ahora en el color del proveedor, así Claude y OpenAI ya no se parecen.";
+"whatsNew.v121.colours.title" = "Cada proveedor con su color";
+"whatsNew.v121.fold.title" = "El arco de ajustes se pliega con el notch";
+"whatsNew.v121.headline" = "Los detalles, bien hechos";
 "whatsNew.version" = "Versión %@";
 "whatsNew.welcome" = "Te damos la bienvenida a TokNotch";

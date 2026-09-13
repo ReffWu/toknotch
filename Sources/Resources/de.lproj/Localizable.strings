@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "Amortisation auf einer Seite";
 "whatsNew.v120.simpler.detail" = "Die Einstellungen sind jetzt eine Seite für Notch, Sprache und Symbol. Der Ausblenden-Modus ist weg, die Notch bleibt immer erreichbar.";
 "whatsNew.v120.simpler.title" = "Weniger zu entscheiden";
+"whatsNew.v121.about.detail" = "Öffne es über die Menüleiste oder die Version in den Einstellungen, um das Symbol in voller Größe zu sehen.";
+"whatsNew.v121.about.title" = "Ein Über-Fenster";
+"whatsNew.v121.colours.detail" = "Der Amortisationsfaktor erscheint jetzt in der Farbe des Anbieters, damit Claude und OpenAI nie gleich aussehen.";
+"whatsNew.v121.colours.title" = "Jeder Anbieter in seiner Farbe";
+"whatsNew.v121.fold.title" = "Der Einstellungsbogen faltet sich mit der Notch ein";
+"whatsNew.v121.headline" = "Kleinigkeiten, richtig gemacht";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

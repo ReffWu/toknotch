@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "La rentabilité sur une page";
 "whatsNew.v120.simpler.detail" = "Les réglages tiennent sur une page : encoche, langue et icône. Le mode masqué disparaît, l’encoche reste toujours à portée.";
 "whatsNew.v120.simpler.title" = "Moins de choix à faire";
+"whatsNew.v121.about.detail" = "Ouvrez-la depuis la barre des menus ou la version dans les réglages pour voir l’icône en grand.";
+"whatsNew.v121.about.title" = "Une fenêtre À propos";
+"whatsNew.v121.colours.detail" = "Le multiple de rentabilité s’affiche désormais dans la couleur du fournisseur, pour que Claude et OpenAI ne se ressemblent plus.";
+"whatsNew.v121.colours.title" = "Chaque fournisseur dans sa couleur";
+"whatsNew.v121.fold.title" = "L’arc des réglages se replie avec l’encoche";
+"whatsNew.v121.headline" = "Les détails, bien faits";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Bienvenue dans TokNotch";

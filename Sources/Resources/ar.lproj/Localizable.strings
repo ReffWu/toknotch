@@ -118,5 +118,11 @@
 "whatsNew.v120.payback.title" = "الاسترداد في صفحة واحدة";
 "whatsNew.v120.simpler.detail" = "أصبحت الإعدادات صفحة واحدة للنتوء واللغة والأيقونة. أُزيل وضع الإخفاء، فيبقى النتوء في متناول يدك دائمًا.";
 "whatsNew.v120.simpler.title" = "خيارات أقل";
+"whatsNew.v121.about.detail" = "افتحها من شريط القائمة أو من رقم الإصدار في الإعدادات لترى الأيقونة بحجمها الكامل.";
+"whatsNew.v121.about.title" = "نافذة «حول»";
+"whatsNew.v121.colours.detail" = "يظهر مضاعف الاسترداد الآن بلون المزوّد نفسه، فلا يبدو Claude وOpenAI متشابهين بعد الآن.";
+"whatsNew.v121.colours.title" = "لكل مزوّد لونه";
+"whatsNew.v121.fold.title" = "ينطوي قوس الإعدادات مع النتوء";
+"whatsNew.v121.headline" = "تفاصيل صغيرة، متقنة";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";
