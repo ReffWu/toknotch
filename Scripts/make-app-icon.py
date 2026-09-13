@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Generate the TokNotch app icon — light and dark variants — and write every
-size the AppIcon.appiconset and the website need.
+"""Generate the TokNotch app icon — dark and light frames — and write every
+size the AppIcon.appiconset, the in-app icon picker and the website need.
 
 The icon is *composed here*, not hand-drawn: a blue squircle (diagonal
 gradient) with the app's own SideNotchShape silhouette welded to its right
@@ -16,7 +16,7 @@ Writes: Sources/Assets.xcassets/AppIcon.appiconset/*.png (+ Contents.json)
         ../artifacts/toknotch/assets/icon.png, icon.webp   (if that repo is present)
 """
 import math, subprocess, base64, json, os, sys
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -56,7 +56,73 @@ NOTCH = _notch0.resize((round(_notch0.width*_k), round(_notch0.height*_k)), Imag
 NW, NH = NOTCH.size
 
 
-def build_base(frame_rgb, c0, c1, rim_a):
+NAME = "TOKNOTCH"
+SIGNATURE = "REFFWU"
+FONT_PATH = "/System/Library/Fonts/Optima.ttc"
+FONT_SIZE = 46
+TRACKING = 16
+ENGRAVING = {"dark": (128, 128, 134, 255), "light": (150, 150, 156, 255)}
+
+
+def ring_point(distance, box, radius):
+    """A point on the frame's centre line, `distance` along it clockwise from
+    the top middle, and the direction of travel there in degrees."""
+    x0, y0, x1, y1 = box
+    width, height = x1 - x0 - 2 * radius, y1 - y0 - 2 * radius
+    arc = math.pi * radius / 2
+    segments = [
+        ("line", (x0 + radius + width / 2, y0), (x1 - radius, y0), width / 2),
+        ("arc", (x1 - radius, y0 + radius), -90, 0, arc),
+        ("line", (x1, y0 + radius), (x1, y1 - radius), height),
+        ("arc", (x1 - radius, y1 - radius), 0, 90, arc),
+        ("line", (x1 - radius, y1), (x0 + radius, y1), width),
+        ("arc", (x0 + radius, y1 - radius), 90, 180, arc),
+        ("line", (x0, y1 - radius), (x0, y0 + radius), height),
+        ("arc", (x0 + radius, y0 + radius), 180, 270, arc),
+        ("line", (x0 + radius, y0), (x0 + radius + width / 2, y0), width / 2),
+    ]
+    distance %= sum(segment[-1] for segment in segments)
+    for segment in segments:
+        if distance <= segment[-1]:
+            share = distance / segment[-1]
+            if segment[0] == "line":
+                (ax, ay), (bx, by) = segment[1], segment[2]
+                return ax + (bx - ax) * share, ay + (by - ay) * share, math.degrees(math.atan2(by - ay, bx - ax))
+            (cx, cy), start, end = segment[1], segment[2], segment[3]
+            angle = math.radians(start + (end - start) * share)
+            return cx + radius * math.cos(angle), cy + radius * math.sin(angle), math.degrees(angle) + 90
+        distance -= segment[-1]
+    raise ValueError("distance outside the frame")
+
+
+def engrave(canvas, text, position, color, upright):
+    """Letters set along the frame's rounded corner, like an engraving on a
+    watch case. `upright` runs them the other way round so text on the lower
+    half is not upside down."""
+    k = 2
+    font = ImageFont.truetype(FONT_PATH, FONT_SIZE * k)
+    box = (OUTER[0] + F / 2, OUTER[1] + F / 2, OUTER[2] - F / 2, OUTER[3] - F / 2)
+    radius = (OUTER_R + BLUE_R) / 2
+    perimeter = 2 * (box[2] - box[0] - 2 * radius) + 2 * (box[3] - box[1] - 2 * radius) + 2 * math.pi * radius
+    widths = [font.getlength(ch) / k for ch in text]
+    total = sum(widths) + TRACKING * (len(text) - 1)
+    direction = -1 if upright else 1
+    cursor = position * perimeter - direction * total / 2
+    layer = Image.new("RGBA", (S * k, S * k), (0, 0, 0, 0))
+    for ch, width in zip(text, widths):
+        x, y, angle = ring_point(cursor + direction * width / 2, box, radius)
+        if upright:
+            angle += 180
+        side = FONT_SIZE * 2 * k
+        glyph = Image.new("RGBA", (side, side), (0, 0, 0, 0))
+        ImageDraw.Draw(glyph).text((side / 2, side / 2), ch, font=font, fill=color, anchor="mm")
+        glyph = glyph.rotate(-angle, resample=Image.BICUBIC)
+        layer.alpha_composite(glyph, (int(x * k - side / 2), int(y * k - side / 2)))
+        cursor += direction * (width + TRACKING)
+    return Image.alpha_composite(canvas, layer.resize((S, S), Image.LANCZOS))
+
+
+def build_base(frame_rgb, c0, c1, rim_a, engraving):
     cv = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     fmask = rr_mask((S, S), OUTER, OUTER_R)
     cv.paste(Image.new("RGBA", (S, S), (*frame_rgb, 255)), (0, 0), fmask)
@@ -94,6 +160,8 @@ def build_base(frame_rgb, c0, c1, rim_a):
     rim = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     ImageDraw.Draw(rim).rounded_rectangle(BLUE, radius=BLUE_R, outline=(255, 255, 255, rim_a), width=4)
     cv = Image.alpha_composite(cv, rim)
+    cv = engrave(cv, NAME, 0.875, engraving, False)
+    cv = engrave(cv, SIGNATURE, 0.375, engraving, True)
 
     cv = Image.composite(cv, Image.new("RGBA", (S, S), (0, 0, 0, 0)), fmask)
     sh = Image.new("RGBA", (S, S), (0, 0, 0, 0))
@@ -170,32 +238,43 @@ def slice_appicon(master_bubble, master_clean, suffix):
 
 
 def write_contents():
+    """Dark frame only: macOS app icon sets ignore light-appearance variants,
+    so the light frame ships as an image set the app switches to instead."""
     images = []
     for pt in SIZES:
         for scale in (1, 2):
-            tag = f"{pt}x{pt}", ("2x" if scale == 2 else "1x")
-            images.append({"idiom": "mac", "size": tag[0], "scale": tag[1],
+            images.append({"idiom": "mac", "size": f"{pt}x{pt}", "scale": f"{scale}x",
                            "filename": f"icon_{pt}x{pt}{'@2x' if scale == 2 else ''}.png"})
-            images.append({"idiom": "mac", "size": tag[0], "scale": tag[1],
-                           "filename": f"icon_{pt}x{pt}{'@2x' if scale == 2 else ''}_light.png",
-                           "appearances": [{"appearance": "luminosity", "value": "light"}]})
     json.dump({"images": images, "info": {"version": 1, "author": "make-app-icon.py"}},
               open(os.path.join(APPICON, "Contents.json"), "w"), indent=2)
 
 
+def write_choice(name, image):
+    """A 1024 px copy the App icon picker shows and applies."""
+    folder = os.path.join(os.path.dirname(APPICON), f"{name}.imageset")
+    os.makedirs(folder, exist_ok=True)
+    image.resize((1024, 1024), Image.LANCZOS).save(os.path.join(folder, "icon.png"))
+    json.dump({"images": [{"idiom": "universal", "filename": "icon.png"}],
+               "info": {"version": 1, "author": "make-app-icon.py"}},
+              open(os.path.join(folder, "Contents.json"), "w"), indent=2)
+
+
 def main():
-    dark_base = build_base((26, 26, 28), (0x3E, 0x7B, 0xFA), (0x2E, 0x40, 0x8E), 70)
-    light_base = build_base((233, 233, 235), (0x4C, 0x86, 0xFB), (0x33, 0x4C, 0xA6), 95)
+    dark_base = build_base((26, 26, 28), (0x3E, 0x7B, 0xFA), (0x2E, 0x40, 0x8E), 70, ENGRAVING["dark"])
+    light_base = build_base((233, 233, 235), (0x4C, 0x86, 0xFB), (0x33, 0x4C, 0xA6), 95, ENGRAVING["light"])
 
     dark = with_bubble(dark_base, 0.5)
     light = with_bubble(light_base, 0.28)
 
-    # AppIcon: dark = default (any), light = luminosity:light appearance.
     # Small sizes (<=32pt) drop the bubble - it is an unreadable smudge there.
+    for stale in os.listdir(APPICON):
+        if stale.endswith("_light.png"):
+            os.remove(os.path.join(APPICON, stale))
     slice_appicon(dark, dark_base.resize((1024, 1024), Image.LANCZOS), "")
-    slice_appicon(light, light_base.resize((1024, 1024), Image.LANCZOS), "_light")
     write_contents()
-    print("wrote AppIcon.appiconset (dark = default, light = light appearance)")
+    write_choice("AppIcon-dark", dark)
+    write_choice("AppIcon-light", light)
+    print("wrote AppIcon.appiconset and the AppIcon-dark / AppIcon-light choices")
 
     # website & docs: 512 png + webp of the dark mark (used on both light/dark pages)
     if os.path.isdir(ARTIFACTS):
