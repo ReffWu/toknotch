@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "Hoe vaak heeft elk AI-abonnement zich al terugverdiend?";
+"about.version" = "Versie %@";
 "baseline.against" = "%2$@ van %1$@";
 "baseline.lastMonth" = "dezelfde dagen vorige maand";
 "baseline.milestone" = "de volgende mijlpaal";
 "baseline.none" = "nog niets om mee te vergelijken";
 "baseline.recentPeak" = "je beste dag in 30";
 "card.moreModels" = "nog %d modellen";
+"menu.about" = "Over TokNotch";
 "menu.open" = "Open TokNotch…";
 "menu.payback" = "%@ terugverdiend deze periode";
 "menu.quit" = "Stop TokNotch";

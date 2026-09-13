@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "Quante volte si è ripagato ogni tuo piano IA?";
+"about.version" = "Versione %@";
 "baseline.against" = "%2$@ di %1$@";
 "baseline.lastMonth" = "degli stessi giorni del mese scorso";
 "baseline.milestone" = "del prossimo traguardo";
 "baseline.none" = "ancora niente da confrontare";
 "baseline.recentPeak" = "del tuo giorno migliore in 30";
 "card.moreModels" = "altri %d modelli";
+"menu.about" = "Informazioni su TokNotch";
 "menu.open" = "Apri TokNotch…";
 "menu.payback" = "%@ ripagato in questo periodo";
 "menu.quit" = "Esci da TokNotch";

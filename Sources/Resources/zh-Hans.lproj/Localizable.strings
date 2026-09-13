@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "你的每个 AI 套餐，到底回本了几倍？";
+"about.version" = "版本 %@";
 "baseline.against" = "%1$@的 %2$@";
 "baseline.lastMonth" = "上月同期";
 "baseline.milestone" = "下一个里程碑";
 "baseline.none" = "暂无可比的历史";
 "baseline.recentPeak" = "近 30 天最高日";
 "card.moreModels" = "还有 %d 个模型";
+"menu.about" = "关于 TokNotch";
 "menu.open" = "打开 TokNotch…";
 "menu.payback" = "本期回本 %@";
 "menu.quit" = "退出 TokNotch";

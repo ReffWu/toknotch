@@ -14,6 +14,8 @@ final class SettingsWindowController {
     /// while the window is open rather than being snapshotted when it opens.
     private let store: UsageStore
     private let updater: Updater
+    /// Set by the app delegate, which owns the About window.
+    var onAbout: () -> Void = {}
 
     init(preferences: Preferences, store: UsageStore, updater: Updater) {
         self.preferences = preferences
@@ -58,7 +60,8 @@ final class SettingsWindowController {
         window.titleVisibility = .hidden
         window.titlebarAppearsTransparent = true
         window.contentView = NSHostingView(
-            rootView: SettingsView(preferences: preferences, store: store, updater: updater)
+            rootView: SettingsView(preferences: preferences, store: store, updater: updater,
+                                   onAbout: { [weak self] in self?.onAbout() })
         )
         window.center()
         window.isReleasedWhenClosed = false

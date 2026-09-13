@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "¿Cuántas veces se ha amortizado cada suscripción de IA?";
+"about.version" = "Versión %@";
 "baseline.against" = "%2$@ de %1$@";
 "baseline.lastMonth" = "los mismos días del mes pasado";
 "baseline.milestone" = "el siguiente hito";
 "baseline.none" = "aún no hay con qué comparar";
 "baseline.recentPeak" = "tu mejor día de los últimos 30";
 "card.moreModels" = "%d modelos más";
+"menu.about" = "Acerca de TokNotch";
 "menu.open" = "Abrir TokNotch…";
 "menu.payback" = "%@ amortizado este periodo";
 "menu.quit" = "Salir de TokNotch";

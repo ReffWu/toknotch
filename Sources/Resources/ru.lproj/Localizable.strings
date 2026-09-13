@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "Во сколько раз окупилась каждая ваша подписка на ИИ?";
+"about.version" = "Версия %@";
 "baseline.against" = "%2$@ от %1$@";
 "baseline.lastMonth" = "тех же дней прошлого месяца";
 "baseline.milestone" = "следующей отметки";
 "baseline.none" = "пока не с чем сравнивать";
 "baseline.recentPeak" = "вашего лучшего дня за 30";
 "card.moreModels" = "ещё %d моделей";
+"menu.about" = "О программе TokNotch";
 "menu.open" = "Открыть TokNotch…";
 "menu.payback" = "Окупилось %@ за период";
 "menu.quit" = "Завершить TokNotch";

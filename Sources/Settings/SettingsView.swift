@@ -16,6 +16,8 @@ struct SettingsView: View {
     /// Which page to open on. Only set by the render tests, which have to be
     /// able to photograph each one.
     var startingPage: Page? = nil
+    /// Opens the About window, from the version line at the foot of Settings.
+    var onAbout: () -> Void = {}
 
     enum Page: String, CaseIterable, Identifiable {
         case payback, settings
@@ -108,7 +110,7 @@ struct SettingsView: View {
     private var detail: some View {
         switch page {
         case .payback:  PaybackPage(preferences: preferences, store: store)
-        case .settings: PreferencesPage(preferences: preferences, updater: updater)
+        case .settings: PreferencesPage(preferences: preferences, updater: updater, onAbout: onAbout)
         }
     }
 
@@ -475,6 +477,7 @@ private struct VendorRow: View {
 struct PreferencesPage: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var updater: Updater
+    var onAbout: () -> Void = {}
 
     private var language: AppLanguage { preferences.appLanguage }
 
@@ -529,7 +532,12 @@ struct PreferencesPage: View {
     /// and all of it is occasionally wanted.
     private var footer: some View {
         HStack(spacing: 6) {
-            Text(verbatim: "TokNotch \(updater.currentVersion)")
+            // The version is the way into About, as it is in most Mac apps.
+            Button { onAbout() } label: {
+                Text(verbatim: "TokNotch \(updater.currentVersion)")
+            }
+            .buttonStyle(.plain)
+            .help(language.t("menu.about"))
             if Updater.isConfigured {
                 Text(verbatim: "·")
                 Button(updateLabel) { updater.checkForUpdates() }

@@ -12,15 +12,17 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let store: UsageStore
     private let updater: Updater
     private let onOpenSettings: () -> Void
+    private let onAbout: () -> Void
 
     private var language: AppLanguage { preferences.appLanguage }
 
     init(preferences: Preferences, store: UsageStore, updater: Updater,
-         onOpenSettings: @escaping () -> Void) {
+         onOpenSettings: @escaping () -> Void, onAbout: @escaping () -> Void) {
         self.preferences = preferences
         self.store = store
         self.updater = updater
         self.onOpenSettings = onOpenSettings
+        self.onAbout = onAbout
     }
 
     func show() {
@@ -50,6 +52,8 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             menu.addItem(.separator())
         }
 
+        menu.addItem(withTitle: language.t("menu.about"),
+                     action: #selector(about), keyEquivalent: "").target = self
         menu.addItem(withTitle: language.t("menu.open"),
                      action: #selector(openSettings), keyEquivalent: ",").target = self
         if Updater.isConfigured {
@@ -95,6 +99,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     }
 
     @objc private func openSettings() { onOpenSettings() }
+    @objc private func about() { onAbout() }
     @objc private func checkForUpdates() { updater.checkForUpdates() }
     @objc private func quit() { NSApp.terminate(nil) }
 }

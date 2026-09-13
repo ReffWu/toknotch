@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "Mỗi gói AI của bạn đã hoàn vốn bao nhiêu lần?";
+"about.version" = "Phiên bản %@";
 "baseline.against" = "%2$@ so với %1$@";
 "baseline.lastMonth" = "cùng kỳ tháng trước";
 "baseline.milestone" = "cột mốc tiếp theo";
 "baseline.none" = "chưa có gì để so sánh";
 "baseline.recentPeak" = "ngày tốt nhất của bạn trong 30 ngày";
 "card.moreModels" = "thêm %d mô hình";
+"menu.about" = "Giới thiệu về TokNotch";
 "menu.open" = "Mở TokNotch…";
 "menu.payback" = "Kỳ này hoàn vốn %@";
 "menu.quit" = "Thoát TokNotch";

@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "その AI プラン、何倍の元が取れていますか？";
+"about.version" = "バージョン %@";
 "baseline.against" = "%1$@の %2$@";
 "baseline.lastMonth" = "先月の同じ期間";
 "baseline.milestone" = "次のマイルストーン";
 "baseline.none" = "比較できる履歴がまだありません";
 "baseline.recentPeak" = "直近 30 日で最も多かった日";
 "card.moreModels" = "ほか %d 件のモデル";
+"menu.about" = "TokNotch について";
 "menu.open" = "TokNotch を開く…";
 "menu.payback" = "今期 %@ 回収";
 "menu.quit" = "TokNotch を終了";

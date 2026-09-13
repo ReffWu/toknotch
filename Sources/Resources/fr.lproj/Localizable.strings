@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "Combien de fois chaque abonnement IA s’est-il rentabilisé ?";
+"about.version" = "Version %@";
 "baseline.against" = "%2$@ de %1$@";
 "baseline.lastMonth" = "la même période le mois dernier";
 "baseline.milestone" = "le prochain palier";
 "baseline.none" = "rien à comparer pour l'instant";
 "baseline.recentPeak" = "votre meilleur jour sur 30";
 "card.moreModels" = "%d autres modèles";
+"menu.about" = "À propos de TokNotch";
 "menu.open" = "Ouvrir TokNotch…";
 "menu.payback" = "%@ rentabilisé sur la période";
 "menu.quit" = "Quitter TokNotch";

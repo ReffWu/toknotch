@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "내 AI 요금제, 몇 배나 본전을 뽑았을까?";
+"about.version" = "버전 %@";
 "baseline.against" = "%1$@의 %2$@";
 "baseline.lastMonth" = "지난달 같은 기간";
 "baseline.milestone" = "다음 이정표";
 "baseline.none" = "아직 비교할 기록이 없습니다";
 "baseline.recentPeak" = "최근 30일 중 가장 많았던 날";
 "card.moreModels" = "모델 %d개 더";
+"menu.about" = "TokNotch에 관하여";
 "menu.open" = "TokNotch 열기…";
 "menu.payback" = "이번 기간 %@ 회수";
 "menu.quit" = "TokNotch 종료";

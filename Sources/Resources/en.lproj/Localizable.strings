@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "How many times over has each AI plan paid for itself?";
+"about.version" = "Version %@";
 "baseline.against" = "%2$@ of %1$@";
 "baseline.lastMonth" = "the same days last month";
 "baseline.milestone" = "the next milestone";
 "baseline.none" = "nothing to compare yet";
 "baseline.recentPeak" = "your best day in 30";
 "card.moreModels" = "%d more models";
+"menu.about" = "About TokNotch";
 "menu.open" = "Open TokNotch…";
 "menu.payback" = "%@ paid back this period";
 "menu.quit" = "Quit TokNotch";

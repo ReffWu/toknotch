@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "Wie oft hat sich jedes deiner KI-Abos schon amortisiert?";
+"about.version" = "Version %@";
 "baseline.against" = "%2$@ von %1$@";
 "baseline.lastMonth" = "denselben Tagen im Vormonat";
 "baseline.milestone" = "dem nächsten Meilenstein";
 "baseline.none" = "noch nichts zum Vergleichen";
 "baseline.recentPeak" = "deinem stärksten Tag der letzten 30";
 "card.moreModels" = "%d weitere Modelle";
+"menu.about" = "Über TokNotch";
 "menu.open" = "TokNotch öffnen …";
 "menu.payback" = "%@ amortisiert in diesem Zeitraum";
 "menu.quit" = "TokNotch beenden";

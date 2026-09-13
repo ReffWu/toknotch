@@ -1,11 +1,14 @@
 /* TokNotch — generated from the key table. Do not edit by hand. */
 
+"about.tagline" = "كم مرة استردّت كل خطة ذكاء اصطناعي تكلفتها؟";
+"about.version" = "الإصدار %@";
 "baseline.against" = "%2$@ من %1$@";
 "baseline.lastMonth" = "الأيام نفسها من الشهر الماضي";
 "baseline.milestone" = "المحطة التالية";
 "baseline.none" = "لا شيء للمقارنة بعد";
 "baseline.recentPeak" = "أفضل يوم لك خلال 30 يومًا";
 "card.moreModels" = "%d نماذج أخرى";
+"menu.about" = "حول TokNotch";
 "menu.open" = "فتح TokNotch…";
 "menu.payback" = "استُرد %@ في هذه الفترة";
 "menu.quit" = "إنهاء TokNotch";

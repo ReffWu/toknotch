@@ -8,6 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var preferences: Preferences?
     private var settings: SettingsWindowController?
     private var whatsNew: WhatsNewWindowController?
+    private var about: AboutWindowController?
     /// Held for the life of the app: releasing it stops the scheduled checks.
     private var updater: Updater?
     private var statusItem: StatusItemController?
@@ -89,8 +90,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             whatsNew.showIfNeeded()
         }
 
-        let statusItem = StatusItemController(preferences: preferences, store: store,
-                                              updater: updater) { [weak settings] in settings?.show() }
+        let about = AboutWindowController(preferences: preferences, version: updater.currentVersion)
+        self.about = about
+        settings.onAbout = { [weak about] in about?.show() }
+
+        let statusItem = StatusItemController(
+            preferences: preferences, store: store, updater: updater,
+            onOpenSettings: { [weak settings] in settings?.show() },
+            onAbout: { [weak about] in about?.show() }
+        )
         statusItem.show()
         self.statusItem = statusItem
 
