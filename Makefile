@@ -8,7 +8,7 @@ PROJECT := TokNotch.xcodeproj
 SCHEME  := TokNotch
 DEST    := platform=macOS,arch=arm64
 
-.PHONY: gen build test run clean tokscale sparkle-keys sign-app
+.PHONY: gen build test run clean tokscale
 
 gen:
 	xcodegen generate
@@ -36,188 +36,46 @@ run: build
 clean:
 	rm -rf build DerivedData $(PROJECT)
 
-# --- Release -----------------------------------------------------------------
-RELEASE_DIR := build/release
-APP_NAME    := TokNotch
-# The label of the stored notarytool credential in the login keychain. Create it
-# once with:
+# --- Release ----------------------------------------------------------------
 #
-#   xcrun notarytool store-credentials TokNotch \
-#       --apple-id <apple-id> --team-id <team-id> --password <app-specific-password>
-#
-# An app-specific password from appleid.apple.com, not the account password.
-NOTARY_PROFILE := TokNotch
-DMG := $(RELEASE_DIR)/$(APP_NAME).dmg
+# Everything a release needs lives in Scripts/release.sh: tests, a Developer ID
+# archive with tokscale signed inside out, notarization through the Apple
+# account signed in to Xcode, a verified dmg and a signed appcast. See
+# docs/RELEASING.md.
 
-.PHONY: archive dmg notarize release verify-release appcast verify-appcast tag publish check-signing
+.PHONY: release publish install sparkle-keys
 
-# How the build is signed.
-#
-# Ad-hoc by default, so `make dmg` always works and produces something you can
-# hand to somebody who is willing to click through Gatekeeper. `make release`
-# overrides both of these — a published build has to be Developer ID signed and
-# hardened, or notarisation refuses it and Sparkle cannot install it.
-SIGN_IDENTITY ?= -
-SIGN_FLAGS    ?= CODE_SIGN_IDENTITY="$(SIGN_IDENTITY)"
+release:
+	Scripts/release.sh
 
-APP_IN_ARCHIVE = $(RELEASE_DIR)/$(APP_NAME).xcarchive/Products/Applications/$(APP_NAME).app
+publish:
+	Scripts/release.sh --publish
 
-# Release configuration, built and archived locally.
-archive: gen
-	rm -rf $(RELEASE_DIR)
-	mkdir -p $(RELEASE_DIR)
-	@touch build/.metadata_never_index
+# A Developer ID build straight into /Applications, for trying a change on this
+# Mac. Signed like a release so privacy grants and the login item carry over,
+# but not notarized.
+IDENTITY := Developer ID Application: XIN SHENG WU (37V2HFG7YT)
+INSTALL_APP := build/install/Build/Products/Release/TokNotch.app
+
+install: gen
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DEST)' \
-		-configuration Release -archivePath $(RELEASE_DIR)/$(APP_NAME).xcarchive \
-		$(SIGN_FLAGS) archive
+		-configuration Release -derivedDataPath build/install \
+		-clonedSourcePackagesDirPath build/SourcePackages \
+		CODE_SIGN_IDENTITY="Developer ID Application" CODE_SIGN_STYLE=Manual \
+		DEVELOPMENT_TEAM=37V2HFG7YT ENABLE_HARDENED_RUNTIME=YES build -quiet
+	codesign --force --options runtime --timestamp --sign "$(IDENTITY)" \
+		"$(INSTALL_APP)/Contents/Resources/tokscale/libFoundationModels.dylib"
+	codesign --force --options runtime --timestamp --sign "$(IDENTITY)" \
+		"$(INSTALL_APP)/Contents/Resources/tokscale/tokscale"
+	codesign --force --options runtime --timestamp --sign "$(IDENTITY)" "$(INSTALL_APP)"
+	osascript -e 'quit app id "com.reffwu.toknotch"' || true
+	osascript -e 'quit app id "com.reff.toknotch"' || true
+	rm -rf /Applications/TokNotch.app
+	ditto "$(INSTALL_APP)" /Applications/TokNotch.app
+	rm -rf build/install
+	open /Applications/TokNotch.app
 
-# Sign the binary we ship inside the app, then the app around it.
-#
-# tokscale arrives ad-hoc signed by whoever built the npm package. Under the
-# hardened runtime a process may not execute code signed by somebody else, so a
-# release that skips this notarises cleanly, installs cleanly, and then reads
-# nothing at all. Inside out, because re-signing a nested binary invalidates the
-# signature of the bundle around it.
-sign-app: archive
-	@if [ "$(SIGN_IDENTITY)" = "-" ]; then \
-		echo "ad-hoc build: leaving signatures as they are"; \
-	else \
-		codesign --force --options runtime --timestamp --sign "$(SIGN_IDENTITY)" \
-			"$(APP_IN_ARCHIVE)/Contents/Resources/tokscale/libFoundationModels.dylib"; \
-		codesign --force --options runtime --timestamp --sign "$(SIGN_IDENTITY)" \
-			"$(APP_IN_ARCHIVE)/Contents/Resources/tokscale/tokscale"; \
-		codesign --force --options runtime --timestamp --sign "$(SIGN_IDENTITY)" \
-			"$(APP_IN_ARCHIVE)"; \
-		codesign --verify --deep --strict --verbose=2 "$(APP_IN_ARCHIVE)"; \
-	fi
-
-# A plain drag-to-Applications disk image.
-dmg: sign-app
-	rm -f $(DMG)
-	rm -rf $(RELEASE_DIR)/stage
-	mkdir -p $(RELEASE_DIR)/stage
-	cp -R $(APP_IN_ARCHIVE) $(RELEASE_DIR)/stage/
-	ln -s /Applications $(RELEASE_DIR)/stage/Applications
-	hdiutil create -volname "$(APP_NAME)" -srcfolder $(RELEASE_DIR)/stage \
-		-ov -format UDZO $(DMG)
-	@# The same identity as the app inside, or a notarised app ships in a disk
-	@# image Gatekeeper rejects on its own account.
-	@if [ "$(SIGN_IDENTITY)" = "-" ]; then \
-		codesign --force --sign - $(DMG); \
-	else \
-		codesign --force --timestamp --sign "$(SIGN_IDENTITY)" $(DMG); \
-	fi
-	rm -rf $(RELEASE_DIR)/stage
-
-# Submits and waits. `--wait` blocks until Apple answers, which is usually a
-# couple of minutes; on rejection, the log says which binary failed and why.
-notarize:
-	@test -f $(DMG) || (echo "no $(DMG) to notarise — make release builds one" && exit 1)
-	xcrun notarytool submit $(DMG) --keychain-profile $(NOTARY_PROFILE) --wait
-	xcrun stapler staple $(DMG)
-
-# Sparkle ships its tools inside the resolved package artifacts.
-SPARKLE_BIN = $(shell dirname $$(find $$HOME/Library/Developer/Xcode/DerivedData/TokNotch-*/SourcePackages/artifacts/sparkle -name generate_appcast 2>/dev/null | head -1))
-
-# --- The update feed ---------------------------------------------------------
-#
-# Both the feed and the dmg are assets on a GitHub release. Nothing is hosted,
-# nothing is committed, and no domain has to stay pointed anywhere — publishing
-# a release is what publishes the update.
-#
-# Read from project.yml rather than repeated here, so a version bump happens in
-# one place. The tag has to be `v$(VERSION)` for the enclosure URL below to
-# resolve, which `make tag` is there to get right.
-VERSION := $(shell awk -F'"' '/MARKETING_VERSION:/ {print $$2}' project.yml)
-TAG     := v$(VERSION)
-
-# Staged, never committed: a dmg in git is a dmg in git forever.
-FEED_DIR := $(RELEASE_DIR)/feed
-
-# Where the dmg will actually sit once the release exists. The enclosure URL the
-# appcast advertises has to match it exactly, or an update downloads and then
-# fails to verify.
-DOWNLOAD_PREFIX := https://github.com/ReffWu/toknotch/releases/download/$(TAG)/
-
-# Signs each update with the EdDSA private key in the login keychain — Sparkle
-# installs nothing that key did not sign, so neither GitHub nor anybody who
-# reaches the release can push code. That private key is why this runs here and
-# not in CI.
-# Describes the dmg already built, and deliberately depends on nothing that
-# builds one: `archive` starts with rm -rf, and the identity a release is signed
-# with is only set on `release`. Chained to `dmg`, `make publish` on its own
-# deleted a notarised build, re-signed it ad-hoc, and shipped that.
-appcast:
-	@test -f $(DMG) || (echo "no $(DMG) — make release first" && exit 1)
-	@test -n "$(SPARKLE_BIN)" || (echo "Sparkle tools not found — run make build first" && exit 1)
-	rm -rf $(FEED_DIR)
-	mkdir -p $(FEED_DIR)
-	@# Generated from an empty folder every time, never merged into an older
-	@# feed. The dmg keeps a constant name, so only one build can exist at a
-	@# time — but generate_appcast preserves entries it already knows, and left
-	@# the previous version advertised at a URL now serving a different file,
-	@# with a signature that could never verify.
-	cp $(DMG) $(FEED_DIR)/
-	$(SPARKLE_BIN)/generate_appcast $(FEED_DIR) --download-url-prefix $(DOWNLOAD_PREFIX)
-	@echo
-	@echo "Feed staged for $(TAG):"
-	@ls -1 $(FEED_DIR)
-	@echo "Publish it with: make publish"
-
-# What the running copies will actually be told, checked before anybody is told
-# it. Verifies the feed parses, advertises the version this build is, carries a
-# signature, and points at the URL the dmg is about to occupy.
-verify-appcast: appcast
-	@python3 Scripts/verify-appcast.py $(FEED_DIR)/appcast.xml $(FEED_DIR)/$(APP_NAME).dmg \
-		$(VERSION) $(DOWNLOAD_PREFIX)
-
-# The tag the enclosure URL above resolves against. Separate from `publish` so a
-# tag is never created by something that might fail halfway.
-tag:
-	@git diff --quiet || (echo "working tree is dirty — commit first" && exit 1)
-	git tag -a $(TAG) -m "TokNotch $(VERSION)"
-	git push origin $(TAG)
-
-# Creates the release the feed URL points at, with the dmg and the appcast on
-# it. Uploading both together is what keeps them consistent: Sparkle reads the
-# appcast from the newest release and downloads the dmg beside it.
-publish: verify-release verify-appcast
-	gh release create $(TAG) \
-		$(FEED_DIR)/$(APP_NAME).dmg $(FEED_DIR)/appcast.xml \
-		--title "TokNotch $(VERSION)" --notes-file CHANGELOG.md --verify-tag
-
-# Fails now rather than five minutes into an archive that cannot be signed.
-# An "Apple Development" certificate is not enough: it is for running a build on
-# your own machines, and Gatekeeper on somebody else's rejects what it signs.
-check-signing:
-	@security find-identity -v -p codesigning | grep -q "Developer ID Application" || ( \
-		echo "No 'Developer ID Application' certificate in the keychain."; \
-		echo "A paid developer account has one available, but it has to be created once:"; \
-		echo "  Xcode -> Settings -> Accounts -> your team -> Manage Certificates"; \
-		echo "  -> + -> Developer ID Application   (Account Holder role required)"; \
-		exit 1)
-
-# The published build: Developer ID signed, hardened, notarised, stapled, and
-# advertised in the appcast Sparkle polls.
-release: SIGN_IDENTITY = Developer ID Application
-release: SIGN_FLAGS = CODE_SIGN_IDENTITY="Developer ID Application" ENABLE_HARDENED_RUNTIME=YES
-release: check-signing dmg notarize verify-release
-	@echo "Notarized: $(DMG)"
-	@echo "Next: make publish"
-
-# One-time: the key pair Sparkle signs updates with. The private half goes into
-# the login keychain and never leaves this Mac; the public half is printed for
-# Info.plist. Run once, ever — regenerating it strands everybody already
-# running a copy, because their app will reject anything the new key signed.
+# One-time: the key pair Sparkle signs updates with. Shared by every ReffWu app
+# and already in the login keychain. Never run this again for a shipped app.
 sparkle-keys:
-	@test -n "$(SPARKLE_BIN)" || (echo "Sparkle tools not found — run make build first" && exit 1)
-	$(SPARKLE_BIN)/generate_keys
-
-# What Gatekeeper on a customer's Mac will check. `spctl` accepting the app is
-# the actual proof that the download will open without a right-click.
-verify-release:
-	xcrun stapler validate $(DMG)
-	hdiutil attach $(DMG) -nobrowse -mountpoint $(RELEASE_DIR)/mnt
-	codesign --verify --deep --strict --verbose=2 $(RELEASE_DIR)/mnt/$(APP_NAME).app
-	spctl --assess --type execute --verbose=4 $(RELEASE_DIR)/mnt/$(APP_NAME).app
-	hdiutil detach $(RELEASE_DIR)/mnt
+	build/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys

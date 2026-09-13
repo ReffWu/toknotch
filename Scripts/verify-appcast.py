@@ -68,7 +68,8 @@ def main(appcast: Path, dmg: Path, version: str, prefix: str) -> int:
 
 def public_key_in_keychain() -> str | None:
     """What `generate_keys` says the private key in the keychain pairs with."""
-    tools = list(Path.home().glob(
+    tools = list(Path("build/SourcePackages").glob("artifacts/sparkle/Sparkle/bin/generate_keys"))
+    tools += list(Path.home().glob(
         "Library/Developer/Xcode/DerivedData/TokNotch-*/SourcePackages/"
         "artifacts/sparkle/Sparkle/bin/generate_keys"))
     if not tools:

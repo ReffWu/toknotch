@@ -13,7 +13,7 @@ concurrency:
 jobs:
   test:
     name: Build & test
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
       - uses: actions/checkout@v4
@@ -34,4 +34,7 @@ jobs:
         run: make test
 
       - name: Release build
-        run: make archive
+        run: >-
+          xcodebuild -project TokNotch.xcodeproj -scheme TokNotch
+          -destination 'platform=macOS,arch=arm64' -configuration Release
+          CODE_SIGN_IDENTITY=- build
