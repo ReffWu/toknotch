@@ -164,7 +164,11 @@ enum RingBuilder {
                                         verdict,
                                         UsageFormat.money(payback.earned, language),
                                         UsageFormat.money(payback.subscription.monthlyUSD, language)),
-                heroTint: payback.hasPaidBack ? Palette.paidBack : Palette.onTheWay,
+                // The vendor's own colour, like the rest of its card. Whether the
+                // plan has paid back is said in words just below; a shared
+                // verdict colour made every vendor's card look like one
+                // another's.
+                heroTint: usage.vendor.ringTint,
                 heroFraction: payback.scale.fill(payback.multiple),
                 heroMarker: payback.scale.breakEven,
                 fraction: share, tint: usage.vendor.ringTint,

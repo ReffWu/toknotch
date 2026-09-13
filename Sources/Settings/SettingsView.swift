@@ -462,7 +462,9 @@ private struct VendorRow: View {
             Text(String(format: "%.1f×", payback.multiple))
                 .font(.system(size: 13, weight: .semibold, design: .rounded))
                 .monospacedDigit()
-                .foregroundStyle(payback.hasPaidBack ? Color.green : Color.orange)
+                // In the vendor's colour, as on its notch card; the
+                // verdict is in the tooltip and in the number itself.
+                .foregroundStyle(vendor.tint)
                 .help(language.t(payback.hasPaidBack ? "settings.paidBack" : "settings.onTheWay"))
         }
     }
