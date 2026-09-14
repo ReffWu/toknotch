@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy 사용량이 다시 집계됩니다";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5가 세션을 새 폴더로 옮겨 토큰이 집계되지 않았습니다. 이제 TokNotch가 새 위치에서 읽어옵니다.";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy 사용량 반영";
+"whatsNew.v126.dock.detail" = "TokNotch는 기본적으로 Dock에 나타나지 않습니다. 설정에서 ‘Dock에 표시’를 켜면 계속 남아 있습니다.";
+"whatsNew.v126.dock.title" = "원하면 Dock에도";
+"whatsNew.v126.headline" = "새롭게 디자인한 메뉴 막대";
+"whatsNew.v126.panel.detail" = "메뉴 막대 아이콘을 누르면 요금제가 몇 배나 본전을 뽑았는지, 오늘·이번 달·누적이 나란히, 요금제별로 한 줄씩 보입니다. 업데이트 확인과 종료는 항상 맨 아래에 있습니다.";
+"whatsNew.v126.panel.title" = "한눈에 모두 확인";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

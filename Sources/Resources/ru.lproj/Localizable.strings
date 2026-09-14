@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy снова учитывается";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 перенёс сеансы в новую папку, поэтому его токены не учитывались. Теперь TokNotch читает их оттуда.";
 "whatsNew.v125.workbuddy.title" = "Использование WorkBuddy видно";
+"whatsNew.v126.dock.detail" = "По умолчанию TokNotch по-прежнему не занимает Dock. Включите «Показывать в Dock» в настройках, чтобы он там оставался.";
+"whatsNew.v126.dock.title" = "В Dock — по желанию";
+"whatsNew.v126.headline" = "Строка меню в новом облике";
+"whatsNew.v126.panel.detail" = "Нажмите значок в строке меню, чтобы увидеть, во сколько раз окупились тарифы, сегодня, этот месяц и всё время рядом, и каждый тариф отдельной строкой. «Проверить обновления» и «Завершить» всегда внизу.";
+"whatsNew.v126.panel.title" = "Всё с одного взгляда";
 "whatsNew.version" = "Версия %@";
 "whatsNew.welcome" = "Добро пожаловать в TokNotch";

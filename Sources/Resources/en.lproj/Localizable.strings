@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy counts again";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 moved its sessions to a new folder, so its tokens were missing. TokNotch now reads them from there.";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy usage shows up";
+"whatsNew.v126.dock.detail" = "TokNotch still stays out of the Dock by default. Turn on Show in Dock in Settings to keep it there.";
+"whatsNew.v126.dock.title" = "In the Dock if you like";
+"whatsNew.v126.headline" = "The menu bar, redesigned";
+"whatsNew.v126.panel.detail" = "Click the menu bar icon to see how many times your plans have paid for themselves, today, this month and all time side by side, and each plan on its own line. Check for Updates and Quit are always at the bottom.";
+"whatsNew.v126.panel.title" = "Everything at a glance";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Welcome to TokNotch";

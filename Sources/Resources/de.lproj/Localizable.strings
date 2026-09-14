@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy zählt wieder mit";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 speichert Sitzungen in einem neuen Ordner, daher fehlten seine Tokens. TokNotch liest sie jetzt von dort.";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy-Nutzung wird erfasst";
+"whatsNew.v126.dock.detail" = "TokNotch bleibt standardmäßig aus dem Dock. Schalte in den Einstellungen „Im Dock anzeigen“ ein, um es dort zu behalten.";
+"whatsNew.v126.dock.title" = "Auf Wunsch im Dock";
+"whatsNew.v126.headline" = "Die Menüleiste, neu gestaltet";
+"whatsNew.v126.panel.detail" = "Ein Klick auf das Menüleistensymbol zeigt, wie oft sich deine Abos bezahlt gemacht haben, dazu Heute, Diesen Monat und Gesamt nebeneinander und jedes Abo in einer eigenen Zeile. Nach Updates suchen und Beenden stehen immer unten.";
+"whatsNew.v126.panel.title" = "Alles auf einen Blick";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

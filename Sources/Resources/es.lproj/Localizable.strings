@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy vuelve a contar";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 movió sus sesiones a una carpeta nueva, así que faltaban sus tokens. TokNotch ahora los lee desde allí.";
 "whatsNew.v125.workbuddy.title" = "El uso de WorkBuddy aparece";
+"whatsNew.v126.dock.detail" = "TokNotch sigue sin aparecer en el Dock por omisión. Activa «Mostrar en el Dock» en Ajustes para dejarlo ahí.";
+"whatsNew.v126.dock.title" = "En el Dock si quieres";
+"whatsNew.v126.headline" = "La barra de menús, rediseñada";
+"whatsNew.v126.panel.detail" = "Haz clic en el icono de la barra de menús para ver cuántas veces se han amortizado tus planes, hoy, este mes y en total uno al lado del otro, y cada plan en su propia línea. Buscar actualizaciones y Salir están siempre abajo.";
+"whatsNew.v126.panel.title" = "Todo de un vistazo";
 "whatsNew.version" = "Versión %@";
 "whatsNew.welcome" = "Te damos la bienvenida a TokNotch";

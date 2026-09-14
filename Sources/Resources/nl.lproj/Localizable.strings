@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy telt weer mee";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 bewaart sessies in een nieuwe map, waardoor de tokens ontbraken. TokNotch leest ze nu daar.";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy-gebruik wordt geteld";
+"whatsNew.v126.dock.detail" = "TokNotch blijft standaard uit het Dock. Zet ‘Toon in Dock’ aan in Instellingen om het daar te houden.";
+"whatsNew.v126.dock.title" = "In het Dock als je wilt";
+"whatsNew.v126.headline" = "De menubalk, opnieuw ontworpen";
+"whatsNew.v126.panel.detail" = "Klik op het menubalksymbool om te zien hoe vaak je abonnementen zichzelf hebben terugverdiend, met vandaag, deze maand en totaal naast elkaar en elk abonnement op een eigen regel. Zoek naar updates en Stop staan altijd onderaan.";
+"whatsNew.v126.panel.title" = "Alles in één oogopslag";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy 的用量回来了";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 把会话记录搬到了新文件夹，之前它的 token 没有被统计到。TokNotch 现在会从新位置读取。";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy 用量已计入";
+"whatsNew.v126.dock.detail" = "TokNotch 默认仍然不占程序坞。在设置里打开“在程序坞中显示”，就会一直留在那里。";
+"whatsNew.v126.dock.title" = "想放进程序坞也可以";
+"whatsNew.v126.headline" = "菜单栏，重新设计";
+"whatsNew.v126.panel.detail" = "点开菜单栏图标，就能看到套餐回本了几倍，今日、本月、累计并排显示，每个套餐各占一行。检查更新和退出始终在最下面。";
+"whatsNew.v126.panel.title" = "一眼看全";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

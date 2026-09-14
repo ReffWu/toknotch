@@ -117,8 +117,9 @@ read as one shape — which is why that is where it starts on a Mac that has one
 **Out of the way until you want it.** At rest it's a small pill at the edge —
 reach for it and it opens. Or keep it open always.
 
-**Never in your Dock.** Just a small icon in the menu bar, with this period's
-payback and today's tokens one click away.
+**Out of your Dock unless you want it.** A small icon in the menu bar opens a
+panel with this period's payback, today, this month and all time. Settings
+can put it in the Dock too.
 
 It knows about your Dock and your menu bar, and moves when they do.
 

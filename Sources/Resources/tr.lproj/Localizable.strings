@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy yeniden sayılıyor";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 oturumlarını yeni bir klasöre taşıdığı için token’ları eksikti. TokNotch artık onları oradan okuyor.";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy kullanımı görünüyor";
+"whatsNew.v126.dock.detail" = "TokNotch varsayılan olarak Dock’ta görünmez. Orada kalması için Ayarlar’da ‘Dock’ta göster’i açın.";
+"whatsNew.v126.dock.title" = "İsterseniz Dock’ta";
+"whatsNew.v126.headline" = "Yeniden tasarlanan menü çubuğu";
+"whatsNew.v126.panel.detail" = "Menü çubuğu simgesine tıklayın; planlarınızın kendini kaç kez çıkardığını, bugün, bu ay ve toplamı yan yana, her planı kendi satırında görün. Güncellemeleri denetle ve Çık her zaman en altta.";
+"whatsNew.v126.panel.title" = "Her şey tek bakışta";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

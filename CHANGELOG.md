@@ -7,6 +7,25 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.6]
+
+The menu bar, redesigned.
+
+### Added
+
+- **A menu bar panel instead of a plain menu.** How many times every plan has
+  paid for itself, with its bar; today, this month and all time side by side;
+  one line per plan once there are two or more. Check for Updates and Quit
+  always sit at the bottom.
+- **Show in Dock.** TokNotch still stays out of the Dock by default; the new
+  switch in Settings keeps it there.
+
+### Changed
+
+- **Only what tokscale reads on its own is counted.** The workaround that
+  pointed tokscale at WorkBuddy AI 5.5's `~/.workbuddy-ai` folder is gone, so
+  that usage appears again once tokscale reads the new folder itself.
+
 ## [1.2.5]
 
 WorkBuddy counts again.

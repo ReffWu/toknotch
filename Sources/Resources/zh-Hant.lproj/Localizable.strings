@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "WorkBuddy 的用量回來了";
 "whatsNew.v125.workbuddy.detail" = "WorkBuddy AI 5.5 把對話紀錄搬到了新資料夾，之前它的 token 沒有被統計到。TokNotch 現在會從新位置讀取。";
 "whatsNew.v125.workbuddy.title" = "WorkBuddy 用量已計入";
+"whatsNew.v126.dock.detail" = "TokNotch 預設仍然不佔 Dock。在設定裡打開「在 Dock 中顯示」，就會一直留在那裡。";
+"whatsNew.v126.dock.title" = "想放進 Dock 也可以";
+"whatsNew.v126.headline" = "選單列，重新設計";
+"whatsNew.v126.panel.detail" = "點開選單列圖像，就能看到方案回本了幾倍，今日、本月、累計並排顯示，每個方案各佔一行。檢查更新和結束一直在最下面。";
+"whatsNew.v126.panel.title" = "一眼看全";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";

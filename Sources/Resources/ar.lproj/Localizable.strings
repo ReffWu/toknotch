@@ -143,5 +143,10 @@
 "whatsNew.v125.headline" = "عاد احتساب WorkBuddy";
 "whatsNew.v125.workbuddy.detail" = "نقل WorkBuddy AI 5.5 جلساته إلى مجلد جديد، لذلك لم تُحتسب رموزه. يقرأها TokNotch الآن من هناك.";
 "whatsNew.v125.workbuddy.title" = "ظهور استخدام WorkBuddy";
+"whatsNew.v126.dock.detail" = "يبقى TokNotch خارج شريط Dock افتراضيًا. فعّل «إظهار في شريط Dock» في الإعدادات لإبقائه هناك.";
+"whatsNew.v126.dock.title" = "في شريط Dock إن أردت";
+"whatsNew.v126.headline" = "شريط القوائم بتصميم جديد";
+"whatsNew.v126.panel.detail" = "انقر أيقونة شريط القوائم لترى كم مرة استردّت خططك تكلفتها، واليوم وهذا الشهر والإجمالي جنبًا إلى جنب، وكل خطة في سطرها. التحقق من التحديثات والإنهاء في الأسفل دائمًا.";
+"whatsNew.v126.panel.title" = "كل شيء بنظرة واحدة";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";
