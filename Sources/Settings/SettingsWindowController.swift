@@ -36,6 +36,8 @@ final class SettingsWindowController {
         window.orderFrontRegardless()
     }
 
+    var isVisible: Bool { window?.isVisible == true }
+
     func show() {
         if let window {
             surface(window)

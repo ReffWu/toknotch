@@ -80,6 +80,26 @@ final class Updater: NSObject, ObservableObject {
     }
 }
 
+extension Updater.Outcome {
+    /// What the update button says: what the updater last found, so checking
+    /// needs no second place to report back to.
+    func label(_ language: AppLanguage) -> String {
+        switch self {
+        case .unconfigured, .idle: return language.t("settings.checkForUpdates")
+        case .checking:            return language.t("settings.checking")
+        case .upToDate:            return language.t("settings.upToDate")
+        case .found(let version):  return language.t("settings.updateAvailable", version)
+        case .unreachable:         return language.t("settings.couldnTReachTheUpdate")
+        case .failed(let why):     return language.t("settings.checkFailed", why)
+        }
+    }
+
+    var isFound: Bool {
+        if case .found = self { return true }
+        return false
+    }
+}
+
 // MARK: - Sparkle's side
 
 extension Updater: SPUUpdaterDelegate {

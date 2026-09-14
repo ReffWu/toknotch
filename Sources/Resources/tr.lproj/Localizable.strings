@@ -10,7 +10,7 @@
 "card.moreModels" = "%d model daha";
 "menu.about" = "TokNotch Hakkında";
 "menu.open" = "TokNotch’u Aç…";
-"menu.payback" = "Bu dönem %@ amorti";
+"menu.pickAPlan" = "Planlarını seç, kendilerini kaç kez çıkardıklarını gör.";
 "menu.quit" = "TokNotch’tan Çık";
 "moreApps.get" = "Al";
 "moreApps.open" = "Aç";
@@ -69,6 +69,7 @@
 "settings.refresh" = "Yenile";
 "settings.scanningThisMacSUsage" = "Bu Mac’in kullanımı taranıyor…";
 "settings.show" = "Göster";
+"settings.showInDock" = "Dock’ta göster";
 "settings.showRing" = "Bu sağlayıcı için çentikte bir halka göster";
 "settings.systemLanguage" = "Sistemle aynı";
 "settings.theAppItself" = "Uygulamanın kendisi";

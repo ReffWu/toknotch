@@ -2,7 +2,17 @@ import AppKit
 import Combine
 import SwiftUI
 
-final class AppDelegate: NSObject, NSApplicationDelegate {
+/// What the menu bar panel reads. Nil until launch has built it.
+struct MenuBarContext {
+    let preferences: Preferences
+    let store: UsageStore
+    let updater: Updater
+    let openSettings: () -> Void
+    let about: () -> Void
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
+    @Published private(set) var menuBar: MenuBarContext?
     private var notchController: NotchWindowController?
     private var store: UsageStore?
     private var preferences: Preferences?
@@ -11,23 +21,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var about: AboutWindowController?
     /// Held for the life of the app: releasing it stops the scheduled checks.
     private var updater: Updater?
-    private var statusItem: StatusItemController?
     private var cancellables = Set<AnyCancellable>()
 
     /// The unit bundle is hosted by this app, so `xcodebuild test` launches it
     /// for real. Without this guard every test run put a live request on the
     /// usage endpoint — which is both wrong on its own terms and, on an endpoint
     /// that rate-limits, actively harmful.
-    private var isRunningTests: Bool {
+    private static var isRunningTests: Bool {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
             || NSClassFromString("XCTestCase") != nil
     }
+    private var isRunningTests: Bool { Self.isRunningTests }
+
+    /// No menu bar icon under test or in a demo run, where there is nothing
+    /// behind it to open.
+    static var hasMenuBarIcon: Bool {
+        !isRunningTests && ProcessInfo.processInfo.environment["TOKNOTCH_DEMO"] != "1"
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        // No Dock tile: the notch and the menu bar icon are how TokNotch is
-        // reached. `LSUIElement` in the Info.plist keeps the tile from flashing
-        // up at launch; this keeps a copy registered before that key existed
-        // from holding on to one.
+        // No Dock tile unless asked for: the notch and the menu bar icon are
+        // how TokNotch is reached. `LSUIElement` in the Info.plist keeps the
+        // tile from flashing up at launch; this keeps a copy registered before
+        // that key existed from holding on to one. The Show in Dock setting
+        // puts it back below.
         NSApp.setActivationPolicy(.accessory)
         guard !isRunningTests else { return }
         AppIconStyle.restore()
@@ -107,18 +124,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.about = about
         settings.onAbout = { [weak about] in about?.show() }
 
-        let statusItem = StatusItemController(
+        menuBar = MenuBarContext(
             preferences: preferences, store: store, updater: updater,
-            onOpenSettings: { [weak settings] in settings?.show() },
-            onAbout: { [weak about] in about?.show() }
+            openSettings: { [weak settings] in settings?.show() },
+            about: { [weak about] in about?.show() }
         )
-        statusItem.show()
-        self.statusItem = statusItem
 
         DistributedNotificationCenter.default().addObserver(
             forName: NSNotification.Name("com.reffwu.toknotch.openSettings"),
             object: nil, queue: .main
         ) { [weak settings] _ in settings?.show() }
+
+        preferences.$showsInDock
+            .receive(on: RunLoop.main)
+            .sink { [weak settings] shows in
+                let policy: NSApplication.ActivationPolicy = shows ? .regular : .accessory
+                guard NSApp.activationPolicy() != policy else { return }
+                NSApp.setActivationPolicy(policy)
+                // Switching hands focus to whatever was behind, which would
+                // bury the window the switch was just flipped in.
+                if settings?.isVisible == true { settings?.show() }
+            }
+            .store(in: &cancellables)
 
         preferences.$notchVisibility
             .receive(on: RunLoop.main)

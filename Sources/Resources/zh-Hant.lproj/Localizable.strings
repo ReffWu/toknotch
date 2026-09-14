@@ -10,7 +10,7 @@
 "card.moreModels" = "還有 %d 個模型";
 "menu.about" = "關於 TokNotch";
 "menu.open" = "打開 TokNotch…";
-"menu.payback" = "本期回本 %@";
+"menu.pickAPlan" = "選好你的方案，就能看到回本了幾倍。";
 "menu.quit" = "結束 TokNotch";
 "moreApps.get" = "取得";
 "moreApps.open" = "打開";
@@ -69,6 +69,7 @@
 "settings.refresh" = "重新整理";
 "settings.scanningThisMacSUsage" = "正在掃描這台 Mac 的用量…";
 "settings.show" = "顯示模式";
+"settings.showInDock" = "在 Dock 中顯示";
 "settings.showRing" = "在瀏海上顯示這家的環";
 "settings.systemLanguage" = "跟隨系統";
 "settings.theAppItself" = "應用程式本身";

@@ -10,7 +10,7 @@
 "card.moreModels" = "%d نماذج أخرى";
 "menu.about" = "حول TokNotch";
 "menu.open" = "فتح TokNotch…";
-"menu.payback" = "استُرد %@ في هذه الفترة";
+"menu.pickAPlan" = "اختر خططك لترى كم مرة استردّت تكلفتها.";
 "menu.quit" = "إنهاء TokNotch";
 "moreApps.get" = "احصل عليه";
 "moreApps.open" = "فتح";
@@ -69,6 +69,7 @@
 "settings.refresh" = "تحديث";
 "settings.scanningThisMacSUsage" = "جارٍ فحص استخدام هذا الـ Mac…";
 "settings.show" = "الإظهار";
+"settings.showInDock" = "إظهار في شريط Dock";
 "settings.showRing" = "إظهار حلقة لهذا المزوّد على النتوء";
 "settings.systemLanguage" = "مثل النظام";
 "settings.theAppItself" = "التطبيق نفسه";

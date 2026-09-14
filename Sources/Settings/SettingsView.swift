@@ -519,6 +519,13 @@ struct PreferencesPage: View {
                     SettingsRow("app.badge", tint: .blue, title: language.t("settings.appIcon")) {
                         AppIconPicker(language: language)
                     }
+                    SettingsDivider()
+                    SettingsRow("dock.rectangle", tint: .gray, title: language.t("settings.showInDock")) {
+                        Toggle("", isOn: $preferences.showsInDock)
+                            .toggleStyle(.switch)
+                            .controlSize(.small)
+                            .labelsHidden()
+                    }
                     if Updater.isConfigured {
                         SettingsDivider()
                         SettingsRow("arrow.triangle.2.circlepath", tint: .green,
@@ -553,7 +560,7 @@ struct PreferencesPage: View {
             .help(language.t("menu.about"))
             if Updater.isConfigured {
                 Text(verbatim: "·")
-                Button(updateLabel) { updater.checkForUpdates() }
+                Button(updater.outcome.label(language)) { updater.checkForUpdates() }
                     .buttonStyle(.link)
                     .disabled(updater.outcome == .checking)
             }
@@ -563,18 +570,5 @@ struct PreferencesPage: View {
         .font(.system(size: 11))
         .foregroundStyle(.secondary)
         .frame(maxWidth: .infinity)
-    }
-
-    /// The button says what the updater last found, so checking needs no
-    /// second place to report back to.
-    private var updateLabel: String {
-        switch updater.outcome {
-        case .unconfigured, .idle: return language.t("settings.checkForUpdates")
-        case .checking:            return language.t("settings.checking")
-        case .upToDate:            return language.t("settings.upToDate")
-        case .found(let version):  return language.t("settings.updateAvailable", version)
-        case .unreachable:         return language.t("settings.couldnTReachTheUpdate")
-        case .failed(let why):     return language.t("settings.checkFailed", why)
-        }
     }
 }

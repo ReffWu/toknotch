@@ -10,7 +10,7 @@
 "card.moreModels" = "nog %d modellen";
 "menu.about" = "Over TokNotch";
 "menu.open" = "Open TokNotch…";
-"menu.payback" = "%@ terugverdiend deze periode";
+"menu.pickAPlan" = "Kies je abonnementen om te zien hoe vaak ze zichzelf al hebben terugverdiend.";
 "menu.quit" = "Stop TokNotch";
 "moreApps.get" = "Download";
 "moreApps.open" = "Open";
@@ -69,6 +69,7 @@
 "settings.refresh" = "Vernieuw";
 "settings.scanningThisMacSUsage" = "Gebruik van deze Mac scannen…";
 "settings.show" = "Tonen";
+"settings.showInDock" = "Toon in Dock";
 "settings.showRing" = "Een ring voor deze aanbieder op de notch tonen";
 "settings.systemLanguage" = "Zoals het systeem";
 "settings.theAppItself" = "De app zelf";

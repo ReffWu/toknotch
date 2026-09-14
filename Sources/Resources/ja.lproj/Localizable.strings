@@ -10,7 +10,7 @@
 "card.moreModels" = "ほか %d 件のモデル";
 "menu.about" = "TokNotch について";
 "menu.open" = "TokNotch を開く…";
-"menu.payback" = "今期 %@ 回収";
+"menu.pickAPlan" = "プランを選ぶと、何倍元が取れたかが分かります。";
 "menu.quit" = "TokNotch を終了";
 "moreApps.get" = "入手";
 "moreApps.open" = "開く";
@@ -69,6 +69,7 @@
 "settings.refresh" = "更新";
 "settings.scanningThisMacSUsage" = "この Mac の使用量をスキャンしています…";
 "settings.show" = "表示";
+"settings.showInDock" = "Dockに表示";
 "settings.showRing" = "ノッチにこのサービスのリングを表示";
 "settings.systemLanguage" = "システムに合わせる";
 "settings.theAppItself" = "アプリ自体";

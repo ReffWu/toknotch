@@ -10,7 +10,7 @@
 "card.moreModels" = "ещё %d моделей";
 "menu.about" = "О программе TokNotch";
 "menu.open" = "Открыть TokNotch…";
-"menu.payback" = "Окупилось %@ за период";
+"menu.pickAPlan" = "Выберите свои тарифы, чтобы увидеть, во сколько раз они окупились.";
 "menu.quit" = "Завершить TokNotch";
 "moreApps.get" = "Загрузить";
 "moreApps.open" = "Открыть";
@@ -69,6 +69,7 @@
 "settings.refresh" = "Обновить";
 "settings.scanningThisMacSUsage" = "Просматриваем расход на этом Mac…";
 "settings.show" = "Показывать";
+"settings.showInDock" = "Показывать в Dock";
 "settings.showRing" = "Показывать кольцо этого провайдера на вырезе";
 "settings.systemLanguage" = "Как в системе";
 "settings.theAppItself" = "Само приложение";

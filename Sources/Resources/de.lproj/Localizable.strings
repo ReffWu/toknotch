@@ -10,7 +10,7 @@
 "card.moreModels" = "%d weitere Modelle";
 "menu.about" = "Über TokNotch";
 "menu.open" = "TokNotch öffnen …";
-"menu.payback" = "%@ amortisiert in diesem Zeitraum";
+"menu.pickAPlan" = "Wähle deine Abos, um zu sehen, wie oft sie sich schon bezahlt gemacht haben.";
 "menu.quit" = "TokNotch beenden";
 "moreApps.get" = "Laden";
 "moreApps.open" = "Öffnen";
@@ -69,6 +69,7 @@
 "settings.refresh" = "Aktualisieren";
 "settings.scanningThisMacSUsage" = "Verbrauch dieses Macs wird durchsucht …";
 "settings.show" = "Anzeigen";
+"settings.showInDock" = "Im Dock anzeigen";
 "settings.showRing" = "Einen Ring für diesen Anbieter an der Notch zeigen";
 "settings.systemLanguage" = "Wie das System";
 "settings.theAppItself" = "Die App selbst";

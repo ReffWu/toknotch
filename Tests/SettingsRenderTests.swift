@@ -56,4 +56,30 @@ final class SettingsRenderTests: XCTestCase {
             }
         }
     }
+
+    /// The menu bar panel, in both appearances.
+    func testMenuBarPanelLaysOut() throws {
+        let preferences = makePreferences()
+        let store = makeStore()
+        store.subscriptions = preferences.subscriptions
+
+        for scheme in [ColorScheme.light, .dark] {
+            let panel = MenuBarPanel(preferences: preferences, store: store, updater: Updater(),
+                                     onOpenSettings: {}, onAbout: {})
+                .background(Color(nsColor: .windowBackgroundColor))
+                .environment(\.colorScheme, scheme)
+            let renderer = ImageRenderer(content: panel)
+            renderer.scale = 2
+            let image = try XCTUnwrap(renderer.nsImage, "panel failed to render")
+            XCTAssertGreaterThan(image.size.height, 200, "panel collapsed")
+
+            if let directory = ProcessInfo.processInfo.environment["SETTINGS_RENDER_PATH"] {
+                let tiff = try XCTUnwrap(image.tiffRepresentation)
+                let png = try XCTUnwrap(NSBitmapImageRep(data: tiff)?
+                    .representation(using: .png, properties: [:]))
+                try png.write(to: URL(fileURLWithPath: directory)
+                    .appendingPathComponent("menu-bar-panel-\(scheme == .dark ? "dark" : "light").png"))
+            }
+        }
+    }
 }

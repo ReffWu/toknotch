@@ -153,6 +153,13 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(notchEdge.rawValue, forKey: Keys.edge) }
     }
 
+    /// Whether TokNotch also keeps a tile in the Dock. Off by default: the
+    /// notch and the menu bar icon are how it is reached, and a tile for an app
+    /// that never has a window open is one more thing to walk past.
+    @Published var showsInDock: Bool {
+        didSet { defaults.set(showsInDock, forKey: Keys.showsInDock) }
+    }
+
     /// The version whose changes have already been shown.
     ///
     /// Written when the What's New dialogue is dismissed rather than when it
@@ -174,6 +181,7 @@ final class Preferences: ObservableObject {
         static let lastSeenVersion = "lastSeenVersion"
         static let language = "appLanguage"
         static let addedLoginItem = "addedLoginItem"
+        static let showsInDock = "showsInDock"
     }
 
     /// True the very first time this copy runs, and never again.
@@ -244,6 +252,7 @@ final class Preferences: ObservableObject {
         self.lastSeenVersion = defaults.string(forKey: Keys.lastSeenVersion)
         self.autoEnabledVendors = Set((defaults.stringArray(forKey: Keys.autoEnabled) ?? [])
             .compactMap(Vendor.init(rawValue:)))
+        self.showsInDock = defaults.bool(forKey: Keys.showsInDock)
         self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "payback"
         // Follows the Mac until somebody says otherwise, which is the right
         // default for a language: an app that opens in the wrong one is worse
