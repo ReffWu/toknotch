@@ -40,7 +40,6 @@
 "row.equivalentCost" = "Custo equivalente de API";
 "row.lifetimeUsage" = "Uso total";
 "row.requests" = "Solicitações";
-"settings.appIcon" = "Ícone do app";
 "settings.autoDetected" = "Detectado automaticamente";
 "settings.autoUpdate" = "Instalar atualizações automaticamente";
 "settings.checkFailed" = "Falha na verificação — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "Verificando…";
 "settings.couldnTReachTheUpdate" = "Não foi possível acessar o feed de atualizações";
 "settings.custom" = "Personalizado…";
-"settings.dark" = "Escuro";
 "settings.dayOfMonth" = "dia %d";
 "settings.detected" = "Detectado: %1$@ · de %2$@";
 "settings.earned" = "Gerado";
 "settings.edge" = "Borda";
 "settings.language" = "Idioma";
-"settings.light" = "Claro";
 "settings.noPlan" = "Sem plano";
 "settings.onTheWay" = "a caminho";
 "settings.page.payback" = "Retorno";

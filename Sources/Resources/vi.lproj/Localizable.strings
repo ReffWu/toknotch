@@ -40,7 +40,6 @@
 "row.equivalentCost" = "Chi phí API tương đương";
 "row.lifetimeUsage" = "Tổng mức sử dụng";
 "row.requests" = "Yêu cầu";
-"settings.appIcon" = "Biểu tượng ứng dụng";
 "settings.autoDetected" = "Tự động nhận diện";
 "settings.autoUpdate" = "Tự động cài bản cập nhật";
 "settings.checkFailed" = "Kiểm tra thất bại — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "Đang kiểm tra…";
 "settings.couldnTReachTheUpdate" = "Không kết nối được nguồn cập nhật";
 "settings.custom" = "Tùy chỉnh…";
-"settings.dark" = "Tối";
 "settings.dayOfMonth" = "ngày %d";
 "settings.detected" = "Đã nhận diện: %1$@ · từ %2$@";
 "settings.earned" = "Thu về";
 "settings.edge" = "Mép";
 "settings.language" = "Ngôn ngữ";
-"settings.light" = "Sáng";
 "settings.noPlan" = "Không có gói";
 "settings.onTheWay" = "đang thu hồi";
 "settings.page.payback" = "Hoàn vốn";

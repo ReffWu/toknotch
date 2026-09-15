@@ -47,7 +47,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // puts it back below.
         NSApp.setActivationPolicy(.accessory)
         guard !isRunningTests else { return }
-        AppIconStyle.restore()
 
         let controller = NotchWindowController()
 

@@ -40,7 +40,6 @@
 "row.equivalentCost" = "Gelijkwaardige API-kosten";
 "row.lifetimeUsage" = "Totaal gebruik";
 "row.requests" = "Verzoeken";
-"settings.appIcon" = "Appsymbool";
 "settings.autoDetected" = "Automatisch herkend";
 "settings.autoUpdate" = "Updates automatisch installeren";
 "settings.checkFailed" = "Controle mislukt — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "Controleren…";
 "settings.couldnTReachTheUpdate" = "De updatefeed is niet bereikbaar";
 "settings.custom" = "Aangepast…";
-"settings.dark" = "Donker";
 "settings.dayOfMonth" = "de %de";
 "settings.detected" = "Herkend: %1$@ · uit %2$@";
 "settings.earned" = "Opgebracht";
 "settings.edge" = "Rand";
 "settings.language" = "Taal";
-"settings.light" = "Licht";
 "settings.noPlan" = "Geen abonnement";
 "settings.onTheWay" = "onderweg";
 "settings.page.payback" = "Terugverdienen";

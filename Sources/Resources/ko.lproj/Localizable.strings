@@ -40,7 +40,6 @@
 "row.equivalentCost" = "API 환산 금액";
 "row.lifetimeUsage" = "누적 사용량";
 "row.requests" = "요청 수";
-"settings.appIcon" = "앱 아이콘";
 "settings.autoDetected" = "자동 인식됨";
 "settings.autoUpdate" = "업데이트 자동 설치";
 "settings.checkFailed" = "확인 실패 — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "확인 중…";
 "settings.couldnTReachTheUpdate" = "업데이트 서버에 연결할 수 없습니다";
 "settings.custom" = "직접 입력…";
-"settings.dark" = "다크";
 "settings.dayOfMonth" = "%d일";
 "settings.detected" = "자동 인식: %1$@ · 출처 %2$@";
 "settings.earned" = "환산 금액";
 "settings.edge" = "표시할 가장자리";
 "settings.language" = "언어";
-"settings.light" = "라이트";
 "settings.noPlan" = "구독 없음";
 "settings.onTheWay" = "회수 중";
 "settings.page.payback" = "회수";

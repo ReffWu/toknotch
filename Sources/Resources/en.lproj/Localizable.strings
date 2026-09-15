@@ -40,7 +40,6 @@
 "row.equivalentCost" = "Equivalent API cost";
 "row.lifetimeUsage" = "All-time usage";
 "row.requests" = "Requests";
-"settings.appIcon" = "App icon";
 "settings.autoDetected" = "Detected";
 "settings.autoUpdate" = "Install updates automatically";
 "settings.checkFailed" = "Check failed — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "Checking…";
 "settings.couldnTReachTheUpdate" = "Couldn't reach the update feed";
 "settings.custom" = "Custom…";
-"settings.dark" = "Dark";
 "settings.dayOfMonth" = "the %dth";
 "settings.detected" = "Detected: %1$@ · from %2$@";
 "settings.earned" = "Earned";
 "settings.edge" = "Edge";
 "settings.language" = "Language";
-"settings.light" = "Light";
 "settings.noPlan" = "No plan";
 "settings.onTheWay" = "on the way";
 "settings.page.payback" = "Payback";

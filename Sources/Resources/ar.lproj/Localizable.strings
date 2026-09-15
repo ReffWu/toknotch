@@ -40,7 +40,6 @@
 "row.equivalentCost" = "تكلفة API المكافئة";
 "row.lifetimeUsage" = "الاستخدام الإجمالي";
 "row.requests" = "الطلبات";
-"settings.appIcon" = "أيقونة التطبيق";
 "settings.autoDetected" = "اكتُشف تلقائيًا";
 "settings.autoUpdate" = "تثبيت التحديثات تلقائيًا";
 "settings.checkFailed" = "فشل التحقق — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "جارٍ التحقق…";
 "settings.couldnTReachTheUpdate" = "تعذر الوصول إلى مصدر التحديثات";
 "settings.custom" = "مخصص…";
-"settings.dark" = "داكن";
 "settings.dayOfMonth" = "يوم %d";
 "settings.detected" = "تم التعرف: %1$@ · من %2$@";
 "settings.earned" = "العائد";
 "settings.edge" = "الحافة";
 "settings.language" = "اللغة";
-"settings.light" = "فاتح";
 "settings.noPlan" = "بلا خطة";
 "settings.onTheWay" = "في الطريق";
 "settings.page.payback" = "الاسترداد";

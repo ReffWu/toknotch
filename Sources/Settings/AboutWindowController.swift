@@ -66,7 +66,7 @@ struct AboutView: View {
             // which at this size shows as a faint box behind the icon. The
             // frame fills 980 of the artwork's 1024 pixels, with 262-pixel
             // circular corners.
-            Image(nsImage: AppIconStyle.current.image ?? NSImage())
+            Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                 .resizable()
                 .interpolation(.high)
                 .frame(width: Self.icon * 1024 / 980, height: Self.icon * 1024 / 980)

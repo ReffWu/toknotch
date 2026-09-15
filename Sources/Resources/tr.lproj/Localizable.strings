@@ -40,7 +40,6 @@
 "row.equivalentCost" = "Eşdeğer API maliyeti";
 "row.lifetimeUsage" = "Toplam kullanım";
 "row.requests" = "İstekler";
-"settings.appIcon" = "Uygulama simgesi";
 "settings.autoDetected" = "Otomatik algılandı";
 "settings.autoUpdate" = "Güncellemeleri otomatik yükle";
 "settings.checkFailed" = "Denetim başarısız oldu — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "Denetleniyor…";
 "settings.couldnTReachTheUpdate" = "Güncelleme kaynağına ulaşılamadı";
 "settings.custom" = "Özel…";
-"settings.dark" = "Koyu";
 "settings.dayOfMonth" = "ayın %d’i";
 "settings.detected" = "Algılandı: %1$@ · %2$@ kaynağından";
 "settings.earned" = "Kazanılan";
 "settings.edge" = "Kenar";
 "settings.language" = "Dil";
-"settings.light" = "Açık";
 "settings.noPlan" = "Plan yok";
 "settings.onTheWay" = "yolda";
 "settings.page.payback" = "Amortisman";

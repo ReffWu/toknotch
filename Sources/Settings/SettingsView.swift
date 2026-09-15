@@ -516,10 +516,6 @@ struct PreferencesPage: View {
                         symbol: "globe", tint: .teal
                     )
                     SettingsDivider()
-                    SettingsRow("app.badge", tint: .blue, title: language.t("settings.appIcon")) {
-                        AppIconPicker(language: language)
-                    }
-                    SettingsDivider()
                     SettingsRow("menubar.rectangle", tint: .gray,
                                 title: language.t("settings.showInMenuBar"),
                                 subtitle: preferences.showsMenuBarIcon

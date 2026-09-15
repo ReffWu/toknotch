@@ -40,7 +40,6 @@
 "row.equivalentCost" = "Эквивалент по API";
 "row.lifetimeUsage" = "Всего использовано";
 "row.requests" = "Запросов";
-"settings.appIcon" = "Значок приложения";
 "settings.autoDetected" = "Определено автоматически";
 "settings.autoUpdate" = "Устанавливать обновления автоматически";
 "settings.checkFailed" = "Не удалось проверить — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "Проверка…";
 "settings.couldnTReachTheUpdate" = "Сервер обновлений недоступен";
 "settings.custom" = "Своя сумма…";
-"settings.dark" = "Тёмный";
 "settings.dayOfMonth" = "%d-го";
 "settings.detected" = "Определено: %1$@ · из %2$@";
 "settings.earned" = "Наработано";
 "settings.edge" = "Край экрана";
 "settings.language" = "Язык";
-"settings.light" = "Светлый";
 "settings.noPlan" = "Без подписки";
 "settings.onTheWay" = "окупается";
 "settings.page.payback" = "Окупаемость";

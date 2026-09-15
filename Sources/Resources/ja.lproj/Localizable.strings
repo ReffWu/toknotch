@@ -40,7 +40,6 @@
 "row.equivalentCost" = "API 換算額";
 "row.lifetimeUsage" = "累計使用量";
 "row.requests" = "リクエスト数";
-"settings.appIcon" = "アプリアイコン";
 "settings.autoDetected" = "自動検出";
 "settings.autoUpdate" = "アップデートを自動でインストール";
 "settings.checkFailed" = "確認できませんでした — %@";
@@ -48,13 +47,11 @@
 "settings.checking" = "確認中…";
 "settings.couldnTReachTheUpdate" = "アップデート情報に接続できませんでした";
 "settings.custom" = "カスタム…";
-"settings.dark" = "ダーク";
 "settings.dayOfMonth" = "%d 日";
 "settings.detected" = "自動検出：%1$@ · 取得元 %2$@";
 "settings.earned" = "換算額";
 "settings.edge" = "表示する辺";
 "settings.language" = "言語";
-"settings.light" = "ライト";
 "settings.noPlan" = "契約なし";
 "settings.onTheWay" = "回収中";
 "settings.page.payback" = "回収";

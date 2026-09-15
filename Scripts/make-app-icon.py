@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Generate the TokNotch app icon — dark and light frames — and write every
-size the AppIcon.appiconset, the in-app icon picker and the website need.
+"""Generate the TokNotch app icon and write every size the AppIcon.appiconset
+and the website need.
 
 The icon is *composed here*, not hand-drawn: a blue squircle (diagonal
 gradient) with the app's own SideNotchShape silhouette welded to its right
 edge, a Claude-coral usage ring inside it, a thin rim light, and a uniform
-concentric frame (near-black for dark, light grey for light). A small payback
+concentric near-black frame. A small payback
 "13.4x" bubble sits on the blue face — it is part of the mark.
 
 Requires: Pillow, and Google Chrome (the bubble + its text are rendered by
@@ -61,7 +61,7 @@ SIGNATURE = "REFFWU"
 FONT_PATH = "/System/Library/Fonts/Optima.ttc"
 FONT_SIZE = 46
 TRACKING = 16
-ENGRAVING = {"dark": (128, 128, 134, 255), "light": (150, 150, 156, 255)}
+ENGRAVING = (128, 128, 134, 255)
 
 
 def ring_point(distance, box, radius):
@@ -238,8 +238,6 @@ def slice_appicon(master_bubble, master_clean, suffix):
 
 
 def write_contents():
-    """Dark frame only: macOS app icon sets ignore light-appearance variants,
-    so the light frame ships as an image set the app switches to instead."""
     images = []
     for pt in SIZES:
         for scale in (1, 2):
@@ -249,32 +247,14 @@ def write_contents():
               open(os.path.join(APPICON, "Contents.json"), "w"), indent=2)
 
 
-def write_choice(name, image):
-    """A 1024 px copy the App icon picker shows and applies."""
-    folder = os.path.join(os.path.dirname(APPICON), f"{name}.imageset")
-    os.makedirs(folder, exist_ok=True)
-    image.resize((1024, 1024), Image.LANCZOS).save(os.path.join(folder, "icon.png"))
-    json.dump({"images": [{"idiom": "universal", "filename": "icon.png"}],
-               "info": {"version": 1, "author": "make-app-icon.py"}},
-              open(os.path.join(folder, "Contents.json"), "w"), indent=2)
-
-
 def main():
-    dark_base = build_base((26, 26, 28), (0x3E, 0x7B, 0xFA), (0x2E, 0x40, 0x8E), 70, ENGRAVING["dark"])
-    light_base = build_base((233, 233, 235), (0x4C, 0x86, 0xFB), (0x33, 0x4C, 0xA6), 95, ENGRAVING["light"])
-
+    dark_base = build_base((26, 26, 28), (0x3E, 0x7B, 0xFA), (0x2E, 0x40, 0x8E), 70, ENGRAVING)
     dark = with_bubble(dark_base, 0.5)
-    light = with_bubble(light_base, 0.28)
 
     # Small sizes (<=32pt) drop the bubble - it is an unreadable smudge there.
-    for stale in os.listdir(APPICON):
-        if stale.endswith("_light.png"):
-            os.remove(os.path.join(APPICON, stale))
     slice_appicon(dark, dark_base.resize((1024, 1024), Image.LANCZOS), "")
     write_contents()
-    write_choice("AppIcon-dark", dark)
-    write_choice("AppIcon-light", light)
-    print("wrote AppIcon.appiconset and the AppIcon-dark / AppIcon-light choices")
+    print("wrote AppIcon.appiconset")
 
     # website & docs: 512 png + webp of the dark mark (used on both light/dark pages)
     if os.path.isdir(ARTIFACTS):

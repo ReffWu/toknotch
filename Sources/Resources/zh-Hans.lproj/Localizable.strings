@@ -40,7 +40,6 @@
 "row.equivalentCost" = "等效商业价值";
 "row.lifetimeUsage" = "累计用量";
 "row.requests" = "请求次数";
-"settings.appIcon" = "App 图标";
 "settings.autoDetected" = "已自动识别";
 "settings.autoUpdate" = "自动安装更新";
 "settings.checkFailed" = "检查失败：%@";
@@ -48,13 +47,11 @@
 "settings.checking" = "正在检查…";
 "settings.couldnTReachTheUpdate" = "暂时连不上更新源";
 "settings.custom" = "自定义…";
-"settings.dark" = "深色";
 "settings.dayOfMonth" = "%d 号";
 "settings.detected" = "自动识别：%1$@ · 读自 %2$@";
 "settings.earned" = "等效价值";
 "settings.edge" = "贴在哪条边";
 "settings.language" = "语言";
-"settings.light" = "白色";
 "settings.noPlan" = "无订阅";
 "settings.onTheWay" = "回本中";
 "settings.page.payback" = "回本";

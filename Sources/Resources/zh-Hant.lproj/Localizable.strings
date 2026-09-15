@@ -40,7 +40,6 @@
 "row.equivalentCost" = "等效商業價值";
 "row.lifetimeUsage" = "累計用量";
 "row.requests" = "請求次數";
-"settings.appIcon" = "App 圖像";
 "settings.autoDetected" = "已自動辨識";
 "settings.autoUpdate" = "自動安裝更新";
 "settings.checkFailed" = "檢查失敗：%@";
@@ -48,13 +47,11 @@
 "settings.checking" = "檢查中…";
 "settings.couldnTReachTheUpdate" = "暫時連不上更新來源";
 "settings.custom" = "自訂…";
-"settings.dark" = "深色";
 "settings.dayOfMonth" = "%d 號";
 "settings.detected" = "自動辨識：%1$@ · 讀自 %2$@";
 "settings.earned" = "等效價值";
 "settings.edge" = "貼在哪一邊";
 "settings.language" = "語言";
-"settings.light" = "白色";
 "settings.noPlan" = "無訂閱";
 "settings.onTheWay" = "回本中";
 "settings.page.payback" = "回本";
