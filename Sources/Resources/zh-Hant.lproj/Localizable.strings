@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "選單列可以更清爽";
 "whatsNew.v127.menuBar.detail" = "選單列太擠的話，在設定裡關掉「在選單列中顯示」就行。瀏海照常在，再次打開 TokNotch 就能回到設定。";
 "whatsNew.v127.menuBar.title" = "選單列圖像可以收起";
+"whatsNew.v128.headline" = "圖像只有一個了";
+"whatsNew.v128.icon.detail" = "TokNotch 現在一律使用黑色邊框的圖像，設定裡的「App 圖像」也就拿掉了。之前選了白色的，會自動換回來。";
+"whatsNew.v128.icon.title" = "統一用黑色邊框";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";

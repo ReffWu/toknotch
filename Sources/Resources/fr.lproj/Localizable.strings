@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Une barre des menus plus calme";
 "whatsNew.v127.menuBar.detail" = "Si votre barre des menus est encombrée, désactivez « Afficher dans la barre des menus » dans les réglages. L’encoche reste en place, et rouvrir TokNotch ramène les réglages.";
 "whatsNew.v127.menuBar.title" = "Masquer l’icône de la barre des menus";
+"whatsNew.v128.headline" = "Une seule icône";
+"whatsNew.v128.icon.detail" = "TokNotch utilise désormais toujours son icône à cadre sombre, le réglage « Icône de l’app » disparaît donc. Si vous aviez choisi la claire, elle revient d’elle-même.";
+"whatsNew.v128.icon.title" = "Le cadre sombre partout";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Bienvenue dans TokNotch";

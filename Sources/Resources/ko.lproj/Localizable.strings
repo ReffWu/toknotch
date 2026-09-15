@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "더 한산한 메뉴 막대";
 "whatsNew.v127.menuBar.detail" = "메뉴 막대가 붐빈다면 설정에서 ‘메뉴 막대에 표시’를 끄세요. 노치는 그대로 남아 있고, TokNotch를 다시 열면 설정으로 돌아옵니다.";
 "whatsNew.v127.menuBar.title" = "메뉴 막대 아이콘 숨기기";
+"whatsNew.v128.headline" = "아이콘은 하나로";
+"whatsNew.v128.icon.detail" = "이제 TokNotch는 항상 검은색 테두리 아이콘을 사용하므로 설정의 ‘앱 아이콘’ 항목이 사라졌습니다. 흰색을 골랐다면 자동으로 되돌아갑니다.";
+"whatsNew.v128.icon.title" = "검은색 테두리로 통일";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

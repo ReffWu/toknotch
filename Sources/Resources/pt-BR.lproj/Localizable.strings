@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Uma barra de menus mais limpa";
 "whatsNew.v127.menuBar.detail" = "Se a sua barra de menus está cheia, desative “Mostrar na barra de menus” nos Ajustes. O notch continua lá, e abrir o TokNotch de novo traz os Ajustes de volta.";
 "whatsNew.v127.menuBar.title" = "Oculte o ícone da barra de menus";
+"whatsNew.v128.headline" = "Um só ícone";
+"whatsNew.v128.icon.detail" = "O TokNotch agora usa sempre o ícone de moldura escura, então o ajuste “Ícone do app” saiu. Se você tinha escolhido o claro, ele volta sozinho.";
+"whatsNew.v128.icon.title" = "A moldura escura em todo lugar";
 "whatsNew.version" = "Versão %@";
 "whatsNew.welcome" = "Boas-vindas ao TokNotch";

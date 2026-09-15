@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Daha sade bir menü çubuğu";
 "whatsNew.v127.menuBar.detail" = "Menü çubuğunuz kalabalıksa Ayarlar’da ‘Menü çubuğunda göster’i kapatın. Çentik yerinde kalır, TokNotch’u yeniden açtığınızda Ayarlar geri gelir.";
 "whatsNew.v127.menuBar.title" = "Menü çubuğu simgesini gizleyin";
+"whatsNew.v128.headline" = "Tek simge";
+"whatsNew.v128.icon.detail" = "TokNotch artık her zaman koyu çerçeveli simgesini kullanıyor, bu yüzden ‘Uygulama simgesi’ ayarı kaldırıldı. Açık olanı seçtiyseniz kendiliğinden geri döner.";
+"whatsNew.v128.icon.title" = "Her yerde koyu çerçeve";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

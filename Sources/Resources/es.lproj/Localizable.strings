@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Una barra de menús más despejada";
 "whatsNew.v127.menuBar.detail" = "Si tu barra de menús está llena, desactiva «Mostrar en la barra de menús» en Ajustes. El notch sigue ahí, y al abrir TokNotch de nuevo vuelves a Ajustes.";
 "whatsNew.v127.menuBar.title" = "Oculta el icono de la barra de menús";
+"whatsNew.v128.headline" = "Un solo icono";
+"whatsNew.v128.icon.detail" = "TokNotch usa ahora siempre su icono de marco oscuro, así que el ajuste «Icono de la app» desaparece. Si habías elegido el claro, vuelve solo.";
+"whatsNew.v128.icon.title" = "El marco oscuro en todas partes";
 "whatsNew.version" = "Versión %@";
 "whatsNew.welcome" = "Te damos la bienvenida a TokNotch";

@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "メニューバーをすっきりと";
 "whatsNew.v127.menuBar.detail" = "メニューバーが混み合っているときは、設定で「メニューバーに表示」をオフにしてください。ノッチはそのまま残り、TokNotch をもう一度開くと設定に戻れます。";
 "whatsNew.v127.menuBar.title" = "メニューバーのアイコンを隠せます";
+"whatsNew.v128.headline" = "アイコンはひとつに";
+"whatsNew.v128.icon.detail" = "TokNotch は常に黒いフレームのアイコンを使うようになり、設定の「App アイコン」はなくなりました。白を選んでいた場合も自動で戻ります。";
+"whatsNew.v128.icon.title" = "黒いフレームに統一";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

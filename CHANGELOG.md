@@ -7,6 +7,15 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.8]
+
+One icon.
+
+### Removed
+
+- **The App icon setting.** TokNotch always uses its dark-framed icon now. A
+  copy that had the light frame picked switches back when it updates.
+
 ## [1.2.7]
 
 A quieter menu bar.

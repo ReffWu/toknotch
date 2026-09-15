@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "A quieter menu bar";
 "whatsNew.v127.menuBar.detail" = "If your menu bar is crowded, turn off Show in menu bar in Settings. The notch stays where it is, and opening TokNotch again brings Settings back.";
 "whatsNew.v127.menuBar.title" = "Hide the menu bar icon";
+"whatsNew.v128.headline" = "One icon";
+"whatsNew.v128.icon.detail" = "TokNotch now always uses its dark-framed icon, so the App icon setting is gone. If you had picked the light one, it switches back on its own.";
+"whatsNew.v128.icon.title" = "The dark frame, everywhere";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Welcome to TokNotch";

@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Una barra dei menu più ordinata";
 "whatsNew.v127.menuBar.detail" = "Se la barra dei menu è affollata, disattiva «Mostra nella barra dei menu» nelle impostazioni. Il notch resta al suo posto e riaprendo TokNotch tornano le impostazioni.";
 "whatsNew.v127.menuBar.title" = "Nascondi l’icona nella barra dei menu";
+"whatsNew.v128.headline" = "Un’unica icona";
+"whatsNew.v128.icon.detail" = "TokNotch ora usa sempre l’icona con la cornice scura, quindi l’impostazione «Icona dell’app» non c’è più. Se avevi scelto quella chiara, torna da sola.";
+"whatsNew.v128.icon.title" = "Cornice scura ovunque";
 "whatsNew.version" = "Versione %@";
 "whatsNew.welcome" = "Benvenuto in TokNotch";

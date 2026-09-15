@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "菜单栏可以更清爽";
 "whatsNew.v127.menuBar.detail" = "菜单栏太挤的话，在设置里关掉“在菜单栏中显示”就行。刘海照常在，再次打开 TokNotch 就能回到设置。";
 "whatsNew.v127.menuBar.title" = "菜单栏图标可以收起";
+"whatsNew.v128.headline" = "图标只有一个了";
+"whatsNew.v128.icon.detail" = "TokNotch 现在始终使用黑色边框的图标，设置里的“App 图标”也就去掉了。之前选了白色的，会自动换回来。";
+"whatsNew.v128.icon.title" = "统一用黑色边框";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

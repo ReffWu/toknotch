@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Spokojniejszy pasek menu";
 "whatsNew.v127.menuBar.detail" = "Jeśli pasek menu jest zatłoczony, wyłącz „Pokazuj na pasku menu” w ustawieniach. Notch zostaje na miejscu, a ponowne otwarcie TokNotch przywraca ustawienia.";
 "whatsNew.v127.menuBar.title" = "Ukryj ikonę na pasku menu";
+"whatsNew.v128.headline" = "Jedna ikona";
+"whatsNew.v128.icon.detail" = "TokNotch zawsze używa teraz ikony z ciemną ramką, więc ustawienie „Ikona aplikacji” zniknęło. Jeśli wybrano jasną, wróci sama.";
+"whatsNew.v128.icon.title" = "Wszędzie ciemna ramka";
 "whatsNew.version" = "Wersja %@";
 "whatsNew.welcome" = "Witaj w TokNotch";

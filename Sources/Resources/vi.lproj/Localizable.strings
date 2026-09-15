@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Thanh menu gọn gàng hơn";
 "whatsNew.v127.menuBar.detail" = "Nếu thanh menu quá chật, hãy tắt “Hiển thị trên thanh menu” trong Cài đặt. Notch vẫn ở đó, và mở lại TokNotch sẽ đưa bạn về Cài đặt.";
 "whatsNew.v127.menuBar.title" = "Ẩn biểu tượng trên thanh menu";
+"whatsNew.v128.headline" = "Chỉ một biểu tượng";
+"whatsNew.v128.icon.detail" = "TokNotch giờ luôn dùng biểu tượng khung tối, nên mục “Biểu tượng ứng dụng” trong Cài đặt đã được bỏ. Nếu bạn từng chọn khung sáng, nó sẽ tự đổi lại.";
+"whatsNew.v128.icon.title" = "Khung tối ở mọi nơi";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

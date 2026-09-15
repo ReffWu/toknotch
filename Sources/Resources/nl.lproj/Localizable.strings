@@ -151,5 +151,8 @@
 "whatsNew.v127.headline" = "Een rustigere menubalk";
 "whatsNew.v127.menuBar.detail" = "Is je menubalk vol, zet dan ‘Toon in menubalk’ uit in Instellingen. De notch blijft staan, en als je TokNotch opnieuw opent, komen de instellingen terug.";
 "whatsNew.v127.menuBar.title" = "Verberg het menubalksymbool";
+"whatsNew.v128.headline" = "Eén symbool";
+"whatsNew.v128.icon.detail" = "TokNotch gebruikt nu altijd het symbool met donker kader, dus de instelling ‘App-symbool’ is weg. Had je het lichte gekozen, dan schakelt het vanzelf terug.";
+"whatsNew.v128.icon.title" = "Overal het donkere kader";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";
