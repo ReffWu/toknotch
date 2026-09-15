@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "La barre des menus, repensée";
 "whatsNew.v126.panel.detail" = "Cliquez sur l’icône de la barre des menus pour voir combien de fois vos abonnements sont rentabilisés, aujourd’hui, ce mois-ci et depuis toujours côte à côte, et chaque abonnement sur sa ligne. Rechercher des mises à jour et Quitter restent toujours en bas.";
 "whatsNew.v126.panel.title" = "Tout en un coup d’œil";
+"whatsNew.v127.headline" = "Une barre des menus plus calme";
+"whatsNew.v127.menuBar.detail" = "Si votre barre des menus est encombrée, désactivez « Afficher dans la barre des menus » dans les réglages. L’encoche reste en place, et rouvrir TokNotch ramène les réglages.";
+"whatsNew.v127.menuBar.title" = "Masquer l’icône de la barre des menus";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Bienvenue dans TokNotch";

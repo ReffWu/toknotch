@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "Die Menüleiste, neu gestaltet";
 "whatsNew.v126.panel.detail" = "Ein Klick auf das Menüleistensymbol zeigt, wie oft sich deine Abos bezahlt gemacht haben, dazu Heute, Diesen Monat und Gesamt nebeneinander und jedes Abo in einer eigenen Zeile. Nach Updates suchen und Beenden stehen immer unten.";
 "whatsNew.v126.panel.title" = "Alles auf einen Blick";
+"whatsNew.v127.headline" = "Eine ruhigere Menüleiste";
+"whatsNew.v127.menuBar.detail" = "Ist deine Menüleiste voll, schalte in den Einstellungen „In der Menüleiste anzeigen“ aus. Die Notch bleibt, und wenn du TokNotch erneut öffnest, kommen die Einstellungen zurück.";
+"whatsNew.v127.menuBar.title" = "Menüleistensymbol ausblenden";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

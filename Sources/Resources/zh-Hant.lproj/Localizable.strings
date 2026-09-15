@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "選單列，重新設計";
 "whatsNew.v126.panel.detail" = "點開選單列圖像，就能看到方案回本了幾倍，今日、本月、累計並排顯示，每個方案各佔一行。檢查更新和結束一直在最下面。";
 "whatsNew.v126.panel.title" = "一眼看全";
+"whatsNew.v127.headline" = "選單列可以更清爽";
+"whatsNew.v127.menuBar.detail" = "選單列太擠的話，在設定裡關掉「在選單列中顯示」就行。瀏海照常在，再次打開 TokNotch 就能回到設定。";
+"whatsNew.v127.menuBar.title" = "選單列圖像可以收起";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";

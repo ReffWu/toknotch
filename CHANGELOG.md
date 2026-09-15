@@ -7,6 +7,23 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.2.7]
+
+A quieter menu bar.
+
+### Added
+
+- **Show in menu bar.** A new switch in Settings takes the menu bar icon away
+  when the bar is crowded. The notch stays on screen, and opening TokNotch
+  again brings Settings back.
+- **Star on GitHub.** The link at the foot of Settings now says what it is
+  for.
+
+### Changed
+
+- **Settings… in the menu bar panel.** The first row is named for the window
+  it opens.
+
 ## [1.2.6]
 
 The menu bar, redesigned.

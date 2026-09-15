@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "Thanh menu, thiết kế lại";
 "whatsNew.v126.panel.detail" = "Bấm biểu tượng trên thanh menu để xem các gói đã hoàn vốn bao nhiêu lần, hôm nay, tháng này và tổng cộng đặt cạnh nhau, mỗi gói một dòng. Kiểm tra cập nhật và Thoát luôn ở dưới cùng.";
 "whatsNew.v126.panel.title" = "Nhìn qua là thấy hết";
+"whatsNew.v127.headline" = "Thanh menu gọn gàng hơn";
+"whatsNew.v127.menuBar.detail" = "Nếu thanh menu quá chật, hãy tắt “Hiển thị trên thanh menu” trong Cài đặt. Notch vẫn ở đó, và mở lại TokNotch sẽ đưa bạn về Cài đặt.";
+"whatsNew.v127.menuBar.title" = "Ẩn biểu tượng trên thanh menu";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

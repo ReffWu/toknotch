@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "Yeniden tasarlanan menü çubuğu";
 "whatsNew.v126.panel.detail" = "Menü çubuğu simgesine tıklayın; planlarınızın kendini kaç kez çıkardığını, bugün, bu ay ve toplamı yan yana, her planı kendi satırında görün. Güncellemeleri denetle ve Çık her zaman en altta.";
 "whatsNew.v126.panel.title" = "Her şey tek bakışta";
+"whatsNew.v127.headline" = "Daha sade bir menü çubuğu";
+"whatsNew.v127.menuBar.detail" = "Menü çubuğunuz kalabalıksa Ayarlar’da ‘Menü çubuğunda göster’i kapatın. Çentik yerinde kalır, TokNotch’u yeniden açtığınızda Ayarlar geri gelir.";
+"whatsNew.v127.menuBar.title" = "Menü çubuğu simgesini gizleyin";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

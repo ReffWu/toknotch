@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "A barra de menus, redesenhada";
 "whatsNew.v126.panel.detail" = "Clique no ícone da barra de menus para ver quantas vezes seus planos já se pagaram, hoje, este mês e o total lado a lado, e cada plano em sua própria linha. Buscar atualizações e Encerrar ficam sempre embaixo.";
 "whatsNew.v126.panel.title" = "Tudo num relance";
+"whatsNew.v127.headline" = "Uma barra de menus mais limpa";
+"whatsNew.v127.menuBar.detail" = "Se a sua barra de menus está cheia, desative “Mostrar na barra de menus” nos Ajustes. O notch continua lá, e abrir o TokNotch de novo traz os Ajustes de volta.";
+"whatsNew.v127.menuBar.title" = "Oculte o ícone da barra de menus";
 "whatsNew.version" = "Versão %@";
 "whatsNew.welcome" = "Boas-vindas ao TokNotch";

@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "La barra dei menu, ridisegnata";
 "whatsNew.v126.panel.detail" = "Fai clic sull’icona nella barra dei menu per vedere quante volte si sono ripagati i tuoi piani, oggi, questo mese e in totale affiancati, e ogni piano sulla sua riga. Controlla aggiornamenti ed Esci sono sempre in fondo.";
 "whatsNew.v126.panel.title" = "Tutto a colpo d’occhio";
+"whatsNew.v127.headline" = "Una barra dei menu più ordinata";
+"whatsNew.v127.menuBar.detail" = "Se la barra dei menu è affollata, disattiva «Mostra nella barra dei menu» nelle impostazioni. Il notch resta al suo posto e riaprendo TokNotch tornano le impostazioni.";
+"whatsNew.v127.menuBar.title" = "Nascondi l’icona nella barra dei menu";
 "whatsNew.version" = "Versione %@";
 "whatsNew.welcome" = "Benvenuto in TokNotch";

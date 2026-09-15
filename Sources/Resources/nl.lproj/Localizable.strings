@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "De menubalk, opnieuw ontworpen";
 "whatsNew.v126.panel.detail" = "Klik op het menubalksymbool om te zien hoe vaak je abonnementen zichzelf hebben terugverdiend, met vandaag, deze maand en totaal naast elkaar en elk abonnement op een eigen regel. Zoek naar updates en Stop staan altijd onderaan.";
 "whatsNew.v126.panel.title" = "Alles in één oogopslag";
+"whatsNew.v127.headline" = "Een rustigere menubalk";
+"whatsNew.v127.menuBar.detail" = "Is je menubalk vol, zet dan ‘Toon in menubalk’ uit in Instellingen. De notch blijft staan, en als je TokNotch opnieuw opent, komen de instellingen terug.";
+"whatsNew.v127.menuBar.title" = "Verberg het menubalksymbool";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

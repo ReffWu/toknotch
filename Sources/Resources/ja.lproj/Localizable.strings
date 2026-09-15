@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "メニューバーを一新";
 "whatsNew.v126.panel.detail" = "メニューバーのアイコンをクリックすると、プランが何倍元を取れたか、今日・今月・累計が並び、プランごとに1行で表示されます。アップデートの確認と終了はいつも一番下にあります。";
 "whatsNew.v126.panel.title" = "ひと目で全体を把握";
+"whatsNew.v127.headline" = "メニューバーをすっきりと";
+"whatsNew.v127.menuBar.detail" = "メニューバーが混み合っているときは、設定で「メニューバーに表示」をオフにしてください。ノッチはそのまま残り、TokNotch をもう一度開くと設定に戻れます。";
+"whatsNew.v127.menuBar.title" = "メニューバーのアイコンを隠せます";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

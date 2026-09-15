@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "Pasek menu w nowej odsłonie";
 "whatsNew.v126.panel.detail" = "Kliknij ikonę na pasku menu, aby zobaczyć, ile razy zwróciły się twoje plany, z dziś, tym miesiącem i sumą obok siebie oraz każdym planem w osobnym wierszu. Sprawdź uaktualnienia i Zakończ są zawsze na dole.";
 "whatsNew.v126.panel.title" = "Wszystko na jeden rzut oka";
+"whatsNew.v127.headline" = "Spokojniejszy pasek menu";
+"whatsNew.v127.menuBar.detail" = "Jeśli pasek menu jest zatłoczony, wyłącz „Pokazuj na pasku menu” w ustawieniach. Notch zostaje na miejscu, a ponowne otwarcie TokNotch przywraca ustawienia.";
+"whatsNew.v127.menuBar.title" = "Ukryj ikonę na pasku menu";
 "whatsNew.version" = "Wersja %@";
 "whatsNew.welcome" = "Witaj w TokNotch";

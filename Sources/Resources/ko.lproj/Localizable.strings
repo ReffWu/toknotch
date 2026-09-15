@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "새롭게 디자인한 메뉴 막대";
 "whatsNew.v126.panel.detail" = "메뉴 막대 아이콘을 누르면 요금제가 몇 배나 본전을 뽑았는지, 오늘·이번 달·누적이 나란히, 요금제별로 한 줄씩 보입니다. 업데이트 확인과 종료는 항상 맨 아래에 있습니다.";
 "whatsNew.v126.panel.title" = "한눈에 모두 확인";
+"whatsNew.v127.headline" = "더 한산한 메뉴 막대";
+"whatsNew.v127.menuBar.detail" = "메뉴 막대가 붐빈다면 설정에서 ‘메뉴 막대에 표시’를 끄세요. 노치는 그대로 남아 있고, TokNotch를 다시 열면 설정으로 돌아옵니다.";
+"whatsNew.v127.menuBar.title" = "메뉴 막대 아이콘 숨기기";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

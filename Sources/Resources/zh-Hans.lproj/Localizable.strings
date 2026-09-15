@@ -151,5 +151,8 @@
 "whatsNew.v126.headline" = "菜单栏，重新设计";
 "whatsNew.v126.panel.detail" = "点开菜单栏图标，就能看到套餐回本了几倍，今日、本月、累计并排显示，每个套餐各占一行。检查更新和退出始终在最下面。";
 "whatsNew.v126.panel.title" = "一眼看全";
+"whatsNew.v127.headline" = "菜单栏可以更清爽";
+"whatsNew.v127.menuBar.detail" = "菜单栏太挤的话，在设置里关掉“在菜单栏中显示”就行。刘海照常在，再次打开 TokNotch 就能回到设置。";
+"whatsNew.v127.menuBar.title" = "菜单栏图标可以收起";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";
