@@ -119,7 +119,7 @@ reach for it and it opens. Or keep it open always.
 
 **Out of your Dock unless you want it.** A small icon in the menu bar opens a
 panel with this period's payback, today, this month and all time. Settings
-can put it in the Dock too.
+can put it in the Dock too, or take it out of a crowded menu bar.
 
 It knows about your Dock and your menu bar, and moves when they do.
 

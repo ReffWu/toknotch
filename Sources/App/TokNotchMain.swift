@@ -3,15 +3,18 @@ import SwiftUI
 @main
 struct TokNotchMain: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+    /// The same key `Preferences.showsMenuBarIcon` writes, read here because an
+    /// App's scenes follow its own properties and not the delegate's.
+    @AppStorage("showsMenuBarIcon") private var showsMenuBarIcon = true
 
     var body: some Scene {
         // The notch is the UI; the panel is put up by the delegate. This scene
         // exists only because `App` needs one.
         Settings { EmptyView() }
 
-        // Decided once at launch: an App's scenes are not rebuilt when the
-        // delegate changes, so the panel itself watches for launch to finish.
-        MenuBarExtra(isInserted: .constant(AppDelegate.hasMenuBarIcon)) {
+        // The panel itself watches for launch to finish: an App's scenes are
+        // not rebuilt when the delegate changes.
+        MenuBarExtra(isInserted: AppDelegate.hasMenuBarIcon ? $showsMenuBarIcon : .constant(false)) {
             MenuBarRoot(app: appDelegate)
         } label: {
             // The menu bar mark is its own drawing, not the app icon shrunk

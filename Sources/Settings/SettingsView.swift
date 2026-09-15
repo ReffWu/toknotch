@@ -520,6 +520,16 @@ struct PreferencesPage: View {
                         AppIconPicker(language: language)
                     }
                     SettingsDivider()
+                    SettingsRow("menubar.rectangle", tint: .gray,
+                                title: language.t("settings.showInMenuBar"),
+                                subtitle: preferences.showsMenuBarIcon
+                                    ? nil : language.t("settings.showInMenuBar.off")) {
+                        Toggle("", isOn: $preferences.showsMenuBarIcon)
+                            .toggleStyle(.switch)
+                            .controlSize(.small)
+                            .labelsHidden()
+                    }
+                    SettingsDivider()
                     SettingsRow("dock.rectangle", tint: .gray, title: language.t("settings.showInDock")) {
                         Toggle("", isOn: $preferences.showsInDock)
                             .toggleStyle(.switch)
@@ -565,7 +575,12 @@ struct PreferencesPage: View {
                     .disabled(updater.outcome == .checking)
             }
             Text(verbatim: "·")
-            Link("GitHub", destination: URL(string: "https://github.com/ReffWu/toknotch")!)
+            Link(destination: URL(string: "https://github.com/ReffWu/toknotch")!) {
+                HStack(spacing: 3) {
+                    Image(systemName: "star")
+                    Text(language.t("settings.starOnGitHub"))
+                }
+            }
         }
         .font(.system(size: 11))
         .foregroundStyle(.secondary)

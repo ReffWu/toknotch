@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "최근 30일 중 가장 많았던 날";
 "card.moreModels" = "모델 %d개 더";
 "menu.about" = "TokNotch에 관하여";
-"menu.open" = "TokNotch 열기…";
 "menu.pickAPlan" = "요금제를 선택하면 몇 배나 본전을 뽑았는지 보여 드려요.";
 "menu.quit" = "TokNotch 종료";
+"menu.settings" = "설정…";
 "moreApps.get" = "받기";
 "moreApps.open" = "열기";
 "moreApps.title" = "Reff Wu의 다른 앱";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "이 Mac의 사용량을 살펴보는 중…";
 "settings.show" = "표시";
 "settings.showInDock" = "Dock에 표시";
+"settings.showInMenuBar" = "메뉴 막대에 표시";
+"settings.showInMenuBar.off" = "TokNotch를 다시 열면 여기로 돌아올 수 있습니다.";
 "settings.showRing" = "노치에 이 제공업체의 링 표시";
+"settings.starOnGitHub" = "GitHub에서 별표 주기";
 "settings.systemLanguage" = "시스템 설정 따르기";
 "settings.theAppItself" = "앱 자체";
 "settings.theNotch" = "노치";

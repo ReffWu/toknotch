@@ -160,6 +160,13 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(showsInDock, forKey: Keys.showsInDock) }
     }
 
+    /// Whether the menu bar icon is there. On by default; somebody with a full
+    /// menu bar can take it away, because the notch is always on screen and
+    /// opening the app again still brings up Settings.
+    @Published var showsMenuBarIcon: Bool {
+        didSet { defaults.set(showsMenuBarIcon, forKey: Keys.showsMenuBarIcon) }
+    }
+
     /// The version whose changes have already been shown.
     ///
     /// Written when the What's New dialogue is dismissed rather than when it
@@ -182,6 +189,7 @@ final class Preferences: ObservableObject {
         static let language = "appLanguage"
         static let addedLoginItem = "addedLoginItem"
         static let showsInDock = "showsInDock"
+        static let showsMenuBarIcon = "showsMenuBarIcon"
     }
 
     /// True the very first time this copy runs, and never again.
@@ -253,6 +261,7 @@ final class Preferences: ObservableObject {
         self.autoEnabledVendors = Set((defaults.stringArray(forKey: Keys.autoEnabled) ?? [])
             .compactMap(Vendor.init(rawValue:)))
         self.showsInDock = defaults.bool(forKey: Keys.showsInDock)
+        self.showsMenuBarIcon = defaults.object(forKey: Keys.showsMenuBarIcon) as? Bool ?? true
         self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "payback"
         // Follows the Mac until somebody says otherwise, which is the right
         // default for a language: an app that opens in the wrong one is worse

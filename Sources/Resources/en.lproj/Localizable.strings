@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "your best day in 30";
 "card.moreModels" = "%d more models";
 "menu.about" = "About TokNotch";
-"menu.open" = "Open TokNotch…";
 "menu.pickAPlan" = "Choose your plans to see how many times they’ve paid for themselves.";
 "menu.quit" = "Quit TokNotch";
+"menu.settings" = "Settings…";
 "moreApps.get" = "Get";
 "moreApps.open" = "Open";
 "moreApps.title" = "More from Reff Wu";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "Scanning this Mac's usage…";
 "settings.show" = "Show";
 "settings.showInDock" = "Show in Dock";
+"settings.showInMenuBar" = "Show in menu bar";
+"settings.showInMenuBar.off" = "Open TokNotch again to come back here.";
 "settings.showRing" = "Show a ring for this vendor on the notch";
+"settings.starOnGitHub" = "Star on GitHub";
 "settings.systemLanguage" = "Match the system";
 "settings.theAppItself" = "The app itself";
 "settings.theNotch" = "The notch";

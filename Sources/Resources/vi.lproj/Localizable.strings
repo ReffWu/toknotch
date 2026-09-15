@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "ngày tốt nhất của bạn trong 30 ngày";
 "card.moreModels" = "thêm %d mô hình";
 "menu.about" = "Giới thiệu về TokNotch";
-"menu.open" = "Mở TokNotch…";
 "menu.pickAPlan" = "Chọn gói của bạn để xem chúng đã hoàn vốn bao nhiêu lần.";
 "menu.quit" = "Thoát TokNotch";
+"menu.settings" = "Cài đặt…";
 "moreApps.get" = "Tải về";
 "moreApps.open" = "Mở";
 "moreApps.title" = "Thêm ứng dụng của Reff Wu";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "Đang quét mức sử dụng trên máy Mac này…";
 "settings.show" = "Hiển thị";
 "settings.showInDock" = "Hiển thị trong Dock";
+"settings.showInMenuBar" = "Hiển thị trên thanh menu";
+"settings.showInMenuBar.off" = "Mở lại TokNotch để quay về đây.";
 "settings.showRing" = "Hiện vòng của nhà cung cấp này trên notch";
+"settings.starOnGitHub" = "Gắn sao trên GitHub";
 "settings.systemLanguage" = "Theo hệ thống";
 "settings.theAppItself" = "Bản thân ứng dụng";
 "settings.theNotch" = "Notch";

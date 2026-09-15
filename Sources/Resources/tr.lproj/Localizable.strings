@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "son 30 gündeki en iyi gününüze";
 "card.moreModels" = "%d model daha";
 "menu.about" = "TokNotch Hakkında";
-"menu.open" = "TokNotch’u Aç…";
 "menu.pickAPlan" = "Planlarını seç, kendilerini kaç kez çıkardıklarını gör.";
 "menu.quit" = "TokNotch’tan Çık";
+"menu.settings" = "Ayarlar…";
 "moreApps.get" = "Al";
 "moreApps.open" = "Aç";
 "moreApps.title" = "Reff Wu’dan daha fazlası";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "Bu Mac’in kullanımı taranıyor…";
 "settings.show" = "Göster";
 "settings.showInDock" = "Dock’ta göster";
+"settings.showInMenuBar" = "Menü çubuğunda göster";
+"settings.showInMenuBar.off" = "Buraya dönmek için TokNotch’u yeniden açın.";
 "settings.showRing" = "Bu sağlayıcı için çentikte bir halka göster";
+"settings.starOnGitHub" = "GitHub’da yıldız ver";
 "settings.systemLanguage" = "Sistemle aynı";
 "settings.theAppItself" = "Uygulamanın kendisi";
 "settings.theNotch" = "Çentik";

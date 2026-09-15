@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "вашего лучшего дня за 30";
 "card.moreModels" = "ещё %d моделей";
 "menu.about" = "О программе TokNotch";
-"menu.open" = "Открыть TokNotch…";
 "menu.pickAPlan" = "Выберите свои тарифы, чтобы увидеть, во сколько раз они окупились.";
 "menu.quit" = "Завершить TokNotch";
+"menu.settings" = "Настройки…";
 "moreApps.get" = "Загрузить";
 "moreApps.open" = "Открыть";
 "moreApps.title" = "Другие приложения Reff Wu";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "Просматриваем расход на этом Mac…";
 "settings.show" = "Показывать";
 "settings.showInDock" = "Показывать в Dock";
+"settings.showInMenuBar" = "Показывать в строке меню";
+"settings.showInMenuBar.off" = "Откройте TokNotch снова, чтобы вернуться сюда.";
 "settings.showRing" = "Показывать кольцо этого провайдера на вырезе";
+"settings.starOnGitHub" = "Поставить звезду на GitHub";
 "settings.systemLanguage" = "Как в системе";
 "settings.theAppItself" = "Само приложение";
 "settings.theNotch" = "Вырез";

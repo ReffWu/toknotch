@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "直近 30 日で最も多かった日";
 "card.moreModels" = "ほか %d 件のモデル";
 "menu.about" = "TokNotch について";
-"menu.open" = "TokNotch を開く…";
 "menu.pickAPlan" = "プランを選ぶと、何倍元が取れたかが分かります。";
 "menu.quit" = "TokNotch を終了";
+"menu.settings" = "設定…";
 "moreApps.get" = "入手";
 "moreApps.open" = "開く";
 "moreApps.title" = "Reff Wu のほかの App";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "この Mac の使用量をスキャンしています…";
 "settings.show" = "表示";
 "settings.showInDock" = "Dockに表示";
+"settings.showInMenuBar" = "メニューバーに表示";
+"settings.showInMenuBar.off" = "TokNotchをもう一度開くと、ここに戻れます。";
 "settings.showRing" = "ノッチにこのサービスのリングを表示";
+"settings.starOnGitHub" = "GitHubでスターを付ける";
 "settings.systemLanguage" = "システムに合わせる";
 "settings.theAppItself" = "アプリ自体";
 "settings.theNotch" = "ノッチ";

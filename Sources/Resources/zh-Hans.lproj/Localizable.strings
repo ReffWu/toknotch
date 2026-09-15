@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "近 30 天最高日";
 "card.moreModels" = "还有 %d 个模型";
 "menu.about" = "关于 TokNotch";
-"menu.open" = "打开 TokNotch…";
 "menu.pickAPlan" = "选好你的套餐，就能看到回本了几倍。";
 "menu.quit" = "退出 TokNotch";
+"menu.settings" = "设置…";
 "moreApps.get" = "获取";
 "moreApps.open" = "打开";
 "moreApps.title" = "更多 Reff Wu 的 App";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "正在扫描本机用量…";
 "settings.show" = "显示模式";
 "settings.showInDock" = "在程序坞中显示";
+"settings.showInMenuBar" = "在菜单栏中显示";
+"settings.showInMenuBar.off" = "再次打开 TokNotch 即可回到这里。";
 "settings.showRing" = "在刘海上显示这家的环";
+"settings.starOnGitHub" = "在 GitHub 上点星";
 "settings.systemLanguage" = "跟随系统";
 "settings.theAppItself" = "应用本身";
 "settings.theNotch" = "刘海";

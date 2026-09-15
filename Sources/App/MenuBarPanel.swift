@@ -162,7 +162,7 @@ struct MenuBarPanel: View {
 
     private var actions: some View {
         VStack(spacing: 0) {
-            PanelAction(symbol: "gearshape", title: language.t("menu.open"), shortcut: "⌘,",
+            PanelAction(symbol: "gearshape", title: language.t("menu.settings"), shortcut: "⌘,",
                         action: onOpenSettings)
                 .keyboardShortcut(",")
             if Updater.isConfigured {

@@ -9,9 +9,9 @@
 "baseline.recentPeak" = "Twojego najlepszego dnia z 30";
 "card.moreModels" = "jeszcze %d modeli";
 "menu.about" = "TokNotch – informacje";
-"menu.open" = "Otwórz TokNotch…";
 "menu.pickAPlan" = "Wybierz swoje plany, aby zobaczyć, ile razy już się zwróciły.";
 "menu.quit" = "Zakończ TokNotch";
+"menu.settings" = "Ustawienia…";
 "moreApps.get" = "Pobierz";
 "moreApps.open" = "Otwórz";
 "moreApps.title" = "Więcej od Reff Wu";
@@ -70,7 +70,10 @@
 "settings.scanningThisMacSUsage" = "Skanowanie użycia na tym Macu…";
 "settings.show" = "Pokazuj";
 "settings.showInDock" = "Pokazuj w Docku";
+"settings.showInMenuBar" = "Pokazuj na pasku menu";
+"settings.showInMenuBar.off" = "Otwórz ponownie TokNotch, aby tu wrócić.";
 "settings.showRing" = "Pokaż pierścień tego dostawcy na notchu";
+"settings.starOnGitHub" = "Daj gwiazdkę na GitHubie";
 "settings.systemLanguage" = "Jak w systemie";
 "settings.theAppItself" = "Sama aplikacja";
 "settings.theNotch" = "Notch";
