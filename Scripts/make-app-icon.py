@@ -59,9 +59,9 @@ NW, NH = NOTCH.size
 NAME = "TOKNOTCH"
 SIGNATURE = "REFFWU"
 FONT_PATH = "/System/Library/Fonts/Optima.ttc"
-FONT_SIZE = 46
-TRACKING = 16
-ENGRAVING = (128, 128, 134, 255)
+FONT_SIZE = 125
+TRACKING = 18
+ENGRAVING = (225, 225, 235, 255)
 
 
 def ring_point(distance, box, radius):
@@ -100,7 +100,7 @@ def engrave(canvas, text, position, color, upright):
     watch case. `upright` runs them the other way round so text on the lower
     half is not upside down."""
     k = 2
-    font = ImageFont.truetype(FONT_PATH, FONT_SIZE * k)
+    font = ImageFont.truetype(FONT_PATH, FONT_SIZE * k, index=1)
     box = (OUTER[0] + F / 2, OUTER[1] + F / 2, OUTER[2] - F / 2, OUTER[3] - F / 2)
     radius = (OUTER_R + BLUE_R) / 2
     perimeter = 2 * (box[2] - box[0] - 2 * radius) + 2 * (box[3] - box[1] - 2 * radius) + 2 * math.pi * radius
@@ -113,7 +113,7 @@ def engrave(canvas, text, position, color, upright):
         x, y, angle = ring_point(cursor + direction * width / 2, box, radius)
         if upright:
             angle += 180
-        side = FONT_SIZE * 2 * k
+        side = int(FONT_SIZE * 2.5 * k)
         glyph = Image.new("RGBA", (side, side), (0, 0, 0, 0))
         ImageDraw.Draw(glyph).text((side / 2, side / 2), ch, font=font, fill=color, anchor="mm")
         glyph = glyph.rotate(-angle, resample=Image.BICUBIC)
