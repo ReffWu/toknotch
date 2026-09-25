@@ -167,6 +167,11 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(showsMenuBarIcon, forKey: Keys.showsMenuBarIcon) }
     }
 
+    /// Whether anonymous daily heartbeat telemetry is shared. On by default.
+    @Published var sharesUsageStatistics: Bool {
+        didSet { defaults.set(sharesUsageStatistics, forKey: Keys.sharesUsageStatistics) }
+    }
+
     /// The version whose changes have already been shown.
     ///
     /// Written when the What's New dialogue is dismissed rather than when it
@@ -190,6 +195,7 @@ final class Preferences: ObservableObject {
         static let addedLoginItem = "addedLoginItem"
         static let showsInDock = "showsInDock"
         static let showsMenuBarIcon = "showsMenuBarIcon"
+        static let sharesUsageStatistics = "sharesUsageStatistics"
     }
 
     /// True the very first time this copy runs, and never again.
@@ -262,6 +268,7 @@ final class Preferences: ObservableObject {
             .compactMap(Vendor.init(rawValue:)))
         self.showsInDock = defaults.bool(forKey: Keys.showsInDock)
         self.showsMenuBarIcon = defaults.object(forKey: Keys.showsMenuBarIcon) as? Bool ?? true
+        self.sharesUsageStatistics = defaults.object(forKey: Keys.sharesUsageStatistics) as? Bool ?? true
         self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "payback"
         // Follows the Mac until somebody says otherwise, which is the right
         // default for a language: an app that opens in the wrong one is worse

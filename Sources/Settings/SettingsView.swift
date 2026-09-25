@@ -542,6 +542,15 @@ struct PreferencesPage: View {
                                 .labelsHidden()
                         }
                     }
+                    SettingsDivider()
+                    SettingsRow("chart.bar.fill", tint: .blue,
+                                title: language.t("settings.shareUsageStatistics"),
+                                subtitle: language.t("settings.shareUsageStatisticsSubtitle")) {
+                        Toggle("", isOn: $preferences.sharesUsageStatistics)
+                            .toggleStyle(.switch)
+                            .controlSize(.small)
+                            .labelsHidden()
+                    }
                 }
 
                 MoreAppsGroup(language: language)

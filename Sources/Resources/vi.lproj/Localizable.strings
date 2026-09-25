@@ -42,6 +42,8 @@
 "row.requests" = "Yêu cầu";
 "settings.autoDetected" = "Tự động nhận diện";
 "settings.autoUpdate" = "Tự động cài bản cập nhật";
+"settings.shareUsageStatistics" = "Chia sẻ thống kê sử dụng ẩn danh";
+"settings.shareUsageStatisticsSubtitle" = "Đếm số máy Mac hoạt động mỗi ngày một lần. Không có dữ liệu màn hình nào được gửi.";
 "settings.checkFailed" = "Kiểm tra thất bại — %@";
 "settings.checkForUpdates" = "Kiểm tra bản cập nhật…";
 "settings.checking" = "Đang kiểm tra…";

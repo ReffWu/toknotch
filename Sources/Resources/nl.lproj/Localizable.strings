@@ -42,6 +42,8 @@
 "row.requests" = "Verzoeken";
 "settings.autoDetected" = "Automatisch herkend";
 "settings.autoUpdate" = "Updates automatisch installeren";
+"settings.shareUsageStatistics" = "Deel anonieme gebruiksstatistieken";
+"settings.shareUsageStatisticsSubtitle" = "Telt actieve Macs eenmaal per dag. Er wordt niets van je scherm verzonden.";
 "settings.checkFailed" = "Controle mislukt — %@";
 "settings.checkForUpdates" = "Controleer op updates…";
 "settings.checking" = "Controleren…";

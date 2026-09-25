@@ -42,6 +42,8 @@
 "row.requests" = "الطلبات";
 "settings.autoDetected" = "اكتُشف تلقائيًا";
 "settings.autoUpdate" = "تثبيت التحديثات تلقائيًا";
+"settings.shareUsageStatistics" = "مشاركة إحصاءات الاستخدام المجهولة";
+"settings.shareUsageStatisticsSubtitle" = "يُحصي أجهزة Mac النشطة مرة يوميًا. لا يتم إرسال أي محتوى من شاشتك.";
 "settings.checkFailed" = "فشل التحقق — %@";
 "settings.checkForUpdates" = "التحقق من وجود تحديثات…";
 "settings.checking" = "جارٍ التحقق…";

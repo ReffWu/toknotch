@@ -42,6 +42,8 @@
 "row.requests" = "リクエスト数";
 "settings.autoDetected" = "自動検出";
 "settings.autoUpdate" = "アップデートを自動でインストール";
+"settings.shareUsageStatistics" = "匿名の使用状況データを共有";
+"settings.shareUsageStatisticsSubtitle" = "1日1回アクティブ端末数を計測します。画面上のデータは送信されません。";
 "settings.checkFailed" = "確認できませんでした — %@";
 "settings.checkForUpdates" = "アップデートを確認…";
 "settings.checking" = "確認中…";

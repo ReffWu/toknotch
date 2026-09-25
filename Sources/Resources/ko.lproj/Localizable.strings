@@ -42,6 +42,8 @@
 "row.requests" = "요청 수";
 "settings.autoDetected" = "자동 인식됨";
 "settings.autoUpdate" = "업데이트 자동 설치";
+"settings.shareUsageStatistics" = "익명 사용 통계 공유";
+"settings.shareUsageStatisticsSubtitle" = "하루 한 번 활성 기기 수를 집계합니다. 화면 데이터는 전송되지 않습니다.";
 "settings.checkFailed" = "확인 실패 — %@";
 "settings.checkForUpdates" = "업데이트 확인…";
 "settings.checking" = "확인 중…";

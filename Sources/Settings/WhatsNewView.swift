@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 /// What changed in this version, shown once when you first run it.
+/// Aligned with the Apple Music / macOS official What's New design standard.
 struct WhatsNewView: View {
     let note: ReleaseNote
     /// Defaulted so a render test can make one without picking a language;
@@ -12,22 +13,32 @@ struct WhatsNewView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
-            // Scrolled rather than sized to fit. The window cannot grow, and a
-            // release with a dozen entries would otherwise run off the bottom
-            // of it — where the Continue button is.
-            ScrollView { WhatsNewChanges(changes: note.changes) }
-                .scrollBounceBehavior(.basedOnSize)
 
-            Divider()
-            HStack {
-                Spacer(minLength: 0)
-                Button(language.t("whatsNew.continue"), action: onContinue)
-                    .keyboardShortcut(.defaultAction)
+            // Scrolled rather than sized to fit. The window cannot grow, and a
+            // release with multiple entries scrolls comfortably.
+            ScrollView {
+                WhatsNewChanges(changes: note.changes)
             }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 16)
+            .scrollBounceBehavior(.basedOnSize)
+
+            Spacer(minLength: 16)
+
+            // 底部宽幅大胶囊主按钮（匹配 Apple Music 官方主行动按钮）
+            Button(action: onContinue) {
+                Text(language.t("whatsNew.continue"))
+                    .font(.system(size: 13.5, weight: .semibold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 36)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(Palette.ample)
+            .clipShape(Capsule())
+            .keyboardShortcut(.defaultAction)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 24)
         }
         .frame(width: WhatsNewView.width, height: WhatsNewView.height)
+        .background(Color(nsColor: .windowBackgroundColor))
     }
 
     private var header: some View {
@@ -35,71 +46,82 @@ struct WhatsNewView: View {
             if let icon = NSImage(named: "AppIcon") ?? NSApp.applicationIconImage {
                 Image(nsImage: icon)
                     .resizable()
-                    .frame(width: 60, height: 60)
-                    .padding(.bottom, 8)
+                    .frame(width: 58, height: 58)
+                    .clipShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
+                    .shadow(color: .black.opacity(0.15), radius: 6, y: 3)
+                    .padding(.bottom, 6)
             }
             Text(language.t("whatsNew.welcome"))
-                .font(.system(size: 19, weight: .semibold))
+                .font(.system(size: 21, weight: .bold))
                 .multilineTextAlignment(.center)
             Text(language.t("whatsNew.version", note.version))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
-            Text(note.headline)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, 6)
+            if !note.headline.isEmpty {
+                Text(note.headline)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 4)
+            }
         }
         .padding(.horizontal, 28)
-        .padding(.top, 26)
-        .padding(.bottom, 20)
+        .padding(.top, 24)
+        .padding(.bottom, 18)
     }
 
-    /// Narrow enough to read as a dialogue rather than a window, wide enough
-    /// that a sentence of detail does not wrap every other word.
-    static let width: CGFloat = 420
-    /// Fixed, with the list scrolling inside it: a window that resizes itself
-    /// to its content jumps between releases of different lengths.
-    static let height: CGFloat = 440
+    static let width: CGFloat = 430
+    static let height: CGFloat = 470
 }
 
-/// The list of changes, on its own.
-///
-/// Separate from the dialogue because the dialogue scrolls it, and a
-/// `ScrollView` draws nothing under `ImageRenderer` — so this is the piece a
-/// test can actually look at.
+/// The list of changes, presented with Apple-style feature icons.
 struct WhatsNewChanges: View {
     let changes: [ReleaseNote.Change]
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            ForEach(Array(changes.enumerated()), id: \.offset) { _, change in
-                HStack(alignment: .top, spacing: 10) {
-                    // The colour a healthy reading takes in the notch, at the
-                    // size a list can carry.
-                    Circle()
-                        .fill(Palette.ample)
-                        .frame(width: 6, height: 6)
-                        .padding(.top, 6)
+    private func symbol(for index: Int) -> (name: String, tint: Color) {
+        let icons: [(String, Color)] = [
+            ("sparkles", Palette.ample),
+            ("app.badge.fill", .indigo),
+            ("menubar.rectangle", .blue),
+            ("slider.horizontal.3", .teal),
+            ("bolt.fill", .orange)
+        ]
+        return icons[index % icons.count]
+    }
 
-                    VStack(alignment: .leading, spacing: 2) {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            ForEach(Array(changes.enumerated()), id: \.offset) { index, change in
+                let (sym, tint) = symbol(for: index)
+                HStack(alignment: .top, spacing: 15) {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(tint.gradient)
+                        .frame(width: 38, height: 38)
+                        .overlay(
+                            Image(systemName: sym)
+                                .font(.system(size: 19, weight: .semibold))
+                                .foregroundStyle(.white)
+                        )
+                        .shadow(color: tint.opacity(0.3), radius: 4, y: 2)
+
+                    VStack(alignment: .leading, spacing: 3) {
                         Text(change.title)
-                            .font(.callout.weight(.medium))
-                        // Absent rather than blank: a small fix is one line,
-                        // not a line padded out to match its neighbours.
+                            .font(.system(size: 13.5, weight: .semibold))
+                            .foregroundStyle(Color.primary)
                         if !change.detail.isEmpty {
                             Text(change.detail)
-                                .font(.callout)
+                                .font(.system(size: 12))
                                 .foregroundStyle(.secondary)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .lineSpacing(2)
                         }
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 28)
-        .padding(.bottom, 22)
+        .padding(.horizontal, 32)
+        .padding(.bottom, 12)
     }
 }

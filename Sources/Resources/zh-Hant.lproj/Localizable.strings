@@ -42,6 +42,8 @@
 "row.requests" = "請求次數";
 "settings.autoDetected" = "已自動辨識";
 "settings.autoUpdate" = "自動安裝更新";
+"settings.shareUsageStatistics" = "分享匿名使用狀況統計";
+"settings.shareUsageStatisticsSubtitle" = "每日統計活躍設備數，不收集任何螢幕與個人資料。";
 "settings.checkFailed" = "檢查失敗：%@";
 "settings.checkForUpdates" = "檢查更新項目…";
 "settings.checking" = "檢查中…";

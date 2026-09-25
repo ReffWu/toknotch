@@ -42,6 +42,8 @@
 "row.requests" = "İstekler";
 "settings.autoDetected" = "Otomatik algılandı";
 "settings.autoUpdate" = "Güncellemeleri otomatik yükle";
+"settings.shareUsageStatistics" = "Anonim kullanım istatistiklerini paylaş";
+"settings.shareUsageStatisticsSubtitle" = "Günde bir kez etkin Mac'leri sayar. Ekranınızdan hiçbir şey gönderilmez.";
 "settings.checkFailed" = "Denetim başarısız oldu — %@";
 "settings.checkForUpdates" = "Güncellemeleri Denetle…";
 "settings.checking" = "Denetleniyor…";

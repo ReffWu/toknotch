@@ -42,6 +42,8 @@
 "row.requests" = "Requêtes";
 "settings.autoDetected" = "Détecté automatiquement";
 "settings.autoUpdate" = "Installer les mises à jour automatiquement";
+"settings.shareUsageStatistics" = "Partager les statistiques d'utilisation anonymes";
+"settings.shareUsageStatisticsSubtitle" = "Compte les Mac actifs une fois par jour. Rien de votre écran n'est envoyé.";
 "settings.checkFailed" = "Échec de la vérification — %@";
 "settings.checkForUpdates" = "Rechercher les mises à jour…";
 "settings.checking" = "Vérification…";
