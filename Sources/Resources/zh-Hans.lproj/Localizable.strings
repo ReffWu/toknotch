@@ -42,8 +42,6 @@
 "row.requests" = "请求次数";
 "settings.autoDetected" = "已自动识别";
 "settings.autoUpdate" = "自动安装更新";
-"settings.shareUsageStatistics" = "分享匿名使用情况统计";
-"settings.shareUsageStatisticsSubtitle" = "每日统计活跃设备数，不收集任何屏幕与个人数据。";
 "settings.checkFailed" = "检查失败：%@";
 "settings.checkForUpdates" = "检查更新…";
 "settings.checking" = "正在检查…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "全部在本机读取：不碰钥匙串，不读密钥，不上传任何数据。";
 "settings.refresh" = "刷新";
 "settings.scanningThisMacSUsage" = "正在扫描本机用量…";
+"settings.shareUsageStatistics" = "分享匿名使用情况统计";
+"settings.shareUsageStatisticsSubtitle" = "每日统计活跃设备数，不收集任何屏幕与个人数据。";
 "settings.show" = "显示模式";
 "settings.showInDock" = "在程序坞中显示";
 "settings.showInMenuBar" = "在菜单栏中显示";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "图标只有一个了";
 "whatsNew.v128.icon.detail" = "TokNotch 现在始终使用黑色边框的图标，设置里的“App 图标”也就去掉了。之前选了白色的，会自动换回来。";
 "whatsNew.v128.icon.title" = "统一用黑色边框";
+"whatsNew.v130.alignment.detail" = "在没有物理刘海的外接显示器上，小条与展开面板均紧贴屏幕顶边，去除多余留白。";
+"whatsNew.v130.alignment.title" = "纯净贴顶";
+"whatsNew.v130.experience.detail" = "全新设计的更新介绍界面、高对比度雕刻质感图标，并新增可选的匿名活跃度统计。";
+"whatsNew.v130.experience.title" = "体验细节升级";
+"whatsNew.v130.headline" = "支持多显示器与纯净贴顶";
+"whatsNew.v130.multiscreen.detail" = "TokNotch 现已同时在所有连接的显示器上常驻显示，各屏实时同步用量环与状态。";
+"whatsNew.v130.multiscreen.title" = "支持多显示器";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

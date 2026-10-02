@@ -42,8 +42,6 @@
 "row.requests" = "الطلبات";
 "settings.autoDetected" = "اكتُشف تلقائيًا";
 "settings.autoUpdate" = "تثبيت التحديثات تلقائيًا";
-"settings.shareUsageStatistics" = "مشاركة إحصاءات الاستخدام المجهولة";
-"settings.shareUsageStatisticsSubtitle" = "يُحصي أجهزة Mac النشطة مرة يوميًا. لا يتم إرسال أي محتوى من شاشتك.";
 "settings.checkFailed" = "فشل التحقق — %@";
 "settings.checkForUpdates" = "التحقق من وجود تحديثات…";
 "settings.checking" = "جارٍ التحقق…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "كل شيء يُقرأ على هذا الـ Mac. لا سلسلة مفاتيح، ولا مفاتيح، ولا يُرفع أي شيء.";
 "settings.refresh" = "تحديث";
 "settings.scanningThisMacSUsage" = "جارٍ فحص استخدام هذا الـ Mac…";
+"settings.shareUsageStatistics" = "مشاركة إحصاءات الاستخدام المجهولة";
+"settings.shareUsageStatisticsSubtitle" = "يُحصي أجهزة Mac النشطة مرة يوميًا. لا يتم إرسال أي محتوى من شاشتك.";
 "settings.show" = "الإظهار";
 "settings.showInDock" = "إظهار في شريط Dock";
 "settings.showInMenuBar" = "إظهار في شريط القائمة";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "أيقونة واحدة";
 "whatsNew.v128.icon.detail" = "يستخدم TokNotch الآن دائمًا أيقونته ذات الإطار الداكن، لذا أُزيل إعداد «أيقونة التطبيق». إذا كنت قد اخترت الفاتحة، فستعود تلقائيًا.";
 "whatsNew.v128.icon.title" = "الإطار الداكن في كل مكان";
+"whatsNew.v130.alignment.detail" = "على الشاشات الخارجية التي لا تحتوي على نتوء، تلتصق الكبسولة واللوحة الممتدة بالحافة العلوية تماماً.";
+"whatsNew.v130.alignment.title" = "محاذاة كاملة للحافة العلوية";
+"whatsNew.v130.experience.detail" = "واجهة جديدة لما هو جديد، وأيقونة محفورة عالية التباين، وإحصاءات استخدام مجهولة اختيارية.";
+"whatsNew.v130.experience.title" = "تفاصيل محسنة";
+"whatsNew.v130.headline" = "دعم الشاشات المتعددة ومحاذاة الحافة العلوية";
+"whatsNew.v130.multiscreen.detail" = "يظهر TokNotch الآن على جميع الشاشات المتصلة مع حلقات استخدام وحالة متزامنة.";
+"whatsNew.v130.multiscreen.title" = "جميع شاشاتك";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";

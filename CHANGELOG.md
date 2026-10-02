@@ -7,6 +7,29 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.3.0]
+
+Multi-display support and full-bleed top alignment.
+
+### Added
+
+- **Multi-display support.** TokNotch now appears across every connected
+  display at the same time, with synchronized token rings, independent hover
+  interactions, and live status.
+- **Anonymous daily telemetry.** A privacy-respecting active Mac count once
+  a day with an opt-out toggle in Settings. Nothing from your screen or tokens
+  is ever sent.
+
+### Changed
+
+- **Seamless top edge alignment.** On external displays without a hardware
+  notch, both the folded pill and the expanded panel now hug the screen's
+  physical top bezel directly without any awkward gap.
+- **Modernized What's New design.** Updated to Apple design standards with
+  colorful gradient feature icons and bold typography.
+- **Refined app icon.** Enhanced with a larger engraved signature and
+  high-contrast lettering.
+
 ## [1.2.8]
 
 One icon.
@@ -219,6 +242,10 @@ The first TokNotch release. What every plan has paid back, at a glance.
 - **Updates that install themselves,** signed with an EdDSA key so nothing
   unsigned can ever be installed. See [docs/RELEASING.md](docs/RELEASING.md).
 
+[1.3.0]: https://github.com/ReffWu/toknotch/releases/tag/v1.3.0
+[1.2.8]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.8
+[1.2.7]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.7
+[1.2.6]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.6
 [1.2.5]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.5
 [1.2.4]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.4
 [1.2.3]: https://github.com/ReffWu/toknotch/releases/tag/v1.2.3

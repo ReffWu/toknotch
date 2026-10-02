@@ -42,8 +42,6 @@
 "row.requests" = "Solicitudes";
 "settings.autoDetected" = "Detectado automáticamente";
 "settings.autoUpdate" = "Instalar actualizaciones automáticamente";
-"settings.shareUsageStatistics" = "Compartir estadísticas de uso anónimas";
-"settings.shareUsageStatisticsSubtitle" = "Cuenta los Mac activos una vez al día. No se envía nada de su pantalla.";
 "settings.checkFailed" = "No se pudo comprobar — %@";
 "settings.checkForUpdates" = "Buscar actualizaciones…";
 "settings.checking" = "Comprobando…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Todo se lee en este Mac. Sin llavero, sin claves, nada se sube.";
 "settings.refresh" = "Actualizar";
 "settings.scanningThisMacSUsage" = "Analizando el consumo de este Mac…";
+"settings.shareUsageStatistics" = "Compartir estadísticas de uso anónimas";
+"settings.shareUsageStatisticsSubtitle" = "Cuenta los Mac activos una vez al día. No se envía nada de su pantalla.";
 "settings.show" = "Mostrar";
 "settings.showInDock" = "Mostrar en el Dock";
 "settings.showInMenuBar" = "Mostrar en la barra de menús";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Un solo icono";
 "whatsNew.v128.icon.detail" = "TokNotch usa ahora siempre su icono de marco oscuro, así que el ajuste «Icono de la app» desaparece. Si habías elegido el claro, vuelve solo.";
 "whatsNew.v128.icon.title" = "El marco oscuro en todas partes";
+"whatsNew.v130.alignment.detail" = "En pantallas externas sin muesca, la pastilla y el panel se ajustan perfectamente al borde superior.";
+"whatsNew.v130.alignment.title" = "Borde superior continuo";
+"whatsNew.v130.experience.detail" = "Nuevo diseño de novedades, icono grabado de alto contraste y estadísticas anónimas opcionales.";
+"whatsNew.v130.experience.title" = "Detalles refinados";
+"whatsNew.v130.headline" = "Compatibilidad con varias pantallas y ajuste superior";
+"whatsNew.v130.multiscreen.detail" = "TokNotch ahora aparece en todas las pantallas conectadas con anillos de uso sincronizados.";
+"whatsNew.v130.multiscreen.title" = "Todas tus pantallas";
 "whatsNew.version" = "Versión %@";
 "whatsNew.welcome" = "Te damos la bienvenida a TokNotch";

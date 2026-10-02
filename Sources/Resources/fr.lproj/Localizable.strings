@@ -42,8 +42,6 @@
 "row.requests" = "Requêtes";
 "settings.autoDetected" = "Détecté automatiquement";
 "settings.autoUpdate" = "Installer les mises à jour automatiquement";
-"settings.shareUsageStatistics" = "Partager les statistiques d'utilisation anonymes";
-"settings.shareUsageStatisticsSubtitle" = "Compte les Mac actifs une fois par jour. Rien de votre écran n'est envoyé.";
 "settings.checkFailed" = "Échec de la vérification — %@";
 "settings.checkForUpdates" = "Rechercher les mises à jour…";
 "settings.checking" = "Vérification…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Tout est lu sur ce Mac. Ni trousseau, ni clés, rien n’est envoyé.";
 "settings.refresh" = "Actualiser";
 "settings.scanningThisMacSUsage" = "Analyse de la consommation de ce Mac…";
+"settings.shareUsageStatistics" = "Partager les statistiques d'utilisation anonymes";
+"settings.shareUsageStatisticsSubtitle" = "Compte les Mac actifs une fois par jour. Rien de votre écran n'est envoyé.";
 "settings.show" = "Afficher";
 "settings.showInDock" = "Afficher dans le Dock";
 "settings.showInMenuBar" = "Afficher dans la barre des menus";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Une seule icône";
 "whatsNew.v128.icon.detail" = "TokNotch utilise désormais toujours son icône à cadre sombre, le réglage « Icône de l’app » disparaît donc. Si vous aviez choisi la claire, elle revient d’elle-même.";
 "whatsNew.v128.icon.title" = "Le cadre sombre partout";
+"whatsNew.v130.alignment.detail" = "Sur les écrans externes sans encoche, la pilule et le panneau s'alignent parfaitement sur le bord supérieur.";
+"whatsNew.v130.alignment.title" = "Alignement bord supérieur";
+"whatsNew.v130.experience.detail" = "Nouvelle présentation des nouveautés, icône gravée à fort contraste et statistiques anonymes facultatives.";
+"whatsNew.v130.experience.title" = "Détails affinés";
+"whatsNew.v130.headline" = "Prise en charge multi-écran et alignement affleurant";
+"whatsNew.v130.multiscreen.detail" = "TokNotch s'affiche désormais sur tous vos écrans connectés, avec des anneaux synchronisés.";
+"whatsNew.v130.multiscreen.title" = "Tous vos écrans";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Bienvenue dans TokNotch";

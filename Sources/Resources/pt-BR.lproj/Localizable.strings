@@ -42,8 +42,6 @@
 "row.requests" = "Solicitações";
 "settings.autoDetected" = "Detectado automaticamente";
 "settings.autoUpdate" = "Instalar atualizações automaticamente";
-"settings.shareUsageStatistics" = "Compartilhar estatísticas de uso anônimas";
-"settings.shareUsageStatisticsSubtitle" = "Conta os Macs ativos uma vez ao dia. Nada da sua tela é enviado.";
 "settings.checkFailed" = "Falha na verificação — %@";
 "settings.checkForUpdates" = "Buscar Atualizações…";
 "settings.checking" = "Verificando…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Tudo é lido neste Mac. Sem Chaves, sem credenciais, nada é enviado.";
 "settings.refresh" = "Atualizar";
 "settings.scanningThisMacSUsage" = "Analisando o uso deste Mac…";
+"settings.shareUsageStatistics" = "Compartilhar estatísticas de uso anônimas";
+"settings.shareUsageStatisticsSubtitle" = "Conta os Macs ativos uma vez ao dia. Nada da sua tela é enviado.";
 "settings.show" = "Mostrar";
 "settings.showInDock" = "Mostrar no Dock";
 "settings.showInMenuBar" = "Mostrar na barra de menus";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Um só ícone";
 "whatsNew.v128.icon.detail" = "O TokNotch agora usa sempre o ícone de moldura escura, então o ajuste “Ícone do app” saiu. Se você tinha escolhido o claro, ele volta sozinho.";
 "whatsNew.v128.icon.title" = "A moldura escura em todo lugar";
+"whatsNew.v130.alignment.detail" = "Em telas externas sem entalhe, a pílula e o painel ficam alinhados rente à borda superior.";
+"whatsNew.v130.alignment.title" = "Alinhamento no topo";
+"whatsNew.v130.experience.detail" = "Novo visual de novidades, ícone gravado de alto contraste e estatísticas anônimas opcionais.";
+"whatsNew.v130.experience.title" = "Detalhes refinados";
+"whatsNew.v130.headline" = "Suporte a múltiplos monitores e alinhamento no topo";
+"whatsNew.v130.multiscreen.detail" = "O TokNotch agora aparece em todas as telas conectadas com anéis de uso sincronizados.";
+"whatsNew.v130.multiscreen.title" = "Todas as suas telas";
 "whatsNew.version" = "Versão %@";
 "whatsNew.welcome" = "Boas-vindas ao TokNotch";

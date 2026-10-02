@@ -141,9 +141,9 @@ final class DockAvoidanceTests: XCTestCase {
         XCTAssertEqual(frame.minY, 70, accuracy: 0.001)
     }
 
-    func testTheTopEdgeHangsBelowTheMenuBar() {
+    func testTheTopEdgeHugsTheTopBezel() {
         let frame = NotchGeometry.panelFrame(for: docked, panelSize: wide, edge: .top)
-        XCTAssertEqual(frame.maxY, docked.visibleFrameValue.maxY, accuracy: 0.001)
+        XCTAssertEqual(frame.maxY, docked.frameValue.maxY, accuracy: 0.001)
     }
 
     func testASideDockPushesTheNotchIn() {

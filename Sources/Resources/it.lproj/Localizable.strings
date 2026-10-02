@@ -42,8 +42,6 @@
 "row.requests" = "Richieste";
 "settings.autoDetected" = "Rilevato automaticamente";
 "settings.autoUpdate" = "Installa gli aggiornamenti automaticamente";
-"settings.shareUsageStatistics" = "Condividi statistiche d'uso anonime";
-"settings.shareUsageStatisticsSubtitle" = "Conta i Mac attivi una volta al giorno. Nessun dato dello schermo viene inviato.";
 "settings.checkFailed" = "Verifica non riuscita — %@";
 "settings.checkForUpdates" = "Controlla aggiornamenti…";
 "settings.checking" = "Verifica in corso…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Tutto viene letto su questo Mac. Niente portachiavi, niente chiavi, nulla viene caricato.";
 "settings.refresh" = "Aggiorna";
 "settings.scanningThisMacSUsage" = "Analisi dell’utilizzo di questo Mac…";
+"settings.shareUsageStatistics" = "Condividi statistiche d'uso anonime";
+"settings.shareUsageStatisticsSubtitle" = "Conta i Mac attivi una volta al giorno. Nessun dato dello schermo viene inviato.";
 "settings.show" = "Mostra";
 "settings.showInDock" = "Mostra nel Dock";
 "settings.showInMenuBar" = "Mostra nella barra dei menu";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Un’unica icona";
 "whatsNew.v128.icon.detail" = "TokNotch ora usa sempre l’icona con la cornice scura, quindi l’impostazione «Icona dell’app» non c’è più. Se avevi scelto quella chiara, torna da sola.";
 "whatsNew.v128.icon.title" = "Cornice scura ovunque";
+"whatsNew.v130.alignment.detail" = "Sui monitor esterni senza notch, la pillola e il pannello aderiscono perfettamente al bordo superiore.";
+"whatsNew.v130.alignment.title" = "Bordo superiore continuo";
+"whatsNew.v130.experience.detail" = "Nuova schermata delle novità, icona incisa ad alto contrasto e statistiche anonime opzionali.";
+"whatsNew.v130.experience.title" = "Dettagli rifiniti";
+"whatsNew.v130.headline" = "Supporto multi-monitor e allineamento superiore";
+"whatsNew.v130.multiscreen.detail" = "TokNotch ora appare su tutti gli schermi collegati con anelli di utilizzo sincronizzati.";
+"whatsNew.v130.multiscreen.title" = "Tutti i tuoi schermi";
 "whatsNew.version" = "Versione %@";
 "whatsNew.welcome" = "Benvenuto in TokNotch";

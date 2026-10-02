@@ -13,7 +13,7 @@ struct MenuBarContext {
 
 final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     @Published private(set) var menuBar: MenuBarContext?
-    private var notchController: NotchWindowController?
+    private var notchCoordinator: NotchCoordinator?
     private var store: UsageStore?
     private var preferences: Preferences?
     private var settings: SettingsWindowController?
@@ -49,7 +49,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         guard !isRunningTests else { return }
         Telemetry.start()
 
-        let controller = NotchWindowController()
+        let coordinator = NotchCoordinator()
 
         // `TOKNOTCH_DEMO=1` puts fixed numbers on screen for screenshots and
         // for eyeballing the layout without touching tokscale. For the README
@@ -59,17 +59,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         if environment["TOKNOTCH_DEMO"] == "1" {
             let language = environment["TOKNOTCH_DEMO_LANGUAGE"]
                 .flatMap(AppLanguage.init(rawValue:)) ?? .simplifiedChinese
-            controller.model.rings = Fixtures.rings(language: language)
+            let rings = Fixtures.rings(language: language)
             if let edge = environment["TOKNOTCH_DEMO_EDGE"].flatMap(NotchEdge.init(rawValue:)) {
-                controller.model.edge = edge
+                coordinator.apply(edge: edge)
             }
-            controller.show()
+            coordinator.updateRings(rings)
+            coordinator.start()
             if let hover = environment["TOKNOTCH_DEMO_HOVER"].flatMap(Int.init) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    controller.present(hovering: hover)
+                    coordinator.present(hovering: hover)
                 }
             }
-            notchController = controller
+            notchCoordinator = coordinator
             return
         }
 
@@ -91,7 +92,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         // already been shown on the default edge — so without this, every launch
         // on any other edge opens with a flash of the right-hand one and then
         // crossfades away from it.
-        controller.model.edge = preferences.notchEdge
+        coordinator.apply(edge: preferences.notchEdge)
+        coordinator.apply(preferences.notchVisibility)
 
         let updater = Updater()
         updater.start()
@@ -99,7 +101,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
 
         let settings = SettingsWindowController(preferences: preferences, store: store,
                                                 updater: updater)
-        controller.onOpenSettings = { [weak settings] in settings?.show() }
+        coordinator.onOpenSettings = { [weak settings] in settings?.show() }
         self.settings = settings
         setupMainMenu()
 
@@ -149,12 +151,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
 
         preferences.$notchVisibility
             .receive(on: RunLoop.main)
-            .sink { [weak controller] in controller?.apply($0) }
+            .sink { [weak coordinator] in coordinator?.apply($0) }
             .store(in: &cancellables)
 
         preferences.$notchEdge
             .receive(on: RunLoop.main)
-            .sink { [weak controller] in controller?.apply(edge: $0) }
+            .sink { [weak coordinator] in coordinator?.apply(edge: $0) }
             .store(in: &cancellables)
 
         // Both of these are presentation: the store re-renders the rings it
@@ -186,22 +188,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
 
         store.$rings
             .receive(on: RunLoop.main)
-            .sink { [weak controller] rings in
-                withAnimation(NotchMotion.unfold) { controller?.model.rings = rings }
-                controller?.model.now = Date()
+            .sink { [weak coordinator] rings in
+                coordinator?.updateRings(rings)
             }
             .store(in: &cancellables)
 
         store.$isRefreshing
             .receive(on: RunLoop.main)
-            .sink { [weak controller] in controller?.model.isRefreshing = $0 }
+            .sink { [weak coordinator] in coordinator?.setRefreshing($0) }
             .store(in: &cancellables)
 
-        controller.onRefresh = { [weak store] in store?.refreshNow(byHand: true) }
+        coordinator.onRefresh = { [weak store] in store?.refreshNow(byHand: true) }
         store.start()
 
-        controller.show()
-        notchController = controller
+        coordinator.start()
+        notchCoordinator = coordinator
     }
 
     /// Closing the settings window must not take the app with it.
@@ -223,7 +224,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
 
     func applicationWillTerminate(_ notification: Notification) {
         store?.stop()
-        notchController?.stop()
+        notchCoordinator?.stop()
     }
 
     @objc @MainActor func openSettingsFromMenu() {

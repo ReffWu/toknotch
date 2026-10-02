@@ -42,8 +42,6 @@
 "row.requests" = "Yêu cầu";
 "settings.autoDetected" = "Tự động nhận diện";
 "settings.autoUpdate" = "Tự động cài bản cập nhật";
-"settings.shareUsageStatistics" = "Chia sẻ thống kê sử dụng ẩn danh";
-"settings.shareUsageStatisticsSubtitle" = "Đếm số máy Mac hoạt động mỗi ngày một lần. Không có dữ liệu màn hình nào được gửi.";
 "settings.checkFailed" = "Kiểm tra thất bại — %@";
 "settings.checkForUpdates" = "Kiểm tra bản cập nhật…";
 "settings.checking" = "Đang kiểm tra…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Mọi thứ được đọc ngay trên máy Mac này. Không đụng Chuỗi khóa, không đọc khóa, không tải lên gì cả.";
 "settings.refresh" = "Làm mới";
 "settings.scanningThisMacSUsage" = "Đang quét mức sử dụng trên máy Mac này…";
+"settings.shareUsageStatistics" = "Chia sẻ thống kê sử dụng ẩn danh";
+"settings.shareUsageStatisticsSubtitle" = "Đếm số máy Mac hoạt động mỗi ngày một lần. Không có dữ liệu màn hình nào được gửi.";
 "settings.show" = "Hiển thị";
 "settings.showInDock" = "Hiển thị trong Dock";
 "settings.showInMenuBar" = "Hiển thị trên thanh menu";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Chỉ một biểu tượng";
 "whatsNew.v128.icon.detail" = "TokNotch giờ luôn dùng biểu tượng khung tối, nên mục “Biểu tượng ứng dụng” trong Cài đặt đã được bỏ. Nếu bạn từng chọn khung sáng, nó sẽ tự đổi lại.";
 "whatsNew.v128.icon.title" = "Khung tối ở mọi nơi";
+"whatsNew.v130.alignment.detail" = "Trên màn hình ngoài không có tai thỏ, thanh thu gọn và bảng mở rộng đều áp sát viền trên.";
+"whatsNew.v130.alignment.title" = "Áp sát viền trên";
+"whatsNew.v130.experience.detail" = "Giao diện cập nhật mới, biểu tượng chạm khắc tương phản cao và tùy chọn thống kê ẩn danh.";
+"whatsNew.v130.experience.title" = "Tinh chỉnh chi tiết";
+"whatsNew.v130.headline" = "Hỗ trợ nhiều màn hình và áp sát viền trên";
+"whatsNew.v130.multiscreen.detail" = "TokNotch hiện xuất hiện trên mọi màn hình được kết nối với các vòng đo đồng bộ.";
+"whatsNew.v130.multiscreen.title" = "Tất cả màn hình";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

@@ -42,8 +42,6 @@
 "row.requests" = "Anfragen";
 "settings.autoDetected" = "Automatisch erkannt";
 "settings.autoUpdate" = "Updates automatisch installieren";
-"settings.shareUsageStatistics" = "Anonyme Nutzungsstatistiken teilen";
-"settings.shareUsageStatisticsSubtitle" = "Zählt einmal täglich aktive Macs. Es werden keine Bildschirminhalte übertragen.";
 "settings.checkFailed" = "Prüfung fehlgeschlagen — %@";
 "settings.checkForUpdates" = "Nach Updates suchen …";
 "settings.checking" = "Wird geprüft …";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Alles wird auf diesem Mac gelesen. Kein Schlüsselbund, keine Schlüssel, kein Upload.";
 "settings.refresh" = "Aktualisieren";
 "settings.scanningThisMacSUsage" = "Verbrauch dieses Macs wird durchsucht …";
+"settings.shareUsageStatistics" = "Anonyme Nutzungsstatistiken teilen";
+"settings.shareUsageStatisticsSubtitle" = "Zählt einmal täglich aktive Macs. Es werden keine Bildschirminhalte übertragen.";
 "settings.show" = "Anzeigen";
 "settings.showInDock" = "Im Dock anzeigen";
 "settings.showInMenuBar" = "In der Menüleiste anzeigen";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Ein Symbol";
 "whatsNew.v128.icon.detail" = "TokNotch verwendet jetzt immer das Symbol mit dunklem Rahmen, daher entfällt die Einstellung „App-Symbol“. Hattest du das helle gewählt, wechselt es von selbst zurück.";
 "whatsNew.v128.icon.title" = "Überall der dunkle Rahmen";
+"whatsNew.v130.alignment.detail" = "Auf externen Bildschirmen schließen Pille und Bedienfeld bündig mit der oberen Kante ab.";
+"whatsNew.v130.alignment.title" = "Bündiger oberer Rand";
+"whatsNew.v130.experience.detail" = "Neues Neuerungen-Fenster, kontrastreiches Gravur-Symbol und optionale anonyme Nutzungsdaten.";
+"whatsNew.v130.experience.title" = "Verfeinerte Details";
+"whatsNew.v130.headline" = "Multi-Display-Unterstützung und bündige Ausrichtung";
+"whatsNew.v130.multiscreen.detail" = "TokNotch erscheint auf allen angeschlossenen Displays mit synchronisierten Ringen und Status.";
+"whatsNew.v130.multiscreen.title" = "Alle Bildschirme";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

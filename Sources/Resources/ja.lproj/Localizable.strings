@@ -42,8 +42,6 @@
 "row.requests" = "リクエスト数";
 "settings.autoDetected" = "自動検出";
 "settings.autoUpdate" = "アップデートを自動でインストール";
-"settings.shareUsageStatistics" = "匿名の使用状況データを共有";
-"settings.shareUsageStatisticsSubtitle" = "1日1回アクティブ端末数を計測します。画面上のデータは送信されません。";
 "settings.checkFailed" = "確認できませんでした — %@";
 "settings.checkForUpdates" = "アップデートを確認…";
 "settings.checking" = "確認中…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "すべてこの Mac の中で読み取ります。キーチェーンにも鍵にも触れず、何も送信しません。";
 "settings.refresh" = "更新";
 "settings.scanningThisMacSUsage" = "この Mac の使用量をスキャンしています…";
+"settings.shareUsageStatistics" = "匿名の使用状況データを共有";
+"settings.shareUsageStatisticsSubtitle" = "1日1回アクティブ端末数を計測します。画面上のデータは送信されません。";
 "settings.show" = "表示";
 "settings.showInDock" = "Dockに表示";
 "settings.showInMenuBar" = "メニューバーに表示";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "アイコンはひとつに";
 "whatsNew.v128.icon.detail" = "TokNotch は常に黒いフレームのアイコンを使うようになり、設定の「App アイコン」はなくなりました。白を選んでいた場合も自動で戻ります。";
 "whatsNew.v128.icon.title" = "黒いフレームに統一";
+"whatsNew.v130.alignment.detail" = "ノッチのない外部ディスプレイでも、折りたたみバーと展開パネルが画面上端にぴったりフィットします。";
+"whatsNew.v130.alignment.title" = "上端にぴったり配置";
+"whatsNew.v130.experience.detail" = "新設計の新機能シート、高コントラストな刻印アイコン、匿名の利用統計設定を追加しました。";
+"whatsNew.v130.experience.title" = "細部の洗練";
+"whatsNew.v130.headline" = "マルチディスプレイ対応と上端配置の最適化";
+"whatsNew.v130.multiscreen.detail" = "接続されているすべてのディスプレイにTokNotchが常駐し、リングと状態を同期します。";
+"whatsNew.v130.multiscreen.title" = "すべての画面に対応";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

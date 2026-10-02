@@ -42,8 +42,6 @@
 "row.requests" = "Запросов";
 "settings.autoDetected" = "Определено автоматически";
 "settings.autoUpdate" = "Устанавливать обновления автоматически";
-"settings.shareUsageStatistics" = "Делиться анонимной статистикой использования";
-"settings.shareUsageStatisticsSubtitle" = "Считает активные Mac раз в день. Данные с экрана не передаются.";
 "settings.checkFailed" = "Не удалось проверить — %@";
 "settings.checkForUpdates" = "Проверить обновления…";
 "settings.checking" = "Проверка…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Всё читается на этом Mac. Без связки ключей, без ключей, ничего не отправляется.";
 "settings.refresh" = "Обновить";
 "settings.scanningThisMacSUsage" = "Просматриваем расход на этом Mac…";
+"settings.shareUsageStatistics" = "Делиться анонимной статистикой использования";
+"settings.shareUsageStatisticsSubtitle" = "Считает активные Mac раз в день. Данные с экрана не передаются.";
 "settings.show" = "Показывать";
 "settings.showInDock" = "Показывать в Dock";
 "settings.showInMenuBar" = "Показывать в строке меню";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Один значок";
 "whatsNew.v128.icon.detail" = "Теперь TokNotch всегда использует значок в тёмной рамке, поэтому настройка «Значок приложения» убрана. Если вы выбирали светлый, он вернётся сам.";
 "whatsNew.v128.icon.title" = "Тёмная рамка везде";
+"whatsNew.v130.alignment.detail" = "На внешних мониторах без выреза капсула и панель плотно прилегают к верхнему краю экрана.";
+"whatsNew.v130.alignment.title" = "Прилегание к верхнему краю";
+"whatsNew.v130.experience.detail" = "Обновленный экран новинок, рельефная контрастная иконка и анонимная статистика по желанию.";
+"whatsNew.v130.experience.title" = "Улучшенные детали";
+"whatsNew.v130.headline" = "Поддержка нескольких экранов и бесшовное прилегание";
+"whatsNew.v130.multiscreen.detail" = "TokNotch теперь отображается на всех подключенных дисплеях с синхронизацией колец.";
+"whatsNew.v130.multiscreen.title" = "Все ваши экраны";
 "whatsNew.version" = "Версия %@";
 "whatsNew.welcome" = "Добро пожаловать в TokNotch";

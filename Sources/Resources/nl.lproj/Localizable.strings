@@ -42,8 +42,6 @@
 "row.requests" = "Verzoeken";
 "settings.autoDetected" = "Automatisch herkend";
 "settings.autoUpdate" = "Updates automatisch installeren";
-"settings.shareUsageStatistics" = "Deel anonieme gebruiksstatistieken";
-"settings.shareUsageStatisticsSubtitle" = "Telt actieve Macs eenmaal per dag. Er wordt niets van je scherm verzonden.";
 "settings.checkFailed" = "Controle mislukt — %@";
 "settings.checkForUpdates" = "Controleer op updates…";
 "settings.checking" = "Controleren…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Alles wordt op deze Mac gelezen. Geen sleutelhanger, geen sleutels, niets wordt geüpload.";
 "settings.refresh" = "Vernieuw";
 "settings.scanningThisMacSUsage" = "Gebruik van deze Mac scannen…";
+"settings.shareUsageStatistics" = "Deel anonieme gebruiksstatistieken";
+"settings.shareUsageStatisticsSubtitle" = "Telt actieve Macs eenmaal per dag. Er wordt niets van je scherm verzonden.";
 "settings.show" = "Tonen";
 "settings.showInDock" = "Toon in Dock";
 "settings.showInMenuBar" = "Toon in menubalk";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Eén symbool";
 "whatsNew.v128.icon.detail" = "TokNotch gebruikt nu altijd het symbool met donker kader, dus de instelling ‘App-symbool’ is weg. Had je het lichte gekozen, dan schakelt het vanzelf terug.";
 "whatsNew.v128.icon.title" = "Overal het donkere kader";
+"whatsNew.v130.alignment.detail" = "Op externe beeldschermen zonder notch sluiten de pil en het paneel naadloos aan op de bovenrand.";
+"whatsNew.v130.alignment.title" = "Naadloze bovenrand";
+"whatsNew.v130.experience.detail" = "Vernieuwd nieuwsoverzicht, pictogram met hoog contrast en optionele anonieme gebruiksstatistieken.";
+"whatsNew.v130.experience.title" = "Verfijnde details";
+"whatsNew.v130.headline" = "Ondersteuning voor meerdere schermen en strakke bovenrand";
+"whatsNew.v130.multiscreen.detail" = "TokNotch verschijnt nu op elk aangesloten scherm met gesynchroniseerde gebruiksringen.";
+"whatsNew.v130.multiscreen.title" = "Al je schermen";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

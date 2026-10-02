@@ -42,8 +42,6 @@
 "row.requests" = "請求次數";
 "settings.autoDetected" = "已自動辨識";
 "settings.autoUpdate" = "自動安裝更新";
-"settings.shareUsageStatistics" = "分享匿名使用狀況統計";
-"settings.shareUsageStatisticsSubtitle" = "每日統計活躍設備數，不收集任何螢幕與個人資料。";
 "settings.checkFailed" = "檢查失敗：%@";
 "settings.checkForUpdates" = "檢查更新項目…";
 "settings.checking" = "檢查中…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "全部在本機讀取：不碰鑰匙圈，不讀金鑰，不上傳任何資料。";
 "settings.refresh" = "重新整理";
 "settings.scanningThisMacSUsage" = "正在掃描這台 Mac 的用量…";
+"settings.shareUsageStatistics" = "分享匿名使用狀況統計";
+"settings.shareUsageStatisticsSubtitle" = "每日統計活躍設備數，不收集任何螢幕與個人資料。";
 "settings.show" = "顯示模式";
 "settings.showInDock" = "在 Dock 中顯示";
 "settings.showInMenuBar" = "在選單列中顯示";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "圖像只有一個了";
 "whatsNew.v128.icon.detail" = "TokNotch 現在一律使用黑色邊框的圖像，設定裡的「App 圖像」也就拿掉了。之前選了白色的，會自動換回來。";
 "whatsNew.v128.icon.title" = "統一用黑色邊框";
+"whatsNew.v130.alignment.detail" = "在沒有硬體瀏海的外接螢幕上，收合膠囊與展開面板均緊貼螢幕頂邊，去除多餘留白。";
+"whatsNew.v130.alignment.title" = "純淨貼頂";
+"whatsNew.v130.experience.detail" = "全新設計的更新導覽介面、高對比鐫刻質感圖示，並新增可選的匿名活躍度統計。";
+"whatsNew.v130.experience.title" = "體驗細節升級";
+"whatsNew.v130.headline" = "支援多螢幕與純淨貼頂";
+"whatsNew.v130.multiscreen.detail" = "TokNotch 現已同時在所有連接的螢幕上常駐顯示，各螢幕即時同步用量環與狀態。";
+"whatsNew.v130.multiscreen.title" = "支援多螢幕";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";

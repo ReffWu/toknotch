@@ -42,8 +42,6 @@
 "row.requests" = "İstekler";
 "settings.autoDetected" = "Otomatik algılandı";
 "settings.autoUpdate" = "Güncellemeleri otomatik yükle";
-"settings.shareUsageStatistics" = "Anonim kullanım istatistiklerini paylaş";
-"settings.shareUsageStatisticsSubtitle" = "Günde bir kez etkin Mac'leri sayar. Ekranınızdan hiçbir şey gönderilmez.";
 "settings.checkFailed" = "Denetim başarısız oldu — %@";
 "settings.checkForUpdates" = "Güncellemeleri Denetle…";
 "settings.checking" = "Denetleniyor…";
@@ -67,6 +65,8 @@
 "settings.privacy" = "Her şey bu Mac’te okunur. Anahtar Zinciri yok, anahtar yok, hiçbir şey gönderilmez.";
 "settings.refresh" = "Yenile";
 "settings.scanningThisMacSUsage" = "Bu Mac’in kullanımı taranıyor…";
+"settings.shareUsageStatistics" = "Anonim kullanım istatistiklerini paylaş";
+"settings.shareUsageStatisticsSubtitle" = "Günde bir kez etkin Mac'leri sayar. Ekranınızdan hiçbir şey gönderilmez.";
 "settings.show" = "Göster";
 "settings.showInDock" = "Dock’ta göster";
 "settings.showInMenuBar" = "Menü çubuğunda göster";
@@ -156,5 +156,12 @@
 "whatsNew.v128.headline" = "Tek simge";
 "whatsNew.v128.icon.detail" = "TokNotch artık her zaman koyu çerçeveli simgesini kullanıyor, bu yüzden ‘Uygulama simgesi’ ayarı kaldırıldı. Açık olanı seçtiyseniz kendiliğinden geri döner.";
 "whatsNew.v128.icon.title" = "Her yerde koyu çerçeve";
+"whatsNew.v130.alignment.detail" = "Çentiksiz harici ekranlarda kapsül ve genişletilmiş panel üst kenara tamamen yapışır.";
+"whatsNew.v130.alignment.title" = "Kusursuz üst kenar";
+"whatsNew.v130.experience.detail" = "Yenilenen yenilikler ekranı, yüksek kontrastlı simge ve isteğe bağlı anonim kullanım istatistikleri.";
+"whatsNew.v130.experience.title" = "İncelikli detaylar";
+"whatsNew.v130.headline" = "Çoklu ekran desteği ve üst kenar hizalaması";
+"whatsNew.v130.multiscreen.detail" = "TokNotch artık bağlı tüm ekranlarda eşzamanlı halkalar ve durumla görünür.";
+"whatsNew.v130.multiscreen.title" = "Tüm ekranlarınız";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

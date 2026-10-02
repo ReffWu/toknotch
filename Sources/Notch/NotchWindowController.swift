@@ -31,6 +31,21 @@ final class NotchWindowController {
     private var clockTimer: Timer?
     private var cursorTimer: Timer?
 
+    private(set) var targetScreen: NSScreen?
+    private(set) var displayID: CGDirectDisplayID?
+
+    init(screen: NSScreen? = nil) {
+        self.targetScreen = screen
+        self.displayID = screen?.displayID
+    }
+
+    func currentScreen() -> NSScreen? {
+        if let displayID, let matched = NSScreen.screens.first(where: { $0.displayID == displayID }) {
+            return matched
+        }
+        return targetScreen ?? NotchGeometry.preferredScreen(from: NSScreen.screens)
+    }
+
     /// Hover in is quick; hover out waits, because the pointer has to cross the
     /// gap between the notch and the card without the card vanishing under it.
     private let hoverGrace: TimeInterval = 0.25
@@ -104,12 +119,18 @@ final class NotchWindowController {
         clockTimer?.invalidate()
         mouseMonitors.forEach(NSEvent.removeMonitor)
         mouseMonitors.removeAll()
+        panel?.close()
+        panel = nil
     }
 
     // MARK: - Placement
 
-    func relocate(cellCount: Int? = nil) {
-        guard let screen = NotchGeometry.preferredScreen(from: NSScreen.screens) else { return }
+    func relocate(cellCount: Int? = nil, screen: NSScreen? = nil) {
+        if let screen {
+            self.targetScreen = screen
+            self.displayID = screen.displayID
+        }
+        guard let screen = currentScreen() else { return }
         model.adopt(screen: screen)
         let size = model.panelSize(cellCount: cellCount ?? model.rings.count)
         let frame = NotchGeometry.panelFrame(for: screen, panelSize: size, edge: model.edge)
@@ -296,7 +317,7 @@ final class NotchWindowController {
     /// Has the Dock appeared, gone away, moved or resized since we last placed
     /// the panel? Nothing notifies us, so this is asked rather than told.
     private func followUsableAreaIfItMoved() {
-        guard let screen = NotchGeometry.preferredScreen(from: NSScreen.screens) else { return }
+        guard let screen = currentScreen() else { return }
         guard screen.visibleFrame != lastVisibleFrame else { return }
         relocate()
     }
@@ -657,5 +678,11 @@ final class MenuActions: NSObject {
 extension Array {
     subscript(safe index: Int) -> Element? {
         indices.contains(index) ? self[index] : nil
+    }
+}
+
+extension NSScreen {
+    var displayID: CGDirectDisplayID? {
+        (deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber)?.uint32Value
     }
 }

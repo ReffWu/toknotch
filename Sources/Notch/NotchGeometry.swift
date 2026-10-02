@@ -77,12 +77,12 @@ enum NotchGeometry {
         case .top:
             // AppKit's y grows upward, so the top edge is `maxY`.
             //
-            // On a Mac with a notch of its own, this one goes all the way up to
-            // meet it — past the menu bar — so the two read as a single shape
-            // rather than as a bar parked underneath the hardware. Where there
-            // is nothing to merge with, covering the menu bar buys nothing, so
-            // it stays below it.
-            let top = screen.hardwareNotch == nil ? usable.maxY : full.maxY
+            // Always position the top panel against the screen's physical top edge (`full.maxY`).
+            // On a screen with a hardware notch, it meets and covers the notch.
+            // On a screen without a hardware notch (external displays), this allows
+            // the folded pill to hug the physical top bezel, while the expanded notch
+            // drops down below the menu bar.
+            let top = full.maxY
             origin = CGPoint(x: full.midX - width / 2, y: top - height)
         case .bottom:
             origin = CGPoint(x: full.midX - width / 2, y: usable.minY)
