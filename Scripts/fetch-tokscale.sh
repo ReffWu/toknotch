@@ -7,7 +7,7 @@
 # nothing but system frameworks.
 #
 #   ./Scripts/fetch-tokscale.sh            make sure the pinned version is here
-#   ./Scripts/fetch-tokscale.sh 4.16.0     move the pin to that version
+#   ./Scripts/fetch-tokscale.sh 4.18.0     move the pin to that version
 #   ./Scripts/fetch-tokscale.sh latest     move the pin to the newest release
 #
 # The binary is not kept in git. What is kept is Vendor/tokscale/tokscale.lock:

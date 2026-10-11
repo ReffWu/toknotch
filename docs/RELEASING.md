@@ -140,7 +140,7 @@ token counts, so a release that changes the JSON or counts a field differently
 fails there first. To move the pin:
 
 ```sh
-make tokscale VERSION=4.16.0
+make tokscale VERSION=4.18.0
 make test
 git add Vendor/tokscale/tokscale.lock Vendor/tokscale/VERSION
 ```

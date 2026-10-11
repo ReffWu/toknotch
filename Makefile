@@ -18,7 +18,7 @@ gen: vendor
 vendor:
 	./Scripts/fetch-tokscale.sh
 
-# Move the pin to a new tokscale: `make tokscale VERSION=4.16.0`, or
+# Move the pin to a new tokscale: `make tokscale VERSION=4.18.0`, or
 # `VERSION=latest`. Run the tests after, then commit tokscale.lock.
 tokscale:
 	./Scripts/fetch-tokscale.sh $(or $(VERSION),latest)

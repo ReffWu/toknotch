@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "دعم الشاشات المتعددة ومحاذاة الحافة العلوية";
 "whatsNew.v130.multiscreen.detail" = "يظهر TokNotch الآن على جميع الشاشات المتصلة مع حلقات استخدام وحالة متزامنة.";
 "whatsNew.v130.multiscreen.title" = "جميع شاشاتك";
+"whatsNew.v131.dsh.detail" = "يحفظ DSH جلساته كسجلات مضغوطة ذات إصدارات كان TokNotch يتجاوزها، فلم يكن يُحتسب منها إلا النزر اليسير. الآن تُحتسب كل جلسة.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness يُحتسب";
+"whatsNew.v131.headline" = "استهلاك DeepSeek Harness أصبح محتسبًا";
+"whatsNew.v131.tokscale.detail" = "إصداران من الإصلاحات، منها التسعير الصحيح لكتابات التخزين المؤقت لساعة واحدة في Claude Code، واحتساب أدق في Codex وCherryStudio.";
+"whatsNew.v131.tokscale.title" = "مبني على tokscale 4.18";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";

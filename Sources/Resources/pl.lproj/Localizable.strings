@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Obsługa wielu ekranów i przyleganie do krawędzi";
 "whatsNew.v130.multiscreen.detail" = "TokNotch pojawia się teraz na każdym podłączonym ekranie ze zsynchronizowanymi pierścieniami.";
 "whatsNew.v130.multiscreen.title" = "Wszystkie Twoje ekrany";
+"whatsNew.v131.dsh.detail" = "DSH zapisuje sesje jako wersjonowane, skompresowane dzienniki, które TokNotch pomijał, więc prawie nic nie było liczone. Teraz liczy się każda sesja.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness się liczy";
+"whatsNew.v131.headline" = "Użycie DeepSeek Harness jest już liczone";
+"whatsNew.v131.tokscale.detail" = "Dwa wydania poprawek, w tym właściwa cena godzinowych zapisów do pamięci podręcznej w Claude Code oraz dokładniejsze liczenie w Codex i CherryStudio.";
+"whatsNew.v131.tokscale.title" = "Oparte na tokscale 4.18";
 "whatsNew.version" = "Wersja %@";
 "whatsNew.welcome" = "Witaj w TokNotch";

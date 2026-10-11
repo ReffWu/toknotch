@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Поддержка нескольких экранов и бесшовное прилегание";
 "whatsNew.v130.multiscreen.detail" = "TokNotch теперь отображается на всех подключенных дисплеях с синхронизацией колец.";
 "whatsNew.v130.multiscreen.title" = "Все ваши экраны";
+"whatsNew.v131.dsh.detail" = "DSH сохраняет сессии как версионированные сжатые журналы, которые TokNotch пропускал, поэтому почти ничего не считалось. Теперь учитывается каждая сессия.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness учитывается";
+"whatsNew.v131.headline" = "Расход DeepSeek Harness теперь учитывается";
+"whatsNew.v131.tokscale.detail" = "Два выпуска исправлений, включая верную цену часовых записей в кэш в Claude Code и более точный учёт в Codex и CherryStudio.";
+"whatsNew.v131.tokscale.title" = "На базе tokscale 4.18";
 "whatsNew.version" = "Версия %@";
 "whatsNew.welcome" = "Добро пожаловать в TokNotch";

@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Ondersteuning voor meerdere schermen en strakke bovenrand";
 "whatsNew.v130.multiscreen.detail" = "TokNotch verschijnt nu op elk aangesloten scherm met gesynchroniseerde gebruiksringen.";
 "whatsNew.v130.multiscreen.title" = "Al je schermen";
+"whatsNew.v131.dsh.detail" = "DSH bewaart zijn sessies als geversioneerde, gecomprimeerde logboeken waar TokNotch langs las, waardoor bijna niets meetelde. Nu telt elke sessie mee.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness telt mee";
+"whatsNew.v131.headline" = "DeepSeek Harness-gebruik telt nu mee";
+"whatsNew.v131.tokscale.detail" = "Twee releases aan correcties, waaronder de juiste prijs voor cache-schrijfacties van een uur in Claude Code en nauwkeuriger cijfers voor Codex en CherryStudio.";
+"whatsNew.v131.tokscale.title" = "Gebouwd op tokscale 4.18";
 "whatsNew.version" = "Versie %@";
 "whatsNew.welcome" = "Welkom bij TokNotch";

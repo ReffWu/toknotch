@@ -7,6 +7,28 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.3.1]
+
+DeepSeek Harness usage counts again.
+
+### Fixed
+
+- **DeepSeek Harness was almost entirely uncounted.** DSH writes its sessions
+  as versioned, compressed transcripts (`session.v4.jsonl.zstd`). The bundled
+  tokscale only recognised the older unversioned filename, so on a Mac with
+  nine DSH sessions it read one and skipped the rest — roughly 19.6M tokens
+  across 268 sessions, and growing with every conversation. Moving to
+  tokscale 4.18.0 picks up its fix for versioned transcripts, and its later
+  one for usage held inside embedded assistant attempts.
+- **Other tools counted more accurately.** The same two tokscale releases
+  bring correct pricing for Claude Code 1-hour cache writes, a corrected Codex
+  tier source, and steadier CherryStudio, MiMo, MiniMax and Muse accounting.
+
+### Changed
+
+- **tokscale 4.16.0 → 4.18.0**, the bundled counter, verified against
+  `Vendor/tokscale/tokscale.lock` as before.
+
 ## [1.3.0]
 
 Multi-display support and full-bleed top alignment.

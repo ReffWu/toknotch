@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Supporto multi-monitor e allineamento superiore";
 "whatsNew.v130.multiscreen.detail" = "TokNotch ora appare su tutti gli schermi collegati con anelli di utilizzo sincronizzati.";
 "whatsNew.v130.multiscreen.title" = "Tutti i tuoi schermi";
+"whatsNew.v131.dsh.detail" = "DSH salva le sessioni come registri compressi e con versione che TokNotch saltava, quindi quasi nulla veniva contato. Ora ogni sessione viene conteggiata.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness conta";
+"whatsNew.v131.headline" = "Anche l'uso di DeepSeek Harness conta";
+"whatsNew.v131.tokscale.detail" = "Due versioni di correzioni, tra cui il prezzo giusto delle scritture in cache di un'ora di Claude Code e un conteggio più preciso per Codex e CherryStudio.";
+"whatsNew.v131.tokscale.title" = "Basato su tokscale 4.18";
 "whatsNew.version" = "Versione %@";
 "whatsNew.welcome" = "Benvenuto in TokNotch";

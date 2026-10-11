@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "マルチディスプレイ対応と上端配置の最適化";
 "whatsNew.v130.multiscreen.detail" = "接続されているすべてのディスプレイにTokNotchが常駐し、リングと状態を同期します。";
 "whatsNew.v130.multiscreen.title" = "すべての画面に対応";
+"whatsNew.v131.dsh.detail" = "DSH はセッションをバージョン付きの圧縮ログとして保存するため、これまで TokNotch はほとんど読み取れていませんでした。すべてのセッションが集計されます。";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness を集計";
+"whatsNew.v131.headline" = "DeepSeek Harness の使用量を集計";
+"whatsNew.v131.tokscale.detail" = "2 リリース分の修正。Claude Code の 1 時間キャッシュ書き込みの料金計算や、Codex と CherryStudio の集計がより正確になりました。";
+"whatsNew.v131.tokscale.title" = "tokscale 4.18 を内蔵";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

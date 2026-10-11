@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Çoklu ekran desteği ve üst kenar hizalaması";
 "whatsNew.v130.multiscreen.detail" = "TokNotch artık bağlı tüm ekranlarda eşzamanlı halkalar ve durumla görünür.";
 "whatsNew.v130.multiscreen.title" = "Tüm ekranlarınız";
+"whatsNew.v131.dsh.detail" = "DSH oturumlarını sürümlenmiş, sıkıştırılmış kayıtlar olarak saklıyor; TokNotch bunları atlıyordu ve neredeyse hiçbiri sayılmıyordu. Artık her oturum sayılıyor.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness sayılıyor";
+"whatsNew.v131.headline" = "DeepSeek Harness kullanımı artık sayılıyor";
+"whatsNew.v131.tokscale.detail" = "İki sürümlük düzeltme: Claude Code'da bir saatlik önbellek yazımlarının doğru fiyatlandırması ve Codex ile CherryStudio'da daha isabetli sayım.";
+"whatsNew.v131.tokscale.title" = "tokscale 4.18 ile";
 "whatsNew.version" = "Sürüm %@";
 "whatsNew.welcome" = "TokNotch’a hoş geldiniz";

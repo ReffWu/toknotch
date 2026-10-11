@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Hỗ trợ nhiều màn hình và áp sát viền trên";
 "whatsNew.v130.multiscreen.detail" = "TokNotch hiện xuất hiện trên mọi màn hình được kết nối với các vòng đo đồng bộ.";
 "whatsNew.v130.multiscreen.title" = "Tất cả màn hình";
+"whatsNew.v131.dsh.detail" = "DSH lưu phiên làm việc dưới dạng nhật ký nén có phiên bản mà TokNotch đã bỏ qua, nên gần như không được tính. Giờ đây mọi phiên đều được tính.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness được tính";
+"whatsNew.v131.headline" = "Đã tính mức dùng của DeepSeek Harness";
+"whatsNew.v131.tokscale.detail" = "Hai bản phát hành sửa lỗi, gồm cách tính đúng cho ghi bộ nhớ đệm một giờ trong Claude Code và số liệu chính xác hơn cho Codex và CherryStudio.";
+"whatsNew.v131.tokscale.title" = "Dựa trên tokscale 4.18";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

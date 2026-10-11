@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "支持多显示器与纯净贴顶";
 "whatsNew.v130.multiscreen.detail" = "TokNotch 现已同时在所有连接的显示器上常驻显示，各屏实时同步用量环与状态。";
 "whatsNew.v130.multiscreen.title" = "支持多显示器";
+"whatsNew.v131.dsh.detail" = "DSH 将会话保存为带版本号的压缩记录，此前 TokNotch 读不到，用量几乎全部漏计。现在每一次会话都会计入。";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness 计入统计";
+"whatsNew.v131.headline" = "DeepSeek Harness 用量开始计入";
+"whatsNew.v131.tokscale.detail" = "跨两个版本的修复，包括 Claude Code 一小时缓存写入的计价修正，以及 Codex 与 CherryStudio 用量统计更准确。";
+"whatsNew.v131.tokscale.title" = "内置 tokscale 升级到 4.18";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "欢迎使用 TokNotch";

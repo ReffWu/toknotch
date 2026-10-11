@@ -163,5 +163,10 @@
 "whatsNew.v130.headline" = "Multi-display support and full-bleed top alignment";
 "whatsNew.v130.multiscreen.detail" = "TokNotch now appears across every connected display with synchronized token rings and status.";
 "whatsNew.v130.multiscreen.title" = "All your screens";
+"whatsNew.v131.dsh.detail" = "DSH saves its sessions as versioned, compressed transcripts that TokNotch was reading past, so almost none of its usage was counted. Every session now adds up.";
+"whatsNew.v131.dsh.title" = "DeepSeek Harness counts";
+"whatsNew.v131.headline" = "DeepSeek Harness usage counts now";
+"whatsNew.v131.tokscale.detail" = "Two releases of fixes, including correct pricing for Claude Code 1-hour cache writes and more accurate Codex and CherryStudio accounting.";
+"whatsNew.v131.tokscale.title" = "Built on tokscale 4.18";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Welcome to TokNotch";
