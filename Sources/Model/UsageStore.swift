@@ -47,7 +47,9 @@ final class UsageStore: ObservableObject {
     /// Whether this vendor's figures came from its own configuration rather
     /// than from the user.
     func isDetected(_ vendor: Vendor) -> Bool {
-        subscriptions[vendor] == nil && detectedPlans[vendor]?.subscription != nil
+        guard let detected = detectedPlans[vendor]?.subscription else { return false }
+        guard let override = subscriptions[vendor] else { return true }
+        return override.planID == detected.planID
     }
 
     private var digest: UsageDigest?

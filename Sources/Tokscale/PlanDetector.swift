@@ -47,7 +47,8 @@ enum PlanDetector {
     /// `~/.claude.json` → `oauthAccount.organizationType`, plus the date the
     /// subscription started.
     static func detectClaude(fileManager: FileManager = .default,
-                             path: String? = nil) -> DetectedPlan? {
+                             path: String? = nil,
+                             calendar: Calendar = .current) -> DetectedPlan? {
         let file = path ?? NSString(string: "~/.claude.json").expandingTildeInPath
         guard fileManager.isReadableFile(atPath: file),
               let data = fileManager.contents(atPath: file),
@@ -58,7 +59,9 @@ enum PlanDetector {
         // An account billed some other way — API credit, an enterprise
         // agreement — has no monthly figure to compare against.
         let billing = account["billingType"] as? String
-        guard billing == nil || billing == "stripe_subscription" else { return nil }
+        guard billing == nil
+                || billing == "stripe_subscription"
+                || billing == "apple_subscription" else { return nil }
 
         guard let type = account["organizationType"] as? String else { return nil }
         let known = PlanCatalog.plan(id: type, for: .anthropic)
@@ -67,7 +70,8 @@ enum PlanDetector {
             planID: type,
             name: known?.name ?? readable(type),
             monthlyUSD: known?.monthlyUSD,
-            renewalDay: (account["subscriptionCreatedAt"] as? String).flatMap { Self.day(ofISO: $0) },
+            renewalDay: (account["subscriptionCreatedAt"] as? String)
+                .flatMap { Self.day(ofISO: $0, calendar: calendar) },
             source: "~/.claude.json"
         )
     }
@@ -83,7 +87,8 @@ enum PlanDetector {
     /// never sent anywhere, because the only thing being asked of it is a
     /// string the user already knows about themselves.
     static func detectCodex(fileManager: FileManager = .default,
-                            path: String? = nil) -> DetectedPlan? {
+                            path: String? = nil,
+                            calendar: Calendar = .current) -> DetectedPlan? {
         let file = path ?? NSString(string: "~/.codex/auth.json").expandingTildeInPath
         guard fileManager.isReadableFile(atPath: file),
               let data = fileManager.contents(atPath: file),
@@ -105,7 +110,7 @@ enum PlanDetector {
             name: known?.name ?? "ChatGPT \(type.capitalized)",
             monthlyUSD: known?.monthlyUSD,
             renewalDay: (auth["chatgpt_subscription_active_start"] as? String)
-                .flatMap { Self.day(ofISO: $0) },
+                .flatMap { Self.day(ofISO: $0, calendar: calendar) },
             source: "~/.codex/auth.json"
         )
     }
