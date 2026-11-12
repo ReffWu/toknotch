@@ -26,9 +26,10 @@ final class UsageDigestTests: XCTestCase {
     }
 
     private func digest(_ days: [GraphReport.Day],
+                        renewalDay: Int? = nil,
                         lifetime: UsageReport = UsageReport(entries: [], messages: 0)) -> UsageDigest {
         UsageDigest.build(graph: GraphReport(contributions: days), lifetime: lifetime,
-                          now: now, calendar: calendar)
+                          renewalDay: renewalDay, now: now, calendar: calendar)
     }
 
     // MARK: - Slicing
@@ -36,6 +37,41 @@ final class UsageDigestTests: XCTestCase {
     func testTodayIsOnlyToday() {
         let d = digest([day(0, tokens: 100), day(-1, tokens: 900), day(-2, tokens: 900)])
         XCTAssertEqual(d.today.totals.tokens, 100)
+    }
+
+    /// With a subscription renewing on the 3rd, the weekly window steps in
+    /// 7-day slices from the 3rd — so on 6 Sep the current week covers 3–6 Sep,
+    /// excluding 2 Sep even though 2 Sep is within the trailing 7 days.
+    func testTheWeekFollowsTheSubscriptionResetAnchor() {
+        let d = digest([day(0, tokens: 100),     // 6 Sep — in the 3..10 Sep slice
+                        day(-3, tokens: 150),    // 3 Sep — start of slice
+                        day(-4, tokens: 800)],   // 2 Sep — previous billing period
+                       renewalDay: 3)
+        XCTAssertEqual(d.week.totals.tokens, 250)
+    }
+
+    /// Ten days into a billing period that started on the 27th of last month,
+    /// the first 7-day slice (27 Aug – 2 Sep) has ended and the second slice
+    /// starts on 3 Sep.
+    func testTheWeekStepsBySevenDaysFromTheBillingStart() {
+        let d = digest([day(0, tokens: 100),     // 6 Sep — in second 7-day slice (3..10 Sep)
+                        day(-3, tokens: 200),    // 3 Sep — start of second slice
+                        day(-4, tokens: 900)],   // 2 Sep — in first slice (27 Aug..3 Sep)
+                       renewalDay: 27)
+        XCTAssertEqual(d.week.totals.tokens, 300)
+    }
+
+    /// Four days into a weekly slice (3–6 Sep), the baseline is the first four
+    /// days of the previous 7-day slice (27–30 Aug), not the whole seven days.
+    func testTheWeekIsMeasuredAgainstTheSameDaysLastWeek() {
+        let d = digest([day(0, tokens: 100),     // 6 Sep (day 4 of current week)
+                        day(-3, tokens: 100),    // 3 Sep (day 1 of current week)
+                        day(-7, tokens: 40),     // 30 Aug (day 4 of previous week — counts)
+                        day(-10, tokens: 60),    // 27 Aug (day 1 of previous week — counts)
+                        day(-6, tokens: 5_000)], // 31 Aug (day 5 of previous week — excluded)
+                       renewalDay: 3)
+        XCTAssertEqual(try XCTUnwrap(d.week.baseline).value, 100, accuracy: 0.0001)
+        XCTAssertEqual(try XCTUnwrap(d.week.fraction), 2.0, accuracy: 0.0001)
     }
 
     /// The month runs from the 1st, not over a trailing thirty days — a figure
@@ -375,7 +411,7 @@ final class RingBuilderTests: XCTestCase {
 
     func testVendorRingsAreOptInAndFollowThePrimaries() {
         let ids = rings(vendors: [.anthropic]).map(\.id)
-        XCTAssertEqual(ids.count, 4)
+        XCTAssertEqual(ids.count, RingKind.primaries.count + 1)
         XCTAssertEqual(ids.last, RingKind.vendor(.anthropic).id)
     }
 

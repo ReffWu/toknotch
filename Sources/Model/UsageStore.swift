@@ -40,7 +40,12 @@ final class UsageStore: ObservableObject {
     /// user has said about it laid over the top.
     var effectivePlans: [Vendor: Subscription] {
         var merged = detectedPlans.compactMapValues(\.subscription)
-        merged.merge(subscriptions) { _, override in override }
+        for (vendor, var override) in subscriptions {
+            if override.weeklyQuota == nil {
+                override.weeklyQuota = detectedPlans[vendor]?.weeklyQuota
+            }
+            merged[vendor] = override
+        }
         return merged.filter { $0.value.isActive }
     }
 

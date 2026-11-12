@@ -8,6 +8,7 @@ import Foundation
 /// can be tested without a notch, a timer or a subprocess.
 struct UsageDigest: Equatable {
     let today: Period
+    let week: Period
     let month: Period
     let lifetime: Period
     /// Vendors this machine has actually used, busiest first. The settings list
@@ -44,6 +45,28 @@ struct UsageDigest: Equatable {
             .flatMap(\.models)
             .filter { $0.vendor == vendor }
             .reduce(Totals()) { $0 + $1.totals }
+    }
+
+    /// One vendor's usage over a weekly slice.
+    func totals(for vendor: Vendor, in window: WeeklyPeriod,
+                calendar: Calendar = .current) -> Totals {
+        let key = DayKey(calendar: calendar)
+        let from = key.day(window.start)
+        let until = key.day(window.end)
+        return days
+            .filter { $0.date >= from && $0.date < until }
+            .flatMap(\.models)
+            .filter { $0.vendor == vendor }
+            .reduce(Totals()) { $0 + $1.totals }
+    }
+
+    /// Slicing this week's period from the stored per-day history, aligned to a
+    /// subscription's weekly `resetAt` or monthly `renewalDay` when present, or
+    /// the calendar week when not.
+    func weekSlice(renewalDay: Int?, resetAt: Date? = nil, now: Date? = nil,
+                   calendar: Calendar = .current) -> (period: Period, window: WeeklyPeriod) {
+        Self.buildWeek(from: days, renewalDay: renewalDay, resetAt: resetAt,
+                       now: now ?? generatedAt, calendar: calendar)
     }
 
     // MARK: - Parts
@@ -112,6 +135,7 @@ struct UsageDigest: Equatable {
     // MARK: - Building
 
     static func build(graph: GraphReport, lifetime report: UsageReport,
+                      renewalDay: Int? = nil, resetAt: Date? = nil,
                       now: Date = Date(), calendar: Calendar = .current) -> UsageDigest {
         let days = graph.contributions
         let key = DayKey(calendar: calendar)
@@ -179,11 +203,15 @@ struct UsageDigest: Equatable {
                      models: modelsOf(days: [day]))
         }
 
+        let weekPeriod = buildWeek(from: history, renewalDay: renewalDay, resetAt: resetAt,
+                                   now: now, calendar: calendar).period
+
         return UsageDigest(
             today: Period(totals: todayTotals,
                           models: modelsOf(days: todayDays),
                           vendors: group(modelsOf(days: todayDays)),
                           baseline: todayBaseline),
+            week: weekPeriod,
             month: Period(totals: monthTotals,
                           models: modelsOf(days: monthDays),
                           vendors: group(modelsOf(days: monthDays)),
@@ -196,6 +224,40 @@ struct UsageDigest: Equatable {
             days: history,
             generatedAt: now
         )
+    }
+
+    private static func buildWeek(from history: [DayUsage], renewalDay: Int?,
+                                  resetAt: Date? = nil,
+                                  now: Date, calendar: Calendar) -> (period: Period, window: WeeklyPeriod) {
+        let key = DayKey(calendar: calendar)
+        let window = WeeklyPeriod.current(renewalDay: renewalDay, resetAt: resetAt,
+                                          now: now, calendar: calendar)
+        let todayStart = calendar.startOfDay(for: now)
+        let fromKey = key.day(window.start)
+        let todayKey = key.day(todayStart)
+        let untilKey = key.day(window.end)
+
+        let weekDays = history.filter { $0.date >= fromKey && $0.date <= todayKey && $0.date < untilKey }
+        let weekTotals = weekDays.reduce(Totals()) { $0 + $1.totals }
+        let weekModels = merge(weekDays.flatMap(\.models))
+
+        // Measured against the same number of elapsed days in the previous 7-day
+        // window, matching the month-to-date comparison.
+        let prevStart = calendar.date(byAdding: .day, value: -7, to: window.start) ?? window.start
+        let prevThrough = calendar.date(byAdding: .day, value: -7, to: todayStart) ?? todayStart
+        let prevFromKey = key.day(prevStart)
+        let prevThroughKey = key.day(prevThrough)
+        let lastWeekToDate = history.filter { $0.date >= prevFromKey && $0.date <= prevThroughKey }
+        let lastWeekTokens = lastWeekToDate.reduce(Totals()) { $0 + $1.totals }.tokens
+        let weekBaseline = lastWeekTokens > 0
+            ? Baseline(value: Double(lastWeekTokens), captionKey: "baseline.lastWeek")
+            : nil
+
+        let period = Period(totals: weekTotals,
+                            models: weekModels,
+                            vendors: group(weekModels),
+                            baseline: weekBaseline)
+        return (period, window)
     }
 
     /// The next round number above `value`, on a 1–2–5 ladder.

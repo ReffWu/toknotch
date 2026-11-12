@@ -4,6 +4,7 @@
 "about.version" = "版本 %@";
 "baseline.against" = "%1$@的 %2$@";
 "baseline.lastMonth" = "上月同期";
+"baseline.lastWeek" = "上週同期";
 "baseline.milestone" = "下一個里程碑";
 "baseline.none" = "尚無可比較的紀錄";
 "baseline.recentPeak" = "近 30 天最高的一天";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "%1$@1–%2$d 日";
 "ring.month.title" = "本月";
 "ring.today.title" = "今日";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "本週";
 "row.equivalentCost" = "等效商業價值";
 "row.lifetimeUsage" = "累計用量";
 "row.requests" = "請求次數";
+"row.weeklyLimit" = "週限額";
+"row.weeklyLimitValue" = "%1$@ · %2$@重置";
+"row.weeklyUsage" = "本週用量";
 "settings.autoDetected" = "已自動辨識";
 "settings.autoUpdate" = "自動安裝更新";
 "settings.checkFailed" = "檢查失敗：%@";

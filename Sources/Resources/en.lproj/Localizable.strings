@@ -4,6 +4,7 @@
 "about.version" = "Version %@";
 "baseline.against" = "%2$@ of %1$@";
 "baseline.lastMonth" = "the same days last month";
+"baseline.lastWeek" = "the same days last week";
 "baseline.milestone" = "the next milestone";
 "baseline.none" = "nothing to compare yet";
 "baseline.recentPeak" = "your best day in 30";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "1–%2$d %1$@";
 "ring.month.title" = "This month";
 "ring.today.title" = "Today";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "This week";
 "row.equivalentCost" = "Equivalent API cost";
 "row.lifetimeUsage" = "All-time usage";
 "row.requests" = "Requests";
+"row.weeklyLimit" = "Weekly limit";
+"row.weeklyLimitValue" = "%1$@ · resets %2$@";
+"row.weeklyUsage" = "This week's usage";
 "settings.autoDetected" = "Detected";
 "settings.autoUpdate" = "Install updates automatically";
 "settings.checkFailed" = "Check failed — %@";

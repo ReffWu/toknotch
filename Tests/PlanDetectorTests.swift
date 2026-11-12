@@ -206,6 +206,20 @@ final class CodexPlanDetectorTests: XCTestCase {
         XCTAssertEqual(PlanDetector.day(ofISO: "2026-04-22T21:50:20+00:00", calendar: utc), 22)
         XCTAssertEqual(PlanDetector.day(ofISO: "2023-10-03T23:13:02.277543Z", calendar: utc), 3)
     }
+
+    func testItReadsTheWeeklyQuotaFromLocalSessionLogs() throws {
+        let authPath = try write(planType: "plus", start: "2026-10-19T08:05:08+00:00")
+        let sessionPath = NSTemporaryDirectory() + "rollout-\(UUID().uuidString).jsonl"
+        let line = """
+        {"type":"event_msg","payload":{"type":"token_count","rate_limits":{"primary":{"used_percent":32.0,"window_minutes":300,"resets_at":1794486446},"secondary":{"used_percent":26.0,"window_minutes":10080,"resets_at":1794991965}}}}
+        """
+        try line.write(toFile: sessionPath, atomically: true, encoding: .utf8)
+
+        let plan = try XCTUnwrap(PlanDetector.detectCodex(path: authPath, sessionsPath: sessionPath))
+        let quota = try XCTUnwrap(plan.weeklyQuota)
+        XCTAssertEqual(quota.usedPercent, 26.0, accuracy: 0.001)
+        XCTAssertEqual(quota.resetsAt, Date(timeIntervalSince1970: 1794991965))
+    }
 }
 
 /// Switching a ring on because a plan was found — once, and only once.

@@ -4,6 +4,7 @@
 "about.version" = "Sürüm %@";
 "baseline.against" = "%1$@ kıyasla %2$@";
 "baseline.lastMonth" = "geçen ayın aynı günlerine";
+"baseline.lastWeek" = "geçen haftanın aynı günlerine";
 "baseline.milestone" = "sonraki hedefe";
 "baseline.none" = "henüz kıyaslanacak bir şey yok";
 "baseline.recentPeak" = "son 30 gündeki en iyi gününüze";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "1–%2$d %1$@";
 "ring.month.title" = "Bu ay";
 "ring.today.title" = "Bugün";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "Bu hafta";
 "row.equivalentCost" = "Eşdeğer API maliyeti";
 "row.lifetimeUsage" = "Toplam kullanım";
 "row.requests" = "İstekler";
+"row.weeklyLimit" = "Haftalık limit";
+"row.weeklyLimitValue" = "%1$@ · %2$@ sıfırlanır";
+"row.weeklyUsage" = "Bu haftaki kullanım";
 "settings.autoDetected" = "Otomatik algılandı";
 "settings.autoUpdate" = "Güncellemeleri otomatik yükle";
 "settings.checkFailed" = "Denetim başarısız oldu — %@";

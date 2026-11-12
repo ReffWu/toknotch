@@ -4,6 +4,7 @@
 "about.version" = "Versie %@";
 "baseline.against" = "%2$@ van %1$@";
 "baseline.lastMonth" = "dezelfde dagen vorige maand";
+"baseline.lastWeek" = "dezelfde dagen vorige week";
 "baseline.milestone" = "de volgende mijlpaal";
 "baseline.none" = "nog niets om mee te vergelijken";
 "baseline.recentPeak" = "je beste dag in 30";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "1–%2$d %1$@";
 "ring.month.title" = "Deze maand";
 "ring.today.title" = "Vandaag";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "Deze week";
 "row.equivalentCost" = "Gelijkwaardige API-kosten";
 "row.lifetimeUsage" = "Totaal gebruik";
 "row.requests" = "Verzoeken";
+"row.weeklyLimit" = "Weeklimiet";
+"row.weeklyLimitValue" = "%1$@ · reset %2$@";
+"row.weeklyUsage" = "Gebruik deze week";
 "settings.autoDetected" = "Automatisch herkend";
 "settings.autoUpdate" = "Updates automatisch installeren";
 "settings.checkFailed" = "Controle mislukt — %@";
