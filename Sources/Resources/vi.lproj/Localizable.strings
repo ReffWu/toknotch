@@ -4,6 +4,7 @@
 "about.version" = "Phiên bản %@";
 "baseline.against" = "%2$@ so với %1$@";
 "baseline.lastMonth" = "cùng kỳ tháng trước";
+"baseline.lastWeek" = "cùng kỳ tuần trước";
 "baseline.milestone" = "cột mốc tiếp theo";
 "baseline.none" = "chưa có gì để so sánh";
 "baseline.recentPeak" = "ngày tốt nhất của bạn trong 30 ngày";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "1–%2$d %1$@";
 "ring.month.title" = "Tháng này";
 "ring.today.title" = "Hôm nay";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "Tuần này";
 "row.equivalentCost" = "Chi phí API tương đương";
 "row.lifetimeUsage" = "Tổng mức sử dụng";
 "row.requests" = "Yêu cầu";
+"row.weeklyLimit" = "Giới hạn tuần";
+"row.weeklyLimitValue" = "%1$@ · đặt lại %2$@";
+"row.weeklyUsage" = "Mức dùng tuần này";
 "settings.autoDetected" = "Tự động nhận diện";
 "settings.autoUpdate" = "Tự động cài bản cập nhật";
 "settings.checkFailed" = "Kiểm tra thất bại — %@";

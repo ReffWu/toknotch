@@ -16,14 +16,92 @@ struct Subscription: Codable, Equatable {
     /// Which catalogue entry this is, when it came from one — so the menu can
     /// show it selected, and so a detected plan can be told from a typed one.
     var planID: String?
+    /// Optional 7-day quota and reset timestamp detected from local session logs.
+    var weeklyQuota: WeeklyQuota?
 
-    init(monthlyUSD: Double, renewalDay: Int = 1, planID: String? = nil) {
+    init(monthlyUSD: Double, renewalDay: Int = 1, planID: String? = nil,
+         weeklyQuota: WeeklyQuota? = nil) {
         self.monthlyUSD = monthlyUSD
         self.renewalDay = min(max(renewalDay, 1), 31)
         self.planID = planID
+        self.weeklyQuota = weeklyQuota
     }
 
     var isActive: Bool { monthlyUSD > 0 }
+
+    /// The renewal day to anchor the primary weekly ring on: the busiest active
+    /// vendor's plan first, falling back to the highest-priced active plan when
+    /// no vendor with usage has a plan yet.
+    static func primaryRenewalDay(in subscriptions: [Vendor: Subscription],
+                                  vendors: [UsageDigest.VendorUsage] = []) -> Int? {
+        primaryWeeklyAnchor(in: subscriptions, vendors: vendors).renewalDay
+    }
+
+    /// Resolves both the monthly renewal day and any exact weekly reset timestamp
+    /// for the primary active plan. Both values come from the *same* primary
+    /// vendor (the busiest vendor with an active subscription), so a secondary
+    /// tool's rolling reset timestamp never truncates the primary vendor's week.
+    static func primaryWeeklyAnchor(in subscriptions: [Vendor: Subscription],
+                                    vendors: [UsageDigest.VendorUsage] = []) -> (renewalDay: Int?, resetAt: Date?) {
+        for usage in vendors {
+            if let plan = subscriptions[usage.vendor], plan.isActive {
+                return (plan.renewalDay, plan.weeklyQuota?.resetsAt)
+            }
+        }
+        let fallback = subscriptions
+            .filter { $0.value.isActive }
+            .sorted { a, b in
+                if a.value.monthlyUSD != b.value.monthlyUSD {
+                    return a.value.monthlyUSD > b.value.monthlyUSD
+                }
+                return a.key.rawValue < b.key.rawValue
+            }
+            .first?.value
+        return (fallback?.renewalDay, fallback?.weeklyQuota?.resetsAt)
+    }
+}
+
+/// The current 7-day stretch within a subscription's billing period, or the
+/// calendar week when no subscription is active.
+///
+/// Stepping in 7-day intervals from an exact weekly `resetAt` timestamp (when
+/// a tool records one locally) or from the billing period's `start` aligns the
+/// weekly readout with the subscription's reset anchor rather than an arbitrary
+/// calendar boundary.
+struct WeeklyPeriod: Equatable {
+    let start: Date
+    /// The day the next weekly slice begins — exclusive, so the period is [start, end).
+    let end: Date
+
+    static func current(renewalDay: Int? = nil, resetAt: Date? = nil,
+                        now: Date = Date(),
+                        calendar: Calendar = .current) -> WeeklyPeriod {
+        let todayStart = calendar.startOfDay(for: now)
+        if let resetAt {
+            // Compare against the exact reset timestamp so that before the reset
+            // hour/minute on the reset day we stay in the current 7-day cycle,
+            // and step into the new cycle the moment `now >= resetAt`.
+            let weekSeconds: TimeInterval = 7 * 86_400
+            let cycleOffset = Int(floor(now.timeIntervalSince(resetAt) / weekSeconds))
+            let exactStart = resetAt.addingTimeInterval(Double(cycleOffset) * weekSeconds)
+            let start = calendar.startOfDay(for: exactStart)
+            let nominalEnd = calendar.date(byAdding: .day, value: 7, to: start) ?? todayStart
+            let throughToday = calendar.date(byAdding: .day, value: 1, to: todayStart) ?? todayStart
+            return WeeklyPeriod(start: start, end: max(nominalEnd, throughToday))
+        } else if let renewalDay {
+            let billing = BillingPeriod.current(renewalDay: renewalDay, now: now, calendar: calendar)
+            let daysSinceStart = max(0, calendar.dateComponents([.day], from: billing.start, to: todayStart).day ?? 0)
+            let weekIndex = daysSinceStart / 7
+            let start = calendar.date(byAdding: .day, value: weekIndex * 7, to: billing.start) ?? billing.start
+            let rawEnd = calendar.date(byAdding: .day, value: 7, to: start) ?? billing.end
+            let end = min(rawEnd, billing.end)
+            return WeeklyPeriod(start: start, end: end)
+        } else {
+            let start = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? todayStart
+            let end = calendar.date(byAdding: .day, value: 7, to: start) ?? todayStart
+            return WeeklyPeriod(start: start, end: end)
+        }
+    }
 }
 
 /// The stretch a subscription is currently paying for.

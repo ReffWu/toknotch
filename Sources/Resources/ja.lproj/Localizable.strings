@@ -4,6 +4,7 @@
 "about.version" = "バージョン %@";
 "baseline.against" = "%1$@の %2$@";
 "baseline.lastMonth" = "先月の同じ期間";
+"baseline.lastWeek" = "先週の同じ期間";
 "baseline.milestone" = "次のマイルストーン";
 "baseline.none" = "比較できる履歴がまだありません";
 "baseline.recentPeak" = "直近 30 日で最も多かった日";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "%1$@1–%2$d 日";
 "ring.month.title" = "今月";
 "ring.today.title" = "今日";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "今週";
 "row.equivalentCost" = "API 換算額";
 "row.lifetimeUsage" = "累計使用量";
 "row.requests" = "リクエスト数";
+"row.weeklyLimit" = "週間上限";
+"row.weeklyLimitValue" = "%1$@ · %2$@にリセット";
+"row.weeklyUsage" = "今週の使用量";
 "settings.autoDetected" = "自動検出";
 "settings.autoUpdate" = "アップデートを自動でインストール";
 "settings.checkFailed" = "確認できませんでした — %@";

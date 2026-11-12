@@ -19,16 +19,24 @@ enum RingBuilder {
                       language: AppLanguage,
                       now: Date = Date(),
                       calendar: Calendar = .current) -> [RingSnapshot] {
+        let anchor = Subscription.primaryWeeklyAnchor(in: subscriptions,
+                                                      vendors: digest.vendors)
+        let weekSlice = digest.weekSlice(renewalDay: anchor.renewalDay,
+                                         resetAt: anchor.resetAt,
+                                         now: now, calendar: calendar)
+
         // Ordered by `RingKind.primaries` rather than listed here, so the stack
         // and the settings list cannot disagree about the order.
         var rings: [RingSnapshot] = RingKind.primaries.map { kind in
             let slice: UsageDigest.Period
             switch kind {
+            case .week:     slice = weekSlice.period
             case .month:    slice = digest.month
             case .lifetime: slice = digest.lifetime
             default:        slice = digest.today
             }
-            return period(kind, slice, digest, language, now, calendar)
+            return period(kind, slice, digest, weekWindow: weekSlice.window,
+                          language, now, calendar)
         }
         // In the order the digest found them — busiest vendor first — so
         // turning several on gives a stack that reads as a ranking.
@@ -50,6 +58,7 @@ enum RingBuilder {
         let (title, glyph): (String, RingGlyph)
         switch kind {
         case .today:    (title, glyph) = (language.t("ring.today.title"), .today)
+        case .week:     (title, glyph) = (language.t("ring.week.title"), .week)
         case .month:    (title, glyph) = (language.t("ring.month.title"), .month)
         case .lifetime: (title, glyph) = (language.t("ring.lifetime.title"), .lifetime)
         case .vendor(let v): (title, glyph) = (v.title(language), .vendor(v))
@@ -63,11 +72,13 @@ enum RingBuilder {
         )
     }
 
-    // MARK: - The three primaries
+    // MARK: - The primaries
 
-    /// All three read the same way: how much, measured against something named.
+    /// All primaries read the same way: how much, measured against something named.
     private static func period(_ kind: RingKind, _ period: UsageDigest.Period,
-                               _ digest: UsageDigest, _ language: AppLanguage,
+                               _ digest: UsageDigest,
+                               weekWindow: WeeklyPeriod,
+                               _ language: AppLanguage,
                                _ now: Date, _ calendar: Calendar) -> RingSnapshot {
         let tokens = UsageFormat.tokens(period.totals.tokens, language)
         let band = IntensityBand.band(for: period.fraction)
@@ -78,6 +89,15 @@ enum RingBuilder {
             title = language.t("ring.today.title")
             glyph = .today
             caption = UsageFormat.day(now, language, calendar: calendar)
+            measure = against(period, language)
+        case .week:
+            title = language.t("ring.week.title")
+            glyph = .week
+            let startText = UsageFormat.day(weekWindow.start, language, calendar: calendar)
+            let todayText = UsageFormat.day(now, language, calendar: calendar)
+            caption = startText == todayText
+                ? todayText
+                : language.t("ring.week.caption", startText, todayText)
             measure = against(period, language)
         case .month:
             title = language.t("ring.month.title")
@@ -146,14 +166,50 @@ enum RingBuilder {
         // move below the rule. Without one, the question is simply how much
         // this vendor accounts for.
         if let payback {
-            var rows: [MetricRow] = [
+            let plan = payback.subscription
+            var rows: [MetricRow] = []
+            if let quota = plan.weeklyQuota, quota.resetsAt > now {
+                let fraction = min(max(quota.usedPercent / 100, 0), 1)
+                rows.append(
+                    MetricRow(
+                        id: "weeklyQuota",
+                        label: language.t("row.weeklyLimit"),
+                        value: language.t(
+                            "row.weeklyLimitValue",
+                            UsageFormat.percent(fraction, language),
+                            UsageFormat.dayAndTime(quota.resetsAt, language, calendar: calendar)
+                        ),
+                        fraction: fraction,
+                        tint: usage.vendor.ringTint,
+                        startsGroup: true
+                    )
+                )
+            } else {
+                let vendorWeek = WeeklyPeriod.current(
+                    renewalDay: plan.renewalDay,
+                    resetAt: plan.weeklyQuota?.resetsAt,
+                    now: now,
+                    calendar: calendar
+                )
+                let weekTotals = digest.totals(for: usage.vendor, in: vendorWeek, calendar: calendar)
+                let weekTokens = UsageFormat.tokens(weekTotals.tokens, language)
+                rows.append(
+                    MetricRow(
+                        id: "weeklyUsage",
+                        label: language.t("row.weeklyUsage"),
+                        value: "\(weekTokens) · \(UsageFormat.money(weekTotals.cost, language))",
+                        startsGroup: true
+                    )
+                )
+            }
+            rows.append(
                 MetricRow(id: "lifetime",
                           label: language.t("row.lifetimeUsage"),
                           value: "\(tokens) · \(UsageFormat.money(usage.totals.cost, language))",
-                          startsGroup: true)
-            ]
-                let verdict = language.t(payback.hasPaidBack ? "payback.paidBack"
-                                                          : "payback.onTheWay")
+                          startsGroup: false)
+            )
+            let verdict = language.t(payback.hasPaidBack ? "payback.paidBack"
+                                                         : "payback.onTheWay")
             return RingSnapshot(
                 kind: .vendor(usage.vendor), title: usage.vendor.title(language),
                 caption: periodLabel(payback, language, calendar),
@@ -179,7 +235,7 @@ enum RingBuilder {
             )
         }
 
-        var rows: [MetricRow] = [
+        let rows: [MetricRow] = [
             MetricRow(id: "cost",
                       label: language.t("row.equivalentCost"),
                       value: UsageFormat.money(usage.totals.cost, language))

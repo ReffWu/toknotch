@@ -9,6 +9,7 @@ import SwiftUI
 /// of the same thing, which is the one thing the stack must never do.
 enum RingGlyph: Equatable {
     case today
+    case week
     case month
     case lifetime
     case vendor(Vendor)
@@ -23,7 +24,8 @@ enum RingGlyph: Equatable {
     var opticalScale: CGFloat {
         switch self {
         case .today:    return 1.14
-        // Already the heaviest mark of the three: a grid inside a frame reads
+        case .week:     return 0.96
+        // Already the heaviest mark of the primaries: a grid inside a frame reads
         // darker than a logo of the same width, so it is trimmed rather than
         // matched.
         case .month:    return 0.96
@@ -41,6 +43,7 @@ struct RingGlyphView: View {
         Group {
             switch glyph {
             case .today:    symbol("sun.max.fill")
+            case .week:     symbol("calendar.badge.clock")
             case .month:    symbol("calendar")
             case .lifetime: symbol("infinity")
             case .vendor(let vendor): mark(for: vendor)

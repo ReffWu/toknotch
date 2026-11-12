@@ -4,6 +4,7 @@
 "about.version" = "버전 %@";
 "baseline.against" = "%1$@의 %2$@";
 "baseline.lastMonth" = "지난달 같은 기간";
+"baseline.lastWeek" = "지난주 같은 기간";
 "baseline.milestone" = "다음 이정표";
 "baseline.none" = "아직 비교할 기록이 없습니다";
 "baseline.recentPeak" = "최근 30일 중 가장 많았던 날";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "%1$@ 1–%2$d일";
 "ring.month.title" = "이번 달";
 "ring.today.title" = "오늘";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "이번 주";
 "row.equivalentCost" = "API 환산 금액";
 "row.lifetimeUsage" = "누적 사용량";
 "row.requests" = "요청 수";
+"row.weeklyLimit" = "주간 한도";
+"row.weeklyLimitValue" = "%1$@ · %2$@ 초기화";
+"row.weeklyUsage" = "이번 주 사용량";
 "settings.autoDetected" = "자동 인식됨";
 "settings.autoUpdate" = "업데이트 자동 설치";
 "settings.checkFailed" = "확인 실패 — %@";

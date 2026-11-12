@@ -4,6 +4,7 @@
 "about.version" = "Версия %@";
 "baseline.against" = "%2$@ от %1$@";
 "baseline.lastMonth" = "тех же дней прошлого месяца";
+"baseline.lastWeek" = "тех же дней прошлой недели";
 "baseline.milestone" = "следующей отметки";
 "baseline.none" = "пока не с чем сравнивать";
 "baseline.recentPeak" = "вашего лучшего дня за 30";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "1–%2$d %1$@";
 "ring.month.title" = "Этот месяц";
 "ring.today.title" = "Сегодня";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "Эта неделя";
 "row.equivalentCost" = "Эквивалент по API";
 "row.lifetimeUsage" = "Всего использовано";
 "row.requests" = "Запросов";
+"row.weeklyLimit" = "Недельный лимит";
+"row.weeklyLimitValue" = "%1$@ · сброс %2$@";
+"row.weeklyUsage" = "Использование за неделю";
 "settings.autoDetected" = "Определено автоматически";
 "settings.autoUpdate" = "Устанавливать обновления автоматически";
 "settings.checkFailed" = "Не удалось проверить — %@";

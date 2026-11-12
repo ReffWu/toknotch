@@ -115,12 +115,20 @@ struct MenuBarPanel: View {
         }
     }
 
-    // MARK: Today · Month · Lifetime
+    // MARK: Today · Week · Month · Lifetime
 
     private var periods: some View {
-        HStack(spacing: 8) {
-            ForEach(RingKind.primaries.reversed(), id: \.self) { kind in
-                PeriodTile(ring: store.rings.first { $0.kind == kind }, kind: kind, language: language)
+        let items = Array(RingKind.primaries.reversed())
+        return Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+            GridRow {
+                ForEach(items.prefix(2), id: \.self) { kind in
+                    PeriodTile(ring: store.rings.first { $0.kind == kind }, kind: kind, language: language)
+                }
+            }
+            GridRow {
+                ForEach(items.suffix(from: min(2, items.count)), id: \.self) { kind in
+                    PeriodTile(ring: store.rings.first { $0.kind == kind }, kind: kind, language: language)
+                }
             }
         }
     }
@@ -265,6 +273,7 @@ private struct PeriodTile: View {
     private var title: String {
         switch kind {
         case .today:    return language.t("ring.today.title")
+        case .week:     return language.t("ring.week.title")
         case .month:    return language.t("ring.month.title")
         default:        return language.t("ring.lifetime.title")
         }
@@ -273,6 +282,7 @@ private struct PeriodTile: View {
     private var glyph: RingGlyph {
         switch kind {
         case .today:    return .today
+        case .week:     return .week
         case .month:    return .month
         default:        return .lifetime
         }

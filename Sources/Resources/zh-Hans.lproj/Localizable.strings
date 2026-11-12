@@ -4,6 +4,7 @@
 "about.version" = "版本 %@";
 "baseline.against" = "%1$@的 %2$@";
 "baseline.lastMonth" = "上月同期";
+"baseline.lastWeek" = "上周同期";
 "baseline.milestone" = "下一个里程碑";
 "baseline.none" = "暂无可比的历史";
 "baseline.recentPeak" = "近 30 天最高日";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "%1$@1–%2$d 日";
 "ring.month.title" = "本月";
 "ring.today.title" = "今日";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "本周";
 "row.equivalentCost" = "等效商业价值";
 "row.lifetimeUsage" = "累计用量";
 "row.requests" = "请求次数";
+"row.weeklyLimit" = "周限额";
+"row.weeklyLimitValue" = "%1$@ · %2$@重置";
+"row.weeklyUsage" = "本周用量";
 "settings.autoDetected" = "已自动识别";
 "settings.autoUpdate" = "自动安装更新";
 "settings.checkFailed" = "检查失败：%@";

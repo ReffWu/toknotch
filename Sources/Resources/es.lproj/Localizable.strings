@@ -4,6 +4,7 @@
 "about.version" = "Versión %@";
 "baseline.against" = "%2$@ de %1$@";
 "baseline.lastMonth" = "los mismos días del mes pasado";
+"baseline.lastWeek" = "los mismos días de la semana pasada";
 "baseline.milestone" = "el siguiente hito";
 "baseline.none" = "aún no hay con qué comparar";
 "baseline.recentPeak" = "tu mejor día de los últimos 30";
@@ -37,9 +38,14 @@
 "ring.month.caption" = "1–%2$d %1$@";
 "ring.month.title" = "Este mes";
 "ring.today.title" = "Hoy";
+"ring.week.caption" = "%1$@–%2$@";
+"ring.week.title" = "Esta semana";
 "row.equivalentCost" = "Coste API equivalente";
 "row.lifetimeUsage" = "Consumo total";
 "row.requests" = "Solicitudes";
+"row.weeklyLimit" = "Límite semanal";
+"row.weeklyLimitValue" = "%1$@ · reinicia el %2$@";
+"row.weeklyUsage" = "Uso esta semana";
 "settings.autoDetected" = "Detectado automáticamente";
 "settings.autoUpdate" = "Instalar actualizaciones automáticamente";
 "settings.checkFailed" = "No se pudo comprobar — %@";

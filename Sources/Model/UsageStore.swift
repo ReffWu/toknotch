@@ -40,14 +40,21 @@ final class UsageStore: ObservableObject {
     /// user has said about it laid over the top.
     var effectivePlans: [Vendor: Subscription] {
         var merged = detectedPlans.compactMapValues(\.subscription)
-        merged.merge(subscriptions) { _, override in override }
+        for (vendor, var override) in subscriptions {
+            if override.weeklyQuota == nil {
+                override.weeklyQuota = detectedPlans[vendor]?.weeklyQuota
+            }
+            merged[vendor] = override
+        }
         return merged.filter { $0.value.isActive }
     }
 
     /// Whether this vendor's figures came from its own configuration rather
     /// than from the user.
     func isDetected(_ vendor: Vendor) -> Bool {
-        subscriptions[vendor] == nil && detectedPlans[vendor]?.subscription != nil
+        guard let detected = detectedPlans[vendor]?.subscription else { return false }
+        guard let override = subscriptions[vendor] else { return true }
+        return override.planID == detected.planID
     }
 
     private var digest: UsageDigest?
