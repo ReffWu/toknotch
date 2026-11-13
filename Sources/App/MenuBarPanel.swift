@@ -12,6 +12,7 @@ struct MenuBarPanel: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
     @ObservedObject var updater: Updater
+    @Environment(\.colorScheme) private var colorScheme
     let onOpenSettings: () -> Void
     let onAbout: () -> Void
 
@@ -143,7 +144,7 @@ struct MenuBarPanel: View {
                 if index > 0 { Divider().padding(.leading, 36).opacity(0.5) }
                 HStack(spacing: 10) {
                     RingGlyphView(glyph: .vendor(entry.vendor), size: 15)
-                        .foregroundStyle(entry.vendor.ringTint)
+                        .foregroundStyle(entry.vendor.surfaceTint(for: colorScheme))
                         .frame(width: 16)
                     Text(entry.vendor.title(language))
                         .font(.system(size: 12))
@@ -155,7 +156,7 @@ struct MenuBarPanel: View {
                         .monospacedDigit()
                     Text(String(format: "%.1f×", entry.payback.multiple))
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        .foregroundStyle(entry.vendor.tint)
+                        .foregroundStyle(entry.vendor.surfaceTint(for: colorScheme))
                         .monospacedDigit()
                         .frame(minWidth: 44, alignment: .trailing)
                 }

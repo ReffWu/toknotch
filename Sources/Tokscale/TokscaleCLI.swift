@@ -247,20 +247,29 @@ struct GraphReport: Decodable, Equatable {
         /// One model, as reached through one route, on that day.
         struct Line: Decodable, Equatable {
             let modelId: String
+            /// tokscale's `providerId`: the route, which for vendors whose
+            /// models carry no maker in their name (Devin's `swe-*`) is the
+            /// only place the maker shows up.
+            let provider: String?
             let tokens: TokenCounts
             let cost: Double
             let messages: Int
 
-            enum CodingKeys: String, CodingKey { case modelId, tokens, cost, messages }
+            enum CodingKeys: String, CodingKey {
+                case modelId, providerId, tokens, cost, messages
+            }
 
-            init(modelId: String, tokens: TokenCounts, cost: Double, messages: Int) {
-                self.modelId = modelId; self.tokens = tokens
+            init(modelId: String, provider: String? = nil, tokens: TokenCounts,
+                 cost: Double, messages: Int) {
+                self.modelId = modelId; self.provider = provider
+                self.tokens = tokens
                 self.cost = cost; self.messages = messages
             }
 
             init(from decoder: Decoder) throws {
                 let c = try decoder.container(keyedBy: CodingKeys.self)
                 modelId  = try c.decodeIfPresent(String.self, forKey: .modelId) ?? "unknown"
+                provider = try c.decodeIfPresent(String.self, forKey: .providerId)
                 tokens   = try c.decodeIfPresent(TokenCounts.self, forKey: .tokens) ?? TokenCounts()
                 cost     = try c.decodeIfPresent(Double.self, forKey: .cost) ?? 0
                 messages = try c.decodeIfPresent(Int.self, forKey: .messages) ?? 0
@@ -303,22 +312,29 @@ struct GraphReport: Decodable, Equatable {
 struct UsageReport: Decodable, Equatable {
     struct Entry: Decodable, Equatable {
         let model: String
+        /// tokscale's `provider`: the route, consulted only when the model id
+        /// itself names no maker (see `Vendor.inferred`).
+        let provider: String?
         let tokens: TokenCounts
         let cost: Double
         let messages: Int
 
         enum CodingKeys: String, CodingKey {
-            case model, cost, messageCount, input, output, cacheRead, cacheWrite, reasoning
+            case model, provider, cost, messageCount
+            case input, output, cacheRead, cacheWrite, reasoning
         }
 
-        init(model: String, tokens: TokenCounts, cost: Double, messages: Int) {
-            self.model = model; self.tokens = tokens
+        init(model: String, provider: String? = nil, tokens: TokenCounts,
+             cost: Double, messages: Int) {
+            self.model = model; self.provider = provider
+            self.tokens = tokens
             self.cost = cost; self.messages = messages
         }
 
         init(from decoder: Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
             model    = try c.decodeIfPresent(String.self, forKey: .model) ?? "unknown"
+            provider = try c.decodeIfPresent(String.self, forKey: .provider)
             cost     = try c.decodeIfPresent(Double.self, forKey: .cost) ?? 0
             messages = try c.decodeIfPresent(Int.self, forKey: .messageCount) ?? 0
             // Flat here, nested under `tokens` in the graph report.

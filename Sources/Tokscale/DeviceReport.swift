@@ -36,6 +36,9 @@ struct DeviceReport: Codable, Equatable {
 
     struct ModelLine: Codable, Equatable {
         var model: String
+        /// Carried so a peer's Devin usage still recognises its vendor;
+        /// optional so reports written before the field existed still read.
+        var provider: String? = nil
         var tokens: TokenCounts
         var cost: Double
         var messages: Int
@@ -43,6 +46,7 @@ struct DeviceReport: Codable, Equatable {
 
     struct LifetimeEntry: Codable, Equatable {
         var model: String
+        var provider: String? = nil
         var tokens: TokenCounts
         var cost: Double
         var messages: Int
@@ -58,13 +62,13 @@ struct DeviceReport: Codable, Equatable {
         self.days = graph.contributions.map { day in
             Day(date: day.date, tokens: day.tokenBreakdown,
                 models: day.clients.map {
-                    ModelLine(model: $0.modelId, tokens: $0.tokens,
+                    ModelLine(model: $0.modelId, provider: $0.provider, tokens: $0.tokens,
                               cost: $0.cost, messages: $0.messages)
                 },
                 cost: day.cost, messages: day.messages)
         }
         self.lifetime = lifetime.entries.map {
-            LifetimeEntry(model: $0.model, tokens: $0.tokens,
+            LifetimeEntry(model: $0.model, provider: $0.provider, tokens: $0.tokens,
                           cost: $0.cost, messages: $0.messages)
         }
         self.lifetimeMessages = lifetime.messages
@@ -82,14 +86,15 @@ struct DeviceReport: Codable, Equatable {
                                            calendar: calendar),
                 tokenBreakdown: day.tokens,
                 clients: day.models.map {
-                    GraphReport.Day.Line(modelId: $0.model, tokens: $0.tokens,
+                    GraphReport.Day.Line(modelId: $0.model, provider: $0.provider,
+                                         tokens: $0.tokens,
                                          cost: $0.cost, messages: $0.messages)
                 },
                 cost: day.cost, messages: day.messages)
         })
         let lifetime = UsageReport(
             entries: lifetime.map {
-                UsageReport.Entry(model: $0.model, tokens: $0.tokens,
+                UsageReport.Entry(model: $0.model, provider: $0.provider, tokens: $0.tokens,
                                   cost: $0.cost, messages: $0.messages)
             },
             messages: lifetimeMessages)
@@ -115,6 +120,7 @@ extension GraphReport {
                     if let prior = lines[line.modelId] {
                         lines[line.modelId] = Day.Line(
                             modelId: line.modelId,
+                            provider: prior.provider ?? line.provider,
                             tokens: prior.tokens + line.tokens,
                             cost: prior.cost + line.cost,
                             messages: prior.messages + line.messages)
@@ -147,6 +153,7 @@ extension UsageReport {
                 if let prior = byModel[entry.model] {
                     byModel[entry.model] = Entry(
                         model: entry.model,
+                        provider: prior.provider ?? entry.provider,
                         tokens: prior.tokens + entry.tokens,
                         cost: prior.cost + entry.cost,
                         messages: prior.messages + entry.messages)

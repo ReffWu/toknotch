@@ -253,6 +253,7 @@ private struct PaybackSummary: View {
 /// the plan is custom, and where a plan was read from only on hover.
 private struct VendorRow: View {
     let vendor: Vendor
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
     let language: AppLanguage
@@ -328,7 +329,7 @@ private struct VendorRow: View {
         VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 9) {
                 RingGlyphView(glyph: .vendor(vendor), size: 17)
-                    .foregroundStyle(vendor.ringTint)
+                    .foregroundStyle(vendor.surfaceTint(for: colorScheme))
                     .frame(width: SettingsMetrics.iconSize)
 
                 Text(vendor.title(language))
@@ -466,7 +467,7 @@ private struct VendorRow: View {
                 .monospacedDigit()
                 // In the vendor's colour, as on its notch card; the
                 // verdict is in the tooltip and in the number itself.
-                .foregroundStyle(vendor.tint)
+                .foregroundStyle(vendor.surfaceTint(for: colorScheme))
                 .help(language.t(payback.hasPaidBack ? "settings.paidBack" : "settings.onTheWay"))
         }
     }

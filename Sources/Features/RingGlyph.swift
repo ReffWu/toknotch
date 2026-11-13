@@ -99,6 +99,7 @@ extension Vendor {
         case .nvidia:    return "NV"
         case .meta:      return "Llama"
         case .mistral:   return "MsT"
+        case .devin:     return "D"
         case .other:     return "···"
         }
     }

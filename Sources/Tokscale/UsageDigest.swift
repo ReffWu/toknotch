@@ -180,7 +180,7 @@ struct UsageDigest: Equatable {
         // --- Lifetime --------------------------------------------------------
         let lifetimeModels = merge(report.entries.map {
             ModelUsage(model: $0.model,
-                       vendor: .inferred(fromModelID: $0.model),
+                       vendor: .inferred(fromModelID: $0.model, provider: $0.provider),
                        totals: Totals(counts: $0.tokens, cost: $0.cost, messages: $0.messages))
         })
         let lifetimeTotals = Totals(
@@ -288,7 +288,7 @@ struct UsageDigest: Equatable {
     private static func modelsOf(days: [GraphReport.Day]) -> [ModelUsage] {
         merge(days.flatMap(\.clients).map {
             ModelUsage(model: $0.modelId,
-                       vendor: .inferred(fromModelID: $0.modelId),
+                       vendor: .inferred(fromModelID: $0.modelId, provider: $0.provider),
                        totals: Totals(counts: $0.tokens, cost: $0.cost, messages: $0.messages))
         })
     }

@@ -187,12 +187,21 @@ final class UsageDigestTests: XCTestCase {
         ], messages: 0)
         XCTAssertEqual(digest([], lifetime: report).vendors.map(\.vendor), [.anthropic, .openai])
     }
+
+    /// The provider tokscale reports has to survive the trip into the digest,
+    /// or a makerless model like Devin's `swe-*` lands on `.other` again.
+    func testAProviderCanNameAVendorWhenTheModelCannot() {
+        let report = UsageReport(entries: [
+            .init(model: "swe-2-flash-medium", provider: "devin",
+                  tokens: TokenCounts(output: 10), cost: 0, messages: 0)
+        ], messages: 0)
+        XCTAssertEqual(digest([], lifetime: report).vendors.map(\.vendor), [.devin])
+    }
 }
 
-/// Who built a model is worked out from its id, never from tokscale's
-/// `provider` field — that field records the route, so on a real machine it
-/// files one vendor under several names and credits models to companies that
-/// had nothing to do with them.
+/// Who built a model is worked out from its id first; tokscale's `provider`
+/// field — which records the route, so on a real machine it files one vendor
+/// under several names — is only a fallback for model ids that name no maker.
 final class VendorTests: XCTestCase {
     func testModelsMapToTheirMakers() {
         let cases: [(String, Vendor)] = [
@@ -217,6 +226,19 @@ final class VendorTests: XCTestCase {
     func testTheRouteDoesNotDecideTheVendor() {
         XCTAssertEqual(Vendor.inferred(fromModelID: "glm-5.2"), .zhipu)
         XCTAssertEqual(Vendor.inferred(fromModelID: "deepseek-v4-flash"), .deepseek)
+    }
+
+    /// Devin's own models name no maker — `swe-*` and `compactor` would land
+    /// on `.other` — so tokscale's provider field is what identifies them.
+    /// A model that does name its maker still wins over the route.
+    func testTheProviderIdentifiesAMakerlessModel() {
+        XCTAssertEqual(Vendor.inferred(fromModelID: "swe-2-flash-medium",
+                                       provider: "devin"), .devin)
+        XCTAssertEqual(Vendor.inferred(fromModelID: "compactor",
+                                       provider: "devin"), .devin)
+        XCTAssertEqual(Vendor.inferred(fromModelID: "swe-2-flash-medium"), .other)
+        XCTAssertEqual(Vendor.inferred(fromModelID: "claude-opus-5",
+                                       provider: "devin"), .anthropic)
     }
 
     func testEveryVendorHasATitleInBothLanguages() {
