@@ -79,6 +79,17 @@
 "settings.showInMenuBar.off" = "Open TokNotch opnieuw om hier terug te komen.";
 "settings.showRing" = "Een ring voor deze aanbieder op de notch tonen";
 "settings.starOnGitHub" = "Geef een ster op GitHub";
+"settings.sync.clear" = "Wissen";
+"settings.sync.custom" = "Map kiezen…";
+"settings.sync.devices" = "Apparaten";
+"settings.sync.folder" = "Gedeelde map";
+"settings.sync.footnote" = "Elk apparaat publiceert zijn gebruikstotalen in deze map en elk apparaat telt de som. Alleen totalen worden gedeeld — nooit prompts of bestandsinhoud.";
+"settings.sync.method" = "Synchronisatiemethode kiezen…";
+"settings.sync.notSet" = "Niet ingesteld — alleen het gebruik van deze Mac wordt geteld";
+"settings.sync.preset.icloud" = "iCloud Drive";
+"settings.sync.preset.syncthing" = "Syncthing (~/Sync/toknotch)";
+"settings.sync.title" = "Meerdere apparaten";
+"settings.sync.waiting" = "Wachten tot andere apparaten hun totalen delen…";
 "settings.systemLanguage" = "Zoals het systeem";
 "settings.theAppItself" = "De app zelf";
 "settings.theNotch" = "De notch";

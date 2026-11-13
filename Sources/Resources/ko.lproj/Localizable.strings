@@ -79,6 +79,17 @@
 "settings.showInMenuBar.off" = "TokNotch를 다시 열면 여기로 돌아올 수 있습니다.";
 "settings.showRing" = "노치에 이 제공업체의 링 표시";
 "settings.starOnGitHub" = "GitHub에서 별표 주기";
+"settings.sync.clear" = "지우기";
+"settings.sync.custom" = "폴더 선택…";
+"settings.sync.devices" = "기기";
+"settings.sync.folder" = "공유 폴더";
+"settings.sync.footnote" = "각 기기가 사용량 합계를 이 폴더에 게시하면 모든 기기에서 합산해 표시합니다. 합계만 공유되며 프롬프트나 파일 내용은 포함되지 않습니다.";
+"settings.sync.method" = "동기화 방법 선택…";
+"settings.sync.notSet" = "설정되지 않음 — 이 Mac의 사용량만 집계";
+"settings.sync.preset.icloud" = "iCloud Drive";
+"settings.sync.preset.syncthing" = "Syncthing（~/Sync/toknotch）";
+"settings.sync.title" = "여러 기기";
+"settings.sync.waiting" = "다른 기기의 공유를 기다리는 중…";
 "settings.systemLanguage" = "시스템 설정 따르기";
 "settings.theAppItself" = "앱 자체";
 "settings.theNotch" = "노치";

@@ -36,7 +36,7 @@ final class SettingsRenderTests: XCTestCase {
 
         let pages: [(String, AnyView)] = [
             ("payback", AnyView(PaybackPage(preferences: preferences, store: store))),
-            ("settings", AnyView(PreferencesPage(preferences: preferences, updater: Updater())))
+            ("settings", AnyView(PreferencesPage(preferences: preferences, store: store, updater: Updater())))
         ]
 
         for (name, page) in pages {

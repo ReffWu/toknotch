@@ -79,6 +79,17 @@
 "settings.showInMenuBar.off" = "افتح TokNotch مرة أخرى للعودة إلى هنا.";
 "settings.showRing" = "إظهار حلقة لهذا المزوّد على النتوء";
 "settings.starOnGitHub" = "أضف نجمة على GitHub";
+"settings.sync.clear" = "مسح";
+"settings.sync.custom" = "اختيار مجلد…";
+"settings.sync.devices" = "الأجهزة";
+"settings.sync.folder" = "المجلد المشترك";
+"settings.sync.footnote" = "ينشر كل جهاز إجماليات استخدامه في هذا المجلد، ويجمع كل جهاز المجموع. تتم مشاركة الإجماليات فقط — وليس المطالبات أو محتويات الملفات أبداً.";
+"settings.sync.method" = "اختيار طريقة المزامنة…";
+"settings.sync.notSet" = "غير معيّن — يُحتسب استخدام هذا Mac فقط";
+"settings.sync.preset.icloud" = "iCloud Drive";
+"settings.sync.preset.syncthing" = "Syncthing (~/Sync/toknotch)";
+"settings.sync.title" = "أجهزة متعددة";
+"settings.sync.waiting" = "في انتظار مشاركة الأجهزة الأخرى لإجمالياتها…";
 "settings.systemLanguage" = "مثل النظام";
 "settings.theAppItself" = "التطبيق نفسه";
 "settings.theNotch" = "النتوء";

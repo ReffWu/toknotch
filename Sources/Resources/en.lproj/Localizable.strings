@@ -79,6 +79,17 @@
 "settings.showInMenuBar.off" = "Open TokNotch again to come back here.";
 "settings.showRing" = "Show a ring for this vendor on the notch";
 "settings.starOnGitHub" = "Star on GitHub";
+"settings.sync.clear" = "Clear";
+"settings.sync.custom" = "Choose folder…";
+"settings.sync.devices" = "Devices";
+"settings.sync.folder" = "Shared folder";
+"settings.sync.footnote" = "Each device publishes its usage totals to this folder, and every device counts the sum. Only totals are shared — never prompts or file contents.";
+"settings.sync.method" = "Choose sync method…";
+"settings.sync.notSet" = "Not set — only this Mac's usage is counted";
+"settings.sync.preset.icloud" = "iCloud Drive";
+"settings.sync.preset.syncthing" = "Syncthing (~/Sync/toknotch)";
+"settings.sync.title" = "Multiple devices";
+"settings.sync.waiting" = "Waiting for other devices to share their totals…";
 "settings.systemLanguage" = "Match the system";
 "settings.theAppItself" = "The app itself";
 "settings.theNotch" = "The notch";

@@ -79,6 +79,17 @@
 "settings.showInMenuBar.off" = "Buraya dönmek için TokNotch’u yeniden açın.";
 "settings.showRing" = "Bu sağlayıcı için çentikte bir halka göster";
 "settings.starOnGitHub" = "GitHub’da yıldız ver";
+"settings.sync.clear" = "Temizle";
+"settings.sync.custom" = "Klasör seç…";
+"settings.sync.devices" = "Cihazlar";
+"settings.sync.folder" = "Paylaşılan klasör";
+"settings.sync.footnote" = "Her cihaz kullanım toplamlarını bu klasöre yayınlar ve her cihaz toplamı sayar. Yalnızca toplamlar paylaşılır — asla istemler veya dosya içerikleri paylaşılmaz.";
+"settings.sync.method" = "Senkronizasyon yöntemini seç…";
+"settings.sync.notSet" = "Ayarlanmadı — yalnızca bu Mac'in kullanımı sayılıyor";
+"settings.sync.preset.icloud" = "iCloud Drive";
+"settings.sync.preset.syncthing" = "Syncthing (~/Sync/toknotch)";
+"settings.sync.title" = "Birden fazla cihaz";
+"settings.sync.waiting" = "Diğer cihazların toplamlarını paylaşması bekleniyor…";
 "settings.systemLanguage" = "Sistemle aynı";
 "settings.theAppItself" = "Uygulamanın kendisi";
 "settings.theNotch" = "Çentik";

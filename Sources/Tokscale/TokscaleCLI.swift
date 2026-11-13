@@ -197,7 +197,7 @@ enum TokscaleCLI {
 /// `reasoning` is part of the total and is easy to miss — leaving it out is a
 /// silent undercount (11M tokens across this machine's history) that makes the
 /// app disagree with tokscale's own headline for no visible reason.
-struct TokenCounts: Decodable, Equatable {
+struct TokenCounts: Codable, Equatable {
     var input: Int64 = 0
     var output: Int64 = 0
     var cacheRead: Int64 = 0

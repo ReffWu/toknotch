@@ -79,6 +79,17 @@
 "settings.showInMenuBar.off" = "Откройте TokNotch снова, чтобы вернуться сюда.";
 "settings.showRing" = "Показывать кольцо этого провайдера на вырезе";
 "settings.starOnGitHub" = "Поставить звезду на GitHub";
+"settings.sync.clear" = "Очистить";
+"settings.sync.custom" = "Выбрать папку…";
+"settings.sync.devices" = "Устройства";
+"settings.sync.folder" = "Общая папка";
+"settings.sync.footnote" = "Каждое устройство публикует свои суммы использования в эту папку, и каждое устройство считает сумму. Общими становятся только суммы — никогда не промпты и не содержимое файлов.";
+"settings.sync.method" = "Выбрать способ синхронизации…";
+"settings.sync.notSet" = "Не задано — учитывается только использование этого Mac";
+"settings.sync.preset.icloud" = "iCloud Drive";
+"settings.sync.preset.syncthing" = "Syncthing (~/Sync/toknotch)";
+"settings.sync.title" = "Несколько устройств";
+"settings.sync.waiting" = "Ожидание, пока другие устройства поделятся суммами…";
 "settings.systemLanguage" = "Как в системе";
 "settings.theAppItself" = "Само приложение";
 "settings.theNotch" = "Вырез";
