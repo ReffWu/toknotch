@@ -100,7 +100,7 @@
 "settings.vendors" = "Fournisseurs";
 "status.exited" = "tokscale s'est arrêté avec le code %d. Lancez-le dans un terminal pour savoir pourquoi.";
 "status.noNode" = "tokscale n'a pas pu démarrer — node est introuvable. Si vous gérez node avec nvm ou fnm, vérifiez qu'il est installé à un emplacement standard.";
-"status.notInstalled" = "tokscale n'est pas installé. Installez-le avec : brew install tokscale";
+"status.notInstalled" = "tokscale n'est pas installé. Réinstallez TokNotch pour le restaurer.";
 "status.readFailed" = "Lecture impossible — %@";
 "status.reading" = "Lecture des données tokscale…";
 "status.timedOut" = "tokscale a mis trop de temps à répondre. Nouvel essai sous peu.";

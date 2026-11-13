@@ -100,7 +100,7 @@
 "settings.vendors" = "Anbieter";
 "status.exited" = "tokscale wurde mit Code %d beendet. Führe es im Terminal aus, um zu sehen, warum.";
 "status.noNode" = "tokscale konnte nicht starten — node wurde nicht gefunden. Wenn du node mit nvm oder fnm verwaltest, stelle sicher, dass es an einem üblichen Ort liegt.";
-"status.notInstalled" = "tokscale ist nicht installiert. Installiere es mit: brew install tokscale";
+"status.notInstalled" = "tokscale ist nicht installiert. Installiere TokNotch neu, um es wiederherzustellen.";
 "status.readFailed" = "Verbrauch konnte nicht gelesen werden — %@";
 "status.reading" = "tokscale-Daten werden gelesen …";
 "status.timedOut" = "tokscale hat zu lange gebraucht. Gleich wird es erneut versucht.";

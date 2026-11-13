@@ -100,7 +100,7 @@
 "settings.vendors" = "Provedores";
 "status.exited" = "O tokscale terminou com o código %d. Execute-o no Terminal para ver o motivo.";
 "status.noNode" = "O tokscale não conseguiu iniciar — o node não foi encontrado. Se você gerencia o node com nvm ou fnm, verifique se ele está em um local padrão.";
-"status.notInstalled" = "O tokscale não está instalado. Instale com: brew install tokscale";
+"status.notInstalled" = "O tokscale não está instalado. Reinstale o TokNotch para restaurá-lo.";
 "status.readFailed" = "Não foi possível ler o uso — %@";
 "status.reading" = "Lendo os dados do tokscale…";
 "status.timedOut" = "O tokscale demorou demais para responder. Tentando de novo em instantes.";

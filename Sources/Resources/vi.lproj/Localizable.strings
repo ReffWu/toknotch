@@ -100,7 +100,7 @@
 "settings.vendors" = "Nhà cung cấp";
 "status.exited" = "tokscale đã thoát với mã %d. Hãy chạy nó trong Terminal để xem lý do.";
 "status.noNode" = "tokscale không khởi động được — không tìm thấy node. Nếu bạn quản lý node bằng nvm hoặc fnm, hãy đảm bảo nó nằm ở vị trí chuẩn.";
-"status.notInstalled" = "Chưa cài tokscale. Cài bằng lệnh: brew install tokscale";
+"status.notInstalled" = "Chưa cài tokscale. Cài lại TokNotch để khôi phục.";
 "status.readFailed" = "Không đọc được mức sử dụng — %@";
 "status.reading" = "Đang đọc dữ liệu tokscale…";
 "status.timedOut" = "tokscale phản hồi quá lâu. Sẽ thử lại ngay sau đây.";

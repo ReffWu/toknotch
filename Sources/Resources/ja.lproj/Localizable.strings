@@ -100,7 +100,7 @@
 "settings.vendors" = "サービス";
 "status.exited" = "tokscale が終了しました（コード %d）。ターミナルで tokscale を実行して原因を確認してください。";
 "status.noNode" = "tokscale を起動できません — node が見つかりませんでした。nvm や fnm を使っている場合は、標準的な場所にインストールされているか確認してください。";
-"status.notInstalled" = "tokscale が見つかりません。Homebrew でインストールしてください：brew install tokscale";
+"status.notInstalled" = "tokscale が見つかりません。TokNotch を再インストールして復元してください。";
 "status.readFailed" = "読み取りに失敗しました — %@";
 "status.reading" = "tokscale のデータを読み込んでいます…";
 "status.timedOut" = "tokscale の応答がタイムアウトしました。まもなく再試行します。";

@@ -100,7 +100,7 @@
 "settings.vendors" = "المزوّدون";
 "status.exited" = "توقف tokscale بالرمز %d. شغّله في Terminal لمعرفة السبب.";
 "status.noNode" = "تعذر بدء tokscale — لم يُعثر على node. إذا كنت تدير node عبر nvm أو fnm فتأكد من وجوده في موقع قياسي.";
-"status.notInstalled" = "tokscale غير مثبت. ثبّته بالأمر: brew install tokscale";
+"status.notInstalled" = "tokscale غير مثبت. أعد تثبيت TokNotch لاستعادته.";
 "status.readFailed" = "تعذرت قراءة الاستخدام — %@";
 "status.reading" = "جارٍ قراءة بيانات tokscale…";
 "status.timedOut" = "استغرق tokscale وقتًا طويلًا للرد. ستُعاد المحاولة قريبًا.";

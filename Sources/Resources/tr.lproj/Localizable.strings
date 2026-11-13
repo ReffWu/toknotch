@@ -100,7 +100,7 @@
 "settings.vendors" = "Sağlayıcılar";
 "status.exited" = "tokscale %d koduyla çıktı. Nedenini görmek için Terminal’de çalıştırın.";
 "status.noNode" = "tokscale başlatılamadı — node bulunamadı. node’u nvm veya fnm ile yönetiyorsanız standart bir konumda olduğundan emin olun.";
-"status.notInstalled" = "tokscale kurulu değil. Şununla kurun: brew install tokscale";
+"status.notInstalled" = "tokscale kurulu değil. Geri yüklemek için TokNotch'u yeniden yükleyin.";
 "status.readFailed" = "Kullanım okunamadı — %@";
 "status.reading" = "tokscale verileri okunuyor…";
 "status.timedOut" = "tokscale yanıt vermekte çok gecikti. Birazdan yeniden denenecek.";

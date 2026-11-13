@@ -100,7 +100,7 @@
 "settings.vendors" = "服务商";
 "status.exited" = "tokscale 退出（代码 %d）。在终端运行 tokscale 看看它说了什么。";
 "status.noNode" = "tokscale 无法启动：找不到 node。若用 nvm/fnm 管理 node，请确保它装在常规位置。";
-"status.notInstalled" = "未找到 tokscale。用 Homebrew 安装即可读取用量：brew install tokscale";
+"status.notInstalled" = "未找到 tokscale。请重新安装 TokNotch 以恢复用量读取。";
 "status.readFailed" = "读取失败：%@";
 "status.reading" = "正在读取 tokscale 数据…";
 "status.timedOut" = "tokscale 响应超时，稍后会自动重试。";

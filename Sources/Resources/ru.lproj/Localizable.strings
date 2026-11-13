@@ -100,7 +100,7 @@
 "settings.vendors" = "Провайдеры";
 "status.exited" = "tokscale завершился с кодом %d. Запустите его в терминале, чтобы понять почему.";
 "status.noNode" = "tokscale не запустился — не найден node. Если вы управляете node через nvm или fnm, проверьте, что он установлен в обычном месте.";
-"status.notInstalled" = "tokscale не установлен. Установите его: brew install tokscale";
+"status.notInstalled" = "tokscale не установлен. Переустановите TokNotch, чтобы восстановить его.";
 "status.readFailed" = "Не удалось прочитать расход — %@";
 "status.reading" = "Читаем данные tokscale…";
 "status.timedOut" = "tokscale слишком долго не отвечал. Скоро будет новая попытка.";
