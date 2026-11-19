@@ -1,5 +1,13 @@
 import Foundation
 
+/// A 7-day rate-limit window read from a tool's local session logs.
+struct WeeklyQuota: Codable, Equatable {
+    /// Percentage of the 7-day quota used (0...100).
+    let usedPercent: Double
+    /// Exact moment the 7-day quota window resets.
+    let resetsAt: Date
+}
+
 /// A plan read from a tool's own configuration rather than typed in.
 struct DetectedPlan: Equatable {
     let planID: String
@@ -12,11 +20,13 @@ struct DetectedPlan: Equatable {
     let renewalDay: Int?
     /// Shown in settings, so it is never a mystery where a number came from.
     let source: String
+    /// Optional 7-day quota and reset timestamp found in local session logs.
+    var weeklyQuota: WeeklyQuota? = nil
 
     var subscription: Subscription? {
         guard let monthlyUSD, monthlyUSD > 0 else { return nil }
         return Subscription(monthlyUSD: monthlyUSD, renewalDay: renewalDay ?? 1,
-                            planID: planID)
+                            planID: planID, weeklyQuota: weeklyQuota)
     }
 }
 
@@ -47,7 +57,8 @@ enum PlanDetector {
     /// `~/.claude.json` → `oauthAccount.organizationType`, plus the date the
     /// subscription started.
     static func detectClaude(fileManager: FileManager = .default,
-                             path: String? = nil) -> DetectedPlan? {
+                             path: String? = nil,
+                             calendar: Calendar = .current) -> DetectedPlan? {
         let file = path ?? NSString(string: "~/.claude.json").expandingTildeInPath
         guard fileManager.isReadableFile(atPath: file),
               let data = fileManager.contents(atPath: file),
@@ -58,7 +69,9 @@ enum PlanDetector {
         // An account billed some other way — API credit, an enterprise
         // agreement — has no monthly figure to compare against.
         let billing = account["billingType"] as? String
-        guard billing == nil || billing == "stripe_subscription" else { return nil }
+        guard billing == nil
+                || billing == "stripe_subscription"
+                || billing == "apple_subscription" else { return nil }
 
         guard let type = account["organizationType"] as? String else { return nil }
         let known = PlanCatalog.plan(id: type, for: .anthropic)
@@ -67,14 +80,16 @@ enum PlanDetector {
             planID: type,
             name: known?.name ?? readable(type),
             monthlyUSD: known?.monthlyUSD,
-            renewalDay: (account["subscriptionCreatedAt"] as? String).flatMap { Self.day(ofISO: $0) },
+            renewalDay: (account["subscriptionCreatedAt"] as? String)
+                .flatMap { Self.day(ofISO: $0, calendar: calendar) },
             source: "~/.claude.json"
         )
     }
 
     // MARK: - OpenAI
 
-    /// `~/.codex/auth.json` → the ChatGPT plan carried in the identity token.
+    /// `~/.codex/auth.json` → the ChatGPT plan carried in the identity token,
+    /// plus the latest 7-day rate-limit window from `~/.codex/sessions`.
     ///
     /// The plan is not in any of Codex's configuration files — its global state
     /// carries no plan, subscription or billing field at all — so the identity
@@ -83,7 +98,9 @@ enum PlanDetector {
     /// never sent anywhere, because the only thing being asked of it is a
     /// string the user already knows about themselves.
     static func detectCodex(fileManager: FileManager = .default,
-                            path: String? = nil) -> DetectedPlan? {
+                            path: String? = nil,
+                            sessionsPath: String? = nil,
+                            calendar: Calendar = .current) -> DetectedPlan? {
         let file = path ?? NSString(string: "~/.codex/auth.json").expandingTildeInPath
         guard fileManager.isReadableFile(atPath: file),
               let data = fileManager.contents(atPath: file),
@@ -100,14 +117,108 @@ enum PlanDetector {
 
         let id = "chatgpt_\(type.lowercased())"
         let known = PlanCatalog.plan(id: id, for: .openai)
+        let sessionsRoot = sessionsPath
+            ?? (path == nil ? NSString(string: "~/.codex/sessions").expandingTildeInPath : nil)
+        let quota = sessionsRoot.flatMap { detectCodexWeeklyQuota(in: $0, fileManager: fileManager) }
         return DetectedPlan(
             planID: id,
             name: known?.name ?? "ChatGPT \(type.capitalized)",
             monthlyUSD: known?.monthlyUSD,
             renewalDay: (auth["chatgpt_subscription_active_start"] as? String)
-                .flatMap { Self.day(ofISO: $0) },
-            source: "~/.codex/auth.json"
+                .flatMap { Self.day(ofISO: $0, calendar: calendar) },
+            source: "~/.codex/auth.json",
+            weeklyQuota: quota
         )
+    }
+
+    /// Reads the newest 7-day (`window_minutes == 10080`) rate-limit entry from
+    /// Codex's local session logs (`~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl`).
+    static func detectCodexWeeklyQuota(in path: String,
+                                       fileManager: FileManager = .default) -> WeeklyQuota? {
+        for file in recentSessionFiles(at: path, fileManager: fileManager).prefix(3) {
+            if let quota = parseCodexWeeklyQuota(fromFile: file, fileManager: fileManager) {
+                return quota
+            }
+        }
+        return nil
+    }
+
+    private static func recentSessionFiles(at path: String,
+                                           fileManager: FileManager) -> [String] {
+        var isDir: ObjCBool = false
+        guard fileManager.fileExists(atPath: path, isDirectory: &isDir) else { return [] }
+        if !isDir.boolValue {
+            return path.hasSuffix(".jsonl") ? [path] : []
+        }
+        func children(of dir: String) -> [String] {
+            ((try? fileManager.contentsOfDirectory(atPath: dir)) ?? [])
+                .filter { !$0.hasPrefix(".") }
+                .sorted(by: >)
+                .map { (dir as NSString).appendingPathComponent($0) }
+        }
+        var result: [String] = []
+        // Walk lexicographically newest YYYY/MM/DD first, stopping once we have
+        // a handful of recent rollout files.
+        func walk(_ current: String, depth: Int) {
+            guard result.count < 5, depth <= 4 else { return }
+            for item in children(of: current) {
+                guard result.count < 5 else { return }
+                var childDir: ObjCBool = false
+                guard fileManager.fileExists(atPath: item, isDirectory: &childDir) else { continue }
+                if childDir.boolValue {
+                    walk(item, depth: depth + 1)
+                } else if item.hasSuffix(".jsonl") {
+                    result.append(item)
+                }
+            }
+        }
+        walk(path, depth: 0)
+        return result
+    }
+
+    /// Reads only the trailing chunk of a session `.jsonl` file, since a rollout
+    /// log can grow to tens of megabytes while the latest `rate_limits` event sits
+    /// near the end.
+    private static let tailReadBytes: UInt64 = 256 * 1024
+
+    private static func parseCodexWeeklyQuota(fromFile file: String,
+                                              fileManager: FileManager) -> WeeklyQuota? {
+        guard fileManager.isReadableFile(atPath: file),
+              let handle = FileHandle(forReadingAtPath: file) else { return nil }
+        defer { try? handle.close() }
+
+        let size = (try? handle.seekToEnd()) ?? 0
+        let offset = size > tailReadBytes ? size - tailReadBytes : 0
+        try? handle.seek(toOffset: offset)
+        guard let data = try? handle.readToEnd(), !data.isEmpty else { return nil }
+        let text = String(decoding: data, as: UTF8.self)
+        var lines = text.split(whereSeparator: \.isNewline)
+        // Starting mid-file may slice the first line in half; drop that fragment.
+        if offset > 0, !lines.isEmpty {
+            lines.removeFirst()
+        }
+
+        for line in lines.reversed() {
+            guard line.contains("rate_limits"),
+                  let lineData = String(line).data(using: .utf8),
+                  let obj = try? JSONSerialization.jsonObject(with: lineData) as? [String: Any],
+                  let payload = obj["payload"] as? [String: Any],
+                  let limits = payload["rate_limits"] as? [String: Any]
+            else { continue }
+
+            for key in ["secondary", "primary"] {
+                guard let bucket = limits[key] as? [String: Any],
+                      let window = (bucket["window_minutes"] as? NSNumber)?.intValue,
+                      window == 10_080,
+                      let used = (bucket["used_percent"] as? NSNumber)?.doubleValue,
+                      let resets = (bucket["resets_at"] as? NSNumber)?.doubleValue,
+                      resets > 0
+                else { continue }
+                return WeeklyQuota(usedPercent: used,
+                                   resetsAt: Date(timeIntervalSince1970: resets))
+            }
+        }
+        return nil
     }
 
     /// A JWT's claim set, decoded but deliberately not verified.

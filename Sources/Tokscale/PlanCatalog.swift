@@ -45,7 +45,7 @@ enum PlanCatalog {
                 Plan(id: "google_ai_ultra", name: "Google AI Ultra", monthlyUSD: 249.99)
             ]
         case .alibaba, .deepseek, .zhipu, .moonshot, .minimax, .xai,
-             .xiaomi, .nvidia, .meta, .mistral, .other:
+             .xiaomi, .nvidia, .meta, .mistral, .devin, .other:
             // Metered by the token rather than subscribed to, at least in the
             // way these are reached here.
             return []

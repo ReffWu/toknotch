@@ -172,6 +172,21 @@ final class Preferences: ObservableObject {
         didSet { defaults.set(sharesUsageStatistics, forKey: Keys.sharesUsageStatistics) }
     }
 
+    /// The folder this Mac's usage report is shared through, so the same
+    /// account on another device can be counted alongside this one.
+    ///
+    /// Any directory both machines can see works — a Syncthing folder, an
+    /// iCloud Drive folder, a NAS mount. Nil, the default, keeps every
+    /// figure exactly as local as the scan that produced it.
+    @Published var syncDirectory: String? {
+        didSet { defaults.set(syncDirectory, forKey: Keys.syncDirectory) }
+    }
+
+    /// This install's stable identity in the shared folder. Random once,
+    /// then kept: peers tell devices apart by it, and it is deliberately
+    /// not the hostname, which changes.
+    let deviceId: String
+
     /// The version whose changes have already been shown.
     ///
     /// Written when the What's New dialogue is dismissed rather than when it
@@ -196,6 +211,8 @@ final class Preferences: ObservableObject {
         static let showsInDock = "showsInDock"
         static let showsMenuBarIcon = "showsMenuBarIcon"
         static let sharesUsageStatistics = "sharesUsageStatistics"
+        static let syncDirectory = "syncDirectory"
+        static let deviceId = "deviceId"
     }
 
     /// True the very first time this copy runs, and never again.
@@ -269,6 +286,14 @@ final class Preferences: ObservableObject {
         self.showsInDock = defaults.bool(forKey: Keys.showsInDock)
         self.showsMenuBarIcon = defaults.object(forKey: Keys.showsMenuBarIcon) as? Bool ?? true
         self.sharesUsageStatistics = defaults.object(forKey: Keys.sharesUsageStatistics) as? Bool ?? true
+        if let stored = defaults.string(forKey: Keys.deviceId) {
+            self.deviceId = stored
+        } else {
+            let id = UUID().uuidString
+            defaults.set(id, forKey: Keys.deviceId)
+            self.deviceId = id
+        }
+        self.syncDirectory = defaults.string(forKey: Keys.syncDirectory)
         self.lastSettingsPage = defaults.string(forKey: Keys.lastSettingsPage) ?? "payback"
         // Follows the Mac until somebody says otherwise, which is the right
         // default for a language: an app that opens in the wrong one is worse

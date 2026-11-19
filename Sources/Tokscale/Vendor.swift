@@ -25,11 +25,18 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
     case nvidia
     case meta
     case mistral
+    case devin
     case other
 
     /// Longest-token-first so `deepseek-v4` cannot be caught by a shorter rule,
     /// and so `gpt-oss` lands on OpenAI rather than on a stray `oss`.
-    static func inferred(fromModelID id: String) -> Vendor {
+    ///
+    /// `provider` is tokscale's route field, consulted only as a last resort:
+    /// a model id that names its maker always wins, because the same model
+    /// reached two ways is still the same maker's work. It exists for vendors
+    /// whose own models carry no maker in the name — Devin's `swe-*` and
+    /// `compactor` would otherwise all land on `.other`.
+    static func inferred(fromModelID id: String, provider: String? = nil) -> Vendor {
         let name = id.lowercased()
         func has(_ needles: String...) -> Bool { needles.contains { name.contains($0) } }
 
@@ -46,6 +53,7 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         if has("nemotron", "nvidia")              { return .nvidia }
         if has("llama", "codellama")              { return .meta }
         if has("mistral", "mixtral", "magistral", "codestral") { return .mistral }
+        if provider?.lowercased() == "devin"           { return .devin }
         return .other
     }
 
@@ -70,6 +78,7 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         case .zhipu:     return language.t("vendor.name.zhipu")
         case .moonshot:  return language.t("vendor.name.moonshot")
         case .xiaomi:    return language.t("vendor.name.xiaomi")
+        case .devin:     return "Devin"
         case .other:     return language.t("vendor.name.other")
         }
     }
@@ -96,14 +105,27 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         case .nvidia:    return Color(hex: 0x76B900)
         case .meta:      return Color(hex: 0x0866FF)
         case .mistral:   return Color(hex: 0xFA520F)
+        // Devin's brand kit ships only a black mark — there is no signature
+        // colour to reach for, so it takes the same near-black Moonshot does.
+        case .devin:     return Color(hex: 0x1A1A1A)
         case .other:     return Palette.textSecondary
         }
     }
 
-    /// Moonshot's mark is near-black, which is invisible on the notch. Only
-    /// this one needs lifting, so it is handled rather than the palette being
-    /// bent for everybody.
-    var ringTint: Color { self == .moonshot ? Color(hex: 0xE8E8E8) : tint }
+    /// Moonshot's and Devin's marks are near-black, which is invisible on the
+    /// notch. Only these need lifting, so it is handled rather than the palette
+    /// being bent for everybody.
+    var ringTint: Color {
+        self == .moonshot || self == .devin ? Color(hex: 0xE8E8E8) : tint
+    }
+
+    /// The mark's colour on a surface that follows the system appearance —
+    /// settings and the menu panel. `ringTint` is only right on the notch,
+    /// which is always black: in light mode the lifted near-white disappears
+    /// into a light window, so those vendors fall back to their own dark mark.
+    func surfaceTint(for scheme: ColorScheme) -> Color {
+        scheme == .dark ? ringTint : tint
+    }
 
     /// The company's own mark, where there is one to draw. Vendors without a
     /// published single-path logo fall back to initials — a wrong logo is worse
@@ -120,6 +142,7 @@ enum Vendor: String, CaseIterable, Codable, Equatable {
         case .xiaomi:    return VendorOutline.xiaomi
         case .meta:      return VendorOutline.meta
         case .mistral:   return VendorOutline.mistral
+        case .devin:     return VendorOutline.devin
         case .zhipu, .moonshot, .xai, .other: return nil
         }
     }

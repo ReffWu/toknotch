@@ -4,6 +4,7 @@ import SwiftUI
 /// the stack and its animation across refreshes.
 enum RingKind: Equatable, Hashable {
     case today
+    case week
     case month
     case lifetime
     case vendor(Vendor)
@@ -11,19 +12,21 @@ enum RingKind: Equatable, Hashable {
     var id: String {
         switch self {
         case .today:            return "today"
+        case .week:             return "week"
         case .month:            return "month"
         case .lifetime:         return "lifetime"
         case .vendor(let v):    return "vendor.\(v.rawValue)"
         }
     }
 
-    /// The three that carry the app, in the order they appear.
+    /// The four that carry the app, in the order they appear.
     ///
     /// Widest span first, narrowing to today. Reading down the stack then goes
     /// from what you have done overall to what you have done since this
     /// morning, which is how the numbers relate to each other — today is a
-    /// slice of the month, which is a slice of the lifetime.
-    static let primaries: [RingKind] = [.lifetime, .month, .today]
+    /// slice of the week, which is a slice of the month, which is a slice of
+    /// the lifetime.
+    static let primaries: [RingKind] = [.lifetime, .month, .week, .today]
 }
 
 /// One row inside a card: a label, a figure, and optionally a bar.

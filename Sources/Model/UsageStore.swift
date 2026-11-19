@@ -23,6 +23,23 @@ final class UsageStore: ObservableObject {
     /// What went wrong with the most recent read, in the reader's language.
     /// Cleared as soon as one succeeds.
     @Published private(set) var problem: String?
+    /// Other devices' latest reports, for the settings page to show what is
+    /// being counted alongside this Mac. Empty while sync is off.
+    @Published private(set) var syncPeers: [DeviceReport] = []
+
+    /// The folder this Mac's report is published to and peers' are read
+    /// from. Nil — the default — keeps every figure exactly as local as the
+    /// scan that produced it.
+    var syncDirectory: String? {
+        didSet {
+            guard syncDirectory != oldValue else { return }
+            refreshNow()
+        }
+    }
+    /// This install's id in the shared folder, set from `Preferences`.
+    var deviceId = UUID().uuidString
+    /// What this Mac is called in the shared folder.
+    var deviceName = Host.current().localizedName ?? "Mac"
     /// Plans found in the tools' own configuration files. Nothing here was
     /// typed by anybody, and nothing here came from a credential store.
     @Published private(set) var detectedPlans: [Vendor: DetectedPlan] = [:]
@@ -40,14 +57,21 @@ final class UsageStore: ObservableObject {
     /// user has said about it laid over the top.
     var effectivePlans: [Vendor: Subscription] {
         var merged = detectedPlans.compactMapValues(\.subscription)
-        merged.merge(subscriptions) { _, override in override }
+        for (vendor, var override) in subscriptions {
+            if override.weeklyQuota == nil {
+                override.weeklyQuota = detectedPlans[vendor]?.weeklyQuota
+            }
+            merged[vendor] = override
+        }
         return merged.filter { $0.value.isActive }
     }
 
     /// Whether this vendor's figures came from its own configuration rather
     /// than from the user.
     func isDetected(_ vendor: Vendor) -> Bool {
-        subscriptions[vendor] == nil && detectedPlans[vendor]?.subscription != nil
+        guard let detected = detectedPlans[vendor]?.subscription else { return false }
+        guard let override = subscriptions[vendor] else { return true }
+        return override.planID == detected.planID
     }
 
     private var digest: UsageDigest?
@@ -58,6 +82,11 @@ final class UsageStore: ObservableObject {
     private var wakeObserver: NSObjectProtocol?
     /// When Antigravity's usage was last copied into tokscale's cache.
     private var lastAntigravitySync: Date?
+    /// When this Mac's report was last written to the shared folder. The
+    /// file is a few hundred KB and every write is a sync event, so it goes
+    /// out at most this often rather than on every one-minute read.
+    private var lastSyncPublish: Date?
+    private static let syncPublishInterval: TimeInterval = 10 * 60
     /// A sync takes several seconds of CPU, so it runs at most this often,
     /// plus whenever somebody asks for a refresh by hand.
     private static let antigravitySyncInterval: TimeInterval = 5 * 60
@@ -137,7 +166,9 @@ final class UsageStore: ObservableObject {
             // the slower one.
             async let graph = TokscaleCLI.graph()
             async let lifetime = TokscaleCLI.lifetime()
-            let digest = UsageDigest.build(graph: try await graph, lifetime: try await lifetime)
+            let (mergedGraph, mergedLifetime) = mergeWithPeers(
+                graph: try await graph, lifetime: try await lifetime)
+            let digest = UsageDigest.build(graph: mergedGraph, lifetime: mergedLifetime)
 
             self.digest = digest
             self.failure = nil
@@ -161,6 +192,44 @@ final class UsageStore: ObservableObject {
             Log.usage.error("tokscale read failed: \(String(describing: error), privacy: .public)")
         }
         render()
+    }
+
+    /// Folds the devices visible in the shared folder into this Mac's own
+    /// scan: this Mac's report goes out (at most every few minutes), every
+    /// other device's comes in, and the digest is built from the sum.
+    ///
+    /// A peer that has stopped syncing simply stops contributing — its last
+    /// report still counts toward lifetime, which is correct: the usage
+    /// happened. A missing or unreadable folder changes nothing either; the
+    /// rings fall back to exactly what this Mac scanned.
+    private func mergeWithPeers(graph: GraphReport,
+                                lifetime: UsageReport) -> (GraphReport, UsageReport) {
+        guard let path = syncDirectory, !path.isEmpty else {
+            syncPeers = []
+            return (graph, lifetime)
+        }
+        let directory = URL(fileURLWithPath: path)
+
+        let now = Date()
+        if lastSyncPublish.map({ now.timeIntervalSince($0) >= Self.syncPublishInterval }) ?? true {
+            let report = DeviceReport(graph: graph, lifetime: lifetime,
+                                      deviceId: deviceId, name: deviceName,
+                                      generatedAt: now)
+            if DeviceSync.publish(report, in: directory) { lastSyncPublish = now }
+        }
+
+        let peers = DeviceSync.peers(in: directory, excluding: deviceId)
+        syncPeers = peers
+        guard !peers.isEmpty else { return (graph, lifetime) }
+
+        var graphs = [graph]
+        var reports = [lifetime]
+        for peer in peers {
+            let (peerGraph, peerLifetime) = peer.reports()
+            graphs.append(peerGraph)
+            reports.append(peerLifetime)
+        }
+        return (GraphReport.merge(graphs), UsageReport.merge(reports))
     }
 
     /// What a plan is currently returning, so the settings screen can show the

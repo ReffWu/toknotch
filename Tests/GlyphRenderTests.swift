@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 final class GlyphRenderTests: XCTestCase {
     private var everyGlyph: [(String, RingGlyph)] {
-        [("today", .today), ("month", .month), ("lifetime", .lifetime)]
+        [("today", .today), ("week", .week), ("month", .month), ("lifetime", .lifetime)]
             + Vendor.allCases.map { ($0.rawValue, RingGlyph.vendor($0)) }
     }
 

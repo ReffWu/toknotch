@@ -82,6 +82,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         preferences.addLoginItemOnce()
 
         let store = UsageStore()
+        store.deviceId = preferences.deviceId
+        store.syncDirectory = preferences.syncDirectory
         store.language = preferences.appLanguage
         store.enabledVendors = preferences.enabledVendors
         store.subscriptions = preferences.subscriptions
@@ -174,6 +176,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
         preferences.$subscriptions
             .receive(on: RunLoop.main)
             .sink { [weak store] in store?.subscriptions = $0 }
+            .store(in: &cancellables)
+
+        preferences.$syncDirectory
+            .receive(on: RunLoop.main)
+            .sink { [weak store] in store?.syncDirectory = $0 }
             .store(in: &cancellables)
 
         // Finding a plan is itself the answer to "do you want this vendor's

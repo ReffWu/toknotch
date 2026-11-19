@@ -242,4 +242,19 @@ enum VendorOutline {
          CGPoint(x: 0.7143, y: 0.5714), CGPoint(x: 0.7143, y: 0.7143), CGPoint(x: 0.5715, y: 0.7143), CGPoint(x: 0.5715, y: 0.8571), 
          CGPoint(x: 1.0000, y: 0.8571), CGPoint(x: 1.0000, y: 0.7143), CGPoint(x: 0.8571, y: 0.7143), CGPoint(x: 0.8571, y: 0.1429), ],
     ]
+    static let devin: [[CGPoint]] = [
+        [CGPoint(x: 0.0636, y: 0.3361), CGPoint(x: 0.0636, y: 0.1290), CGPoint(x: 0.0680, y: 0.1147), CGPoint(x: 0.2556, y: 0.0034), 
+         CGPoint(x: 0.2758, y: 0.0011), CGPoint(x: 0.4676, y: 0.1131), CGPoint(x: 0.4731, y: 0.1271), CGPoint(x: 0.4761, y: 0.2571), 
+         CGPoint(x: 0.4957, y: 0.2973), CGPoint(x: 0.5252, y: 0.3227), CGPoint(x: 0.5618, y: 0.3355), CGPoint(x: 0.6066, y: 0.3324), 
+         CGPoint(x: 0.7206, y: 0.2700), CGPoint(x: 0.7354, y: 0.2678), CGPoint(x: 0.9283, y: 0.3778), CGPoint(x: 0.9364, y: 0.3965), 
+         CGPoint(x: 0.9353, y: 0.6111), CGPoint(x: 0.9237, y: 0.6256), CGPoint(x: 0.7354, y: 0.7323), CGPoint(x: 0.7206, y: 0.7300), 
+         CGPoint(x: 0.5999, y: 0.6659), CGPoint(x: 0.5621, y: 0.6645), CGPoint(x: 0.5252, y: 0.6774), CGPoint(x: 0.4957, y: 0.7027), 
+         CGPoint(x: 0.4761, y: 0.7430), CGPoint(x: 0.4731, y: 0.8729), CGPoint(x: 0.4676, y: 0.8869), CGPoint(x: 0.2811, y: 0.9966), 
+         CGPoint(x: 0.2609, y: 0.9989), CGPoint(x: 0.0670, y: 0.8837), CGPoint(x: 0.0661, y: 0.6529), CGPoint(x: 0.0763, y: 0.6419), 
+         CGPoint(x: 0.2646, y: 0.5352), CGPoint(x: 0.2794, y: 0.5375), CGPoint(x: 0.3936, y: 0.5999), CGPoint(x: 0.4307, y: 0.6038), 
+         CGPoint(x: 0.4605, y: 0.5970), CGPoint(x: 0.4940, y: 0.5760), CGPoint(x: 0.5165, y: 0.5452), CGPoint(x: 0.5265, y: 0.5090), 
+         CGPoint(x: 0.5219, y: 0.4712), CGPoint(x: 0.5043, y: 0.4363), CGPoint(x: 0.4816, y: 0.4142), CGPoint(x: 0.4531, y: 0.4004), 
+         CGPoint(x: 0.4231, y: 0.3959), CGPoint(x: 0.3794, y: 0.4054), CGPoint(x: 0.2789, y: 0.4631), CGPoint(x: 0.2604, y: 0.4645), 
+         CGPoint(x: 0.0746, y: 0.3571), CGPoint(x: 0.0636, y: 0.3361), ],
+    ]
 }

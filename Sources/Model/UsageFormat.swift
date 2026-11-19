@@ -105,6 +105,17 @@ enum UsageFormat {
         return formatter.string(from: date)
     }
 
+    /// A date with hour and minute, for an exact quota reset timestamp —
+    /// `11月18日 14:12` / `Nov 18, 14:12`.
+    static func dayAndTime(_ date: Date, _ language: AppLanguage,
+                           calendar: Calendar = .current) -> String {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = language.locale
+        formatter.setLocalizedDateFormatFromTemplate("MMMdHm")
+        return formatter.string(from: date)
+    }
+
     /// A date and time, for "last updated at".
     static func moment(_ date: Date, _ language: AppLanguage) -> String {
         date.formatted(.dateTime.hour().minute().second().locale(language.locale))

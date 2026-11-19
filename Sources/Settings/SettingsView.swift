@@ -110,7 +110,7 @@ struct SettingsView: View {
     private var detail: some View {
         switch page {
         case .payback:  PaybackPage(preferences: preferences, store: store)
-        case .settings: PreferencesPage(preferences: preferences, updater: updater, onAbout: onAbout)
+        case .settings: PreferencesPage(preferences: preferences, store: store, updater: updater, onAbout: onAbout)
         }
     }
 
@@ -253,6 +253,7 @@ private struct PaybackSummary: View {
 /// the plan is custom, and where a plan was read from only on hover.
 private struct VendorRow: View {
     let vendor: Vendor
+    @Environment(\.colorScheme) private var colorScheme
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
     let language: AppLanguage
@@ -328,7 +329,7 @@ private struct VendorRow: View {
         VStack(alignment: .leading, spacing: 5) {
             HStack(spacing: 9) {
                 RingGlyphView(glyph: .vendor(vendor), size: 17)
-                    .foregroundStyle(vendor.ringTint)
+                    .foregroundStyle(vendor.surfaceTint(for: colorScheme))
                     .frame(width: SettingsMetrics.iconSize)
 
                 Text(vendor.title(language))
@@ -466,7 +467,7 @@ private struct VendorRow: View {
                 .monospacedDigit()
                 // In the vendor's colour, as on its notch card; the
                 // verdict is in the tooltip and in the number itself.
-                .foregroundStyle(vendor.tint)
+                .foregroundStyle(vendor.surfaceTint(for: colorScheme))
                 .help(language.t(payback.hasPaidBack ? "settings.paidBack" : "settings.onTheWay"))
         }
     }
@@ -476,6 +477,7 @@ private struct VendorRow: View {
 
 struct PreferencesPage: View {
     @ObservedObject var preferences: Preferences
+    @ObservedObject var store: UsageStore
     @ObservedObject var updater: Updater
     var onAbout: () -> Void = {}
 
@@ -553,6 +555,49 @@ struct PreferencesPage: View {
                     }
                 }
 
+                SettingsGroup(title: language.t("settings.sync.title"),
+                              footnote: language.t("settings.sync.footnote")) {
+                    SettingsRow("folder.badge.plus", tint: .blue,
+                                title: language.t("settings.sync.folder"),
+                                subtitle: preferences.syncDirectory
+                                    ?? language.t("settings.sync.notSet")) {
+                        HStack(spacing: 8) {
+                            if preferences.syncDirectory != nil {
+                                Button(language.t("settings.sync.clear")) {
+                                    preferences.syncDirectory = nil
+                                }
+                                .controlSize(.small)
+                            }
+                            // The method is the choice; each preset is just a
+                            // fixed folder the sync client happens to share.
+                            Menu {
+                                Button(language.t("settings.sync.preset.icloud")) {
+                                    preferences.syncDirectory = Self.iCloudSyncPath
+                                }
+                                Button(language.t("settings.sync.preset.syncthing")) {
+                                    preferences.syncDirectory = Self.syncthingSyncPath
+                                }
+                                Divider()
+                                Button(language.t("settings.sync.custom")) { chooseSyncFolder() }
+                            } label: {
+                                Text(language.t("settings.sync.method"))
+                            }
+                            .controlSize(.small)
+                            .fixedSize()
+                        }
+                    }
+                    if preferences.syncDirectory != nil {
+                        SettingsDivider(inset: 0)
+                        SettingsRow("laptopcomputer.and.iphone", tint: .gray,
+                                    title: language.t("settings.sync.devices"),
+                                    subtitle: store.syncPeers.isEmpty
+                                        ? language.t("settings.sync.waiting")
+                                        : syncDeviceNames) {
+                            EmptyView()
+                        }
+                    }
+                }
+
                 MoreAppsGroup(language: language)
             }
 
@@ -561,6 +606,29 @@ struct PreferencesPage: View {
                 .padding(.bottom, 16)
         }
         .onAppear { MoreApps.shared.refreshIfStale() }
+    }
+
+    /// Every device being counted — this Mac first, then whoever has
+    /// published a report — for the sync row's second line.
+    private var syncDeviceNames: String {
+        ([store.deviceName] + store.syncPeers.map(\.name)).joined(separator: " · ")
+    }
+
+    /// Where each preset points. Both are ordinary folders — it is the sync
+    /// client, not TokNotch, that makes them shared.
+    static let iCloudSyncPath = NSHomeDirectory()
+        + "/Library/Mobile Documents/com~apple~CloudDocs/TokNotch"
+    static let syncthingSyncPath = NSHomeDirectory() + "/Sync/toknotch"
+
+    /// Fallback for anything the presets do not cover.
+    private func chooseSyncFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseDirectories = true
+        panel.canChooseFiles = false
+        panel.allowsMultipleSelection = false
+        panel.prompt = language.t("settings.sync.custom")
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+        preferences.syncDirectory = url.path
     }
 
     /// Version, updates and source in one quiet line: none of it is a setting,

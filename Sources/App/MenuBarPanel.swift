@@ -12,6 +12,7 @@ struct MenuBarPanel: View {
     @ObservedObject var preferences: Preferences
     @ObservedObject var store: UsageStore
     @ObservedObject var updater: Updater
+    @Environment(\.colorScheme) private var colorScheme
     let onOpenSettings: () -> Void
     let onAbout: () -> Void
 
@@ -115,12 +116,20 @@ struct MenuBarPanel: View {
         }
     }
 
-    // MARK: Today · Month · Lifetime
+    // MARK: Today · Week · Month · Lifetime
 
     private var periods: some View {
-        HStack(spacing: 8) {
-            ForEach(RingKind.primaries.reversed(), id: \.self) { kind in
-                PeriodTile(ring: store.rings.first { $0.kind == kind }, kind: kind, language: language)
+        let items = Array(RingKind.primaries.reversed())
+        return Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+            GridRow {
+                ForEach(items.prefix(2), id: \.self) { kind in
+                    PeriodTile(ring: store.rings.first { $0.kind == kind }, kind: kind, language: language)
+                }
+            }
+            GridRow {
+                ForEach(items.suffix(from: min(2, items.count)), id: \.self) { kind in
+                    PeriodTile(ring: store.rings.first { $0.kind == kind }, kind: kind, language: language)
+                }
             }
         }
     }
@@ -135,7 +144,7 @@ struct MenuBarPanel: View {
                 if index > 0 { Divider().padding(.leading, 36).opacity(0.5) }
                 HStack(spacing: 10) {
                     RingGlyphView(glyph: .vendor(entry.vendor), size: 15)
-                        .foregroundStyle(entry.vendor.ringTint)
+                        .foregroundStyle(entry.vendor.surfaceTint(for: colorScheme))
                         .frame(width: 16)
                     Text(entry.vendor.title(language))
                         .font(.system(size: 12))
@@ -147,7 +156,7 @@ struct MenuBarPanel: View {
                         .monospacedDigit()
                     Text(String(format: "%.1f×", entry.payback.multiple))
                         .font(.system(size: 13, weight: .semibold, design: .rounded))
-                        .foregroundStyle(entry.vendor.tint)
+                        .foregroundStyle(entry.vendor.surfaceTint(for: colorScheme))
                         .monospacedDigit()
                         .frame(minWidth: 44, alignment: .trailing)
                 }
@@ -265,6 +274,7 @@ private struct PeriodTile: View {
     private var title: String {
         switch kind {
         case .today:    return language.t("ring.today.title")
+        case .week:     return language.t("ring.week.title")
         case .month:    return language.t("ring.month.title")
         default:        return language.t("ring.lifetime.title")
         }
@@ -273,6 +283,7 @@ private struct PeriodTile: View {
     private var glyph: RingGlyph {
         switch kind {
         case .today:    return .today
+        case .week:     return .week
         case .month:    return .month
         default:        return .lifetime
         }
