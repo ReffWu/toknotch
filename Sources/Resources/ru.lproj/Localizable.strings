@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "Расход DeepSeek Harness теперь учитывается";
 "whatsNew.v131.tokscale.detail" = "Два выпуска исправлений, включая верную цену часовых записей в кэш в Claude Code и более точный учёт в Codex и CherryStudio.";
 "whatsNew.v131.tokscale.title" = "На базе tokscale 4.18";
+"whatsNew.v132.headline" = "Вырез больше не зависает";
+"whatsNew.v132.stuck.title" = "Не зависает открытым";
+"whatsNew.v132.stuck.detail" = "Уведите указатель или щёлкните в другом месте — он всегда закроется.";
+"whatsNew.v132.codex.title" = "Codex учитывается полностью";
+"whatsNew.v132.codex.detail" = "tokscale 4.23 читает сжатые сессии Codex и верно оценивает Claude 5.5.";
+"whatsNew.v132.refresh.title" = "Обновление всегда завершается";
+"whatsNew.v132.refresh.detail" = "Зависшее чтение прерывается и повторяется, цифры не замирают.";
 "whatsNew.version" = "Версия %@";
 "whatsNew.welcome" = "Добро пожаловать в TokNotch";

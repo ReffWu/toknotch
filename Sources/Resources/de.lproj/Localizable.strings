@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "DeepSeek Harness wird mitgezählt";
 "whatsNew.v131.tokscale.detail" = "Zwei Releases voller Korrekturen, darunter die richtige Berechnung einstündiger Cache-Schreibvorgänge in Claude Code und genauere Zahlen für Codex und CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Mit tokscale 4.18";
+"whatsNew.v132.headline" = "Keine hängende Notch mehr";
+"whatsNew.v132.stuck.title" = "Bleibt nie offen hängen";
+"whatsNew.v132.stuck.detail" = "Zeiger wegbewegen oder woanders klicken schließt sie jetzt immer.";
+"whatsNew.v132.codex.title" = "Codex vollständig gezählt";
+"whatsNew.v132.codex.detail" = "tokscale 4.23 liest komprimierte Codex-Sitzungen und bepreist Claude 5.5 korrekt.";
+"whatsNew.v132.refresh.title" = "Aktualisierung endet immer";
+"whatsNew.v132.refresh.detail" = "Hängende Lesevorgänge werden abgebrochen und wiederholt, statt Zahlen einzufrieren.";
 "whatsNew.version" = "Version %@";
 "whatsNew.welcome" = "Willkommen bei TokNotch";

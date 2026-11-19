@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "DeepSeek Harness の使用量を集計";
 "whatsNew.v131.tokscale.detail" = "2 リリース分の修正。Claude Code の 1 時間キャッシュ書き込みの料金計算や、Codex と CherryStudio の集計がより正確になりました。";
 "whatsNew.v131.tokscale.title" = "tokscale 4.18 を内蔵";
+"whatsNew.v132.headline" = "ノッチが固まらなくなりました";
+"whatsNew.v132.stuck.title" = "開いたまま固まらない";
+"whatsNew.v132.stuck.detail" = "ポインタを離すか別の場所をクリックすれば必ず閉じます。";
+"whatsNew.v132.codex.title" = "Codex を完全集計";
+"whatsNew.v132.codex.detail" = "tokscale 4.23 で Codex の圧縮セッションを読み、Claude 5.5 の料金も修正。";
+"whatsNew.v132.refresh.title" = "更新が必ず完了";
+"whatsNew.v132.refresh.detail" = "読み込みが止まっても中断して再試行し、数字が固まりません。";
 "whatsNew.version" = "バージョン %@";
 "whatsNew.welcome" = "TokNotch へようこそ";

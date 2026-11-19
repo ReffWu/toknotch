@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "استهلاك DeepSeek Harness أصبح محتسبًا";
 "whatsNew.v131.tokscale.detail" = "إصداران من الإصلاحات، منها التسعير الصحيح لكتابات التخزين المؤقت لساعة واحدة في Claude Code، واحتساب أدق في Codex وCherryStudio.";
 "whatsNew.v131.tokscale.title" = "مبني على tokscale 4.18";
+"whatsNew.v132.headline" = "النتوء لم يعد يعلق";
+"whatsNew.v132.stuck.title" = "لا يعلق مفتوحًا";
+"whatsNew.v132.stuck.detail" = "إبعاد المؤشر أو النقر في مكان آخر يغلقه دائمًا.";
+"whatsNew.v132.codex.title" = "احتساب Codex كاملًا";
+"whatsNew.v132.codex.detail" = "يقرأ tokscale 4.23 جلسات Codex المضغوطة ويسعّر Claude 5.5 بدقة.";
+"whatsNew.v132.refresh.title" = "التحديث يكتمل دائمًا";
+"whatsNew.v132.refresh.detail" = "تتوقف القراءة المتعطلة وتُعاد دون تجميد الأرقام.";
 "whatsNew.version" = "الإصدار %@";
 "whatsNew.welcome" = "مرحبًا بك في TokNotch";

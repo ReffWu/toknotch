@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "Đã tính mức dùng của DeepSeek Harness";
 "whatsNew.v131.tokscale.detail" = "Hai bản phát hành sửa lỗi, gồm cách tính đúng cho ghi bộ nhớ đệm một giờ trong Claude Code và số liệu chính xác hơn cho Codex và CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Dựa trên tokscale 4.18";
+"whatsNew.v132.headline" = "Tai thỏ hết bị kẹt";
+"whatsNew.v132.stuck.title" = "Không còn kẹt mở";
+"whatsNew.v132.stuck.detail" = "Rời con trỏ hoặc nhấp chỗ khác luôn khiến nó thu lại.";
+"whatsNew.v132.codex.title" = "Tính đủ Codex";
+"whatsNew.v132.codex.detail" = "tokscale 4.23 đọc phiên nén của Codex và tính đúng giá Claude 5.5.";
+"whatsNew.v132.refresh.title" = "Làm mới luôn hoàn tất";
+"whatsNew.v132.refresh.detail" = "Lần đọc bị treo sẽ dừng và thử lại, số liệu không còn đứng yên.";
 "whatsNew.version" = "Phiên bản %@";
 "whatsNew.welcome" = "Chào mừng đến với TokNotch";

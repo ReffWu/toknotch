@@ -7,6 +7,54 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.3.2]
+
+The notch no longer gets stuck open, and Codex counts in full.
+
+### Fixed
+
+- **The open notch could get stuck open until TokNotch was restarted.** The
+  region that held the open notch open and took the mouse was the notch's
+  rect unioned with the settings handle's — and a union of rects is their
+  bounding box. On a top notch joining the display's own, the handle hangs
+  below the bar's far corner, so the box took in a band about 47pt deep under
+  the *whole* bar where nothing is drawn. The pointer resting there held the
+  notch open over empty screen; a click there (on a browser's tabs, say) was
+  swallowed and fell through to the click-to-pin, pinning the notch open with
+  no sign that it had. The only way out was to click that same invisible band
+  again. The bar and the handle's circles are now asked separately, so the
+  live region is exactly what is drawn.
+- **A pin can always be let go of.** A click anywhere other than the notch or
+  its card now releases a pin made by clicking, the way a click outside closes
+  any popover; so does the display sleeping or the session switching away. A
+  click that lands within moments of hover opening the notch — one aimed at
+  whatever was there a moment before — no longer pins it, and a click beside
+  the bar is no longer a pin at all. Always show is a setting, not a pin, and
+  is untouched by any of this.
+- **Moving the notch there and back quickly left it on the wrong edge.**
+  Choosing right → top → right inside one crossing compared the second choice
+  against the edge the notch was still on, skipped it, and let the move to the
+  top land — leaving the notch on an edge Settings no longer showed.
+- **A hung tokscale read could freeze the numbers until restart.** The read
+  waited for end-of-file, which only arrives once every holder of the pipe has
+  let go — so a helper left running, or a process that ignored SIGTERM, held
+  the one refresh allowed at a time forever. The exit is now waited on with a
+  deadline (SIGKILL after SIGTERM), the output drained on its own thread, and
+  a read always ends.
+
+### Changed
+
+- **tokscale 4.18.0 → 4.23.0.** Reads Codex's zstd-compressed session
+  archives — on this Mac Codex went from 0.07B to 4.23B tokens, every other
+  tool within a fraction of a percent of before — and prices Claude 5.5
+  reasoning tiers, counts Codex compaction turns, streams large DeepSeek
+  Harness transcripts and stops Cursor double counting. Verified against
+  `Vendor/tokscale/tokscale.lock` as before.
+- **Sturdier panel.** A stopped notch can no longer put its panel back up with
+  nothing tracking the pointer, its hosting view gives SwiftUI no sizing
+  constraints to argue with, and display wake, Space changes and session
+  switches re-check the pointer at once instead of waiting for it to move.
+
 ## [1.3.1]
 
 DeepSeek Harness usage counts again.

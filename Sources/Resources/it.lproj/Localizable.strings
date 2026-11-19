@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "Anche l'uso di DeepSeek Harness conta";
 "whatsNew.v131.tokscale.detail" = "Due versioni di correzioni, tra cui il prezzo giusto delle scritture in cache di un'ora di Claude Code e un conteggio più preciso per Codex e CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Basato su tokscale 4.18";
+"whatsNew.v132.headline" = "Basta notch bloccato";
+"whatsNew.v132.stuck.title" = "Mai più bloccato aperto";
+"whatsNew.v132.stuck.detail" = "Allontanare il puntatore o fare clic altrove lo chiude sempre.";
+"whatsNew.v132.codex.title" = "Codex contato per intero";
+"whatsNew.v132.codex.detail" = "tokscale 4.23 legge le sessioni compresse di Codex e prezza bene Claude 5.5.";
+"whatsNew.v132.refresh.title" = "Aggiornamenti sempre completati";
+"whatsNew.v132.refresh.detail" = "Una lettura bloccata viene interrotta e ripetuta senza congelare i numeri.";
 "whatsNew.version" = "Versione %@";
 "whatsNew.welcome" = "Benvenuto in TokNotch";

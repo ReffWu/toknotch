@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "DeepSeek Harness 사용량 집계";
 "whatsNew.v131.tokscale.detail" = "두 번의 릴리스에 걸친 수정으로, Claude Code 1시간 캐시 쓰기 요금 계산과 Codex, CherryStudio 집계가 더 정확해졌습니다.";
 "whatsNew.v131.tokscale.title" = "tokscale 4.18 내장";
+"whatsNew.v132.headline" = "노치가 더 이상 멈추지 않음";
+"whatsNew.v132.stuck.title" = "열린 채 멈추지 않음";
+"whatsNew.v132.stuck.detail" = "포인터를 치우거나 다른 곳을 클릭하면 항상 닫힙니다.";
+"whatsNew.v132.codex.title" = "Codex 전체 집계";
+"whatsNew.v132.codex.detail" = "tokscale 4.23이 Codex 압축 세션을 읽고 Claude 5.5 요금을 바로잡습니다.";
+"whatsNew.v132.refresh.title" = "새로 고침 항상 완료";
+"whatsNew.v132.refresh.detail" = "읽기가 멈추면 중단 후 다시 시도해 숫자가 멈추지 않습니다.";
 "whatsNew.version" = "버전 %@";
 "whatsNew.welcome" = "TokNotch를 시작합니다";

@@ -168,5 +168,12 @@
 "whatsNew.v131.headline" = "DeepSeek Harness 用量開始計入";
 "whatsNew.v131.tokscale.detail" = "橫跨兩個版本的修正，包括 Claude Code 一小時快取寫入的計價修正，以及 Codex 與 CherryStudio 用量統計更準確。";
 "whatsNew.v131.tokscale.title" = "內建 tokscale 升級到 4.18";
+"whatsNew.v132.headline" = "瀏海不再卡住";
+"whatsNew.v132.stuck.title" = "不再卡住不收";
+"whatsNew.v132.stuck.detail" = "移開指標或點擊別處，瀏海都會正常收起。";
+"whatsNew.v132.codex.title" = "Codex 完整計入";
+"whatsNew.v132.codex.detail" = "tokscale 4.23 可讀取 Codex 壓縮工作階段，並修正 Claude 5.5 計價。";
+"whatsNew.v132.refresh.title" = "重新整理必定完成";
+"whatsNew.v132.refresh.detail" = "讀取卡死時會自動終止並重試，數字不再停住。";
 "whatsNew.version" = "版本 %@";
 "whatsNew.welcome" = "歡迎使用 TokNotch";
