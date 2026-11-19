@@ -7,6 +7,46 @@ All notable changes to TokNotch are recorded here. The format follows
 The same notes, in the app's own words and in your language, appear in the
 What's New sheet after an update.
 
+## [1.3.3]
+
+A This week ring, usage summed across Macs, and Devin as its own vendor.
+Thanks to @xjeway for the pull request this release is built on.
+
+### Added
+
+- **This week.** A fourth primary ring, and a 2×2 grid in the menu bar panel
+  (Today · This week / This month · All time). The week is the plan's own
+  7-day stretch — stepped from the exact reset Codex records, or from the
+  billing day — rather than a calendar week, and is measured against the same
+  elapsed stretch of the week before. With no plan it falls back to the
+  calendar week.
+- **Codex's weekly limit.** Read from the tail of the newest
+  `~/.codex/sessions/**/rollout-*.jsonl` — no keychain, no network — and shown
+  on the OpenAI card with its reset time. Without one, the card shows this
+  week's tokens and cost instead.
+- **Every Mac, added up.** Choose a folder two Macs can both see (iCloud
+  Drive, Syncthing, any path) and each publishes its own per-day totals there;
+  every Mac counts the sum. Only tokens, cost and message counts per model per
+  day cross the folder. Each Mac writes only its own file, so a sync client
+  never sees a conflict, and a peer in another time zone has its days re-dated
+  into the reader's.
+- **Devin.** Its makerless models (`swe-*`, `compactor`) are filed under a
+  Devin vendor, from tokscale's provider field, instead of Other.
+
+### Fixed
+
+- **Claude plans billed through the App Store** (`apple_subscription`) are
+  recognised, and the Detected badge stays when the saved plan is the detected
+  one.
+- **Naming this Mac no longer risks a stall at launch.** The name shown in the
+  shared folder is read from Sharing settings rather than `Host.current()`,
+  which resolves the machine's addresses and can block for seconds.
+- **Plan detection runs off the main thread**, now that it also reads Codex's
+  session logs.
+- **Telemetry's activity flag was never set**, so the daily report always said
+  the notch had not been opened. Opening it by hover now marks the day — once a
+  day, and only when sharing anonymous statistics is on.
+
 ## [1.3.2]
 
 The notch no longer gets stuck open, and Codex counts in full.

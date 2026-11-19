@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness 用量開始計入";
 "whatsNew.v131.tokscale.detail" = "橫跨兩個版本的修正，包括 Claude Code 一小時快取寫入的計價修正，以及 Codex 與 CherryStudio 用量統計更準確。";
 "whatsNew.v131.tokscale.title" = "內建 tokscale 升級到 4.18";
+"whatsNew.v133.headline" = "按週看，多台 Mac 合計";
+"whatsNew.v133.week.title" = "本週";
+"whatsNew.v133.week.detail" = "新增本週圓環，依訂閱的 7 天週期與 Codex 週額度計算。";
+"whatsNew.v133.devices.title" = "多台 Mac";
+"whatsNew.v133.devices.detail" = "共用一個資料夾，所有 Mac 的用量自動合計。";
+"whatsNew.v133.detect.title" = "辨識更準";
+"whatsNew.v133.detect.detail" = "Devin 獨立成為廠商，App Store 訂閱的 Claude 也能辨識。";
 "whatsNew.v132.headline" = "瀏海不再卡住";
 "whatsNew.v132.stuck.title" = "不再卡住不收";
 "whatsNew.v132.stuck.detail" = "移開指標或點擊別處，瀏海都會正常收起。";

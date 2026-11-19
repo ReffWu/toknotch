@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness usage counts now";
 "whatsNew.v131.tokscale.detail" = "Two releases of fixes, including correct pricing for Claude Code 1-hour cache writes and more accurate Codex and CherryStudio accounting.";
 "whatsNew.v131.tokscale.title" = "Built on tokscale 4.18";
+"whatsNew.v133.headline" = "A week, and every Mac";
+"whatsNew.v133.week.title" = "This week";
+"whatsNew.v133.week.detail" = "A ring that follows your plan’s 7-day reset and Codex’s weekly limit.";
+"whatsNew.v133.devices.title" = "All your Macs";
+"whatsNew.v133.devices.detail" = "Share one folder and every Mac’s usage adds up.";
+"whatsNew.v133.detect.title" = "Sharper detection";
+"whatsNew.v133.detect.detail" = "Devin gets its own vendor; App Store Claude plans are found.";
 "whatsNew.v132.headline" = "No more stuck notch";
 "whatsNew.v132.stuck.title" = "Never stuck open";
 "whatsNew.v132.stuck.detail" = "Moving away or clicking elsewhere now always lets it close.";

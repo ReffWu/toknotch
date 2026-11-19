@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "استهلاك DeepSeek Harness أصبح محتسبًا";
 "whatsNew.v131.tokscale.detail" = "إصداران من الإصلاحات، منها التسعير الصحيح لكتابات التخزين المؤقت لساعة واحدة في Claude Code، واحتساب أدق في Codex وCherryStudio.";
 "whatsNew.v131.tokscale.title" = "مبني على tokscale 4.18";
+"whatsNew.v133.headline" = "أسبوعيًا، وعلى كل أجهزة Mac";
+"whatsNew.v133.week.title" = "هذا الأسبوع";
+"whatsNew.v133.week.detail" = "حلقة تتبع دورة خطتك ذات 7 أيام وحدّ Codex الأسبوعي.";
+"whatsNew.v133.devices.title" = "كل أجهزة Mac";
+"whatsNew.v133.devices.detail" = "شارك مجلدًا واحدًا ليُجمع استخدام كل أجهزة Mac.";
+"whatsNew.v133.detect.title" = "تعرّف أدق";
+"whatsNew.v133.detect.detail" = "Devin مزوّد مستقل، وتُكتشف خطط Claude من App Store.";
 "whatsNew.v132.headline" = "النتوء لم يعد يعلق";
 "whatsNew.v132.stuck.title" = "لا يعلق مفتوحًا";
 "whatsNew.v132.stuck.detail" = "إبعاد المؤشر أو النقر في مكان آخر يغلقه دائمًا.";

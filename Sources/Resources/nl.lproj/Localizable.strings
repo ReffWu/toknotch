@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness-gebruik telt nu mee";
 "whatsNew.v131.tokscale.detail" = "Twee releases aan correcties, waaronder de juiste prijs voor cache-schrijfacties van een uur in Claude Code en nauwkeuriger cijfers voor Codex en CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Gebouwd op tokscale 4.18";
+"whatsNew.v133.headline" = "Per week, op elke Mac";
+"whatsNew.v133.week.title" = "Deze week";
+"whatsNew.v133.week.detail" = "Een ring op de 7‑daagse cyclus van je plan en de Codex‑weeklimiet.";
+"whatsNew.v133.devices.title" = "Al je Macs";
+"whatsNew.v133.devices.detail" = "Deel één map en het gebruik van elke Mac telt op.";
+"whatsNew.v133.detect.title" = "Betere herkenning";
+"whatsNew.v133.detect.detail" = "Devin krijgt een eigen aanbieder; App Store‑Claude‑plannen worden herkend.";
 "whatsNew.v132.headline" = "Geen vastzittende notch meer";
 "whatsNew.v132.stuck.title" = "Blijft nooit openhangen";
 "whatsNew.v132.stuck.detail" = "Wegbewegen of ergens anders klikken sluit hem nu altijd.";

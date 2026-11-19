@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import os
+import SystemConfiguration
 
 /// Reads tokscale on a timer and publishes the rings.
 ///
@@ -38,8 +39,10 @@ final class UsageStore: ObservableObject {
     }
     /// This install's id in the shared folder, set from `Preferences`.
     var deviceId = UUID().uuidString
-    /// What this Mac is called in the shared folder.
-    var deviceName = Host.current().localizedName ?? "Mac"
+    /// What this Mac is called in the shared folder: the name in Sharing
+    /// settings. Not `Host.current()`, which resolves the machine's addresses
+    /// and can hold the main thread for seconds on a slow network.
+    lazy var deviceName: String = SCDynamicStoreCopyComputerName(nil, nil) as String? ?? "Mac"
     /// Plans found in the tools' own configuration files. Nothing here was
     /// typed by anybody, and nothing here came from a credential store.
     @Published private(set) var detectedPlans: [Vendor: DetectedPlan] = [:]
@@ -177,7 +180,11 @@ final class UsageStore: ObservableObject {
             self.availableVendors = digest.vendors.map(\.vendor)
             // Re-read on each refresh: a plan changed in another app should
             // show up here without restarting.
-            self.detectedPlans = PlanDetector.detect()
+            // Off the main thread: it now also reads the tail of Codex's
+            // session logs, and the notch animates on the main thread.
+            self.detectedPlans = await Task.detached(priority: .utility) {
+                PlanDetector.detect()
+            }.value
             // Notice rather than debug: this is the app's health signal, and
             // debug records are not kept, so the one line worth having when
             // somebody asks why the rings are empty was never there to read.

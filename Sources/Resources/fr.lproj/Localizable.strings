@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "L'usage de DeepSeek Harness est compté";
 "whatsNew.v131.tokscale.detail" = "Deux versions de correctifs, dont le bon tarif des écritures de cache d'une heure dans Claude Code et un décompte plus juste pour Codex et CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Basé sur tokscale 4.18";
+"whatsNew.v133.headline" = "La semaine, sur tous vos Mac";
+"whatsNew.v133.week.title" = "Cette semaine";
+"whatsNew.v133.week.detail" = "Un anneau calé sur le cycle de 7 jours et la limite Codex.";
+"whatsNew.v133.devices.title" = "Tous vos Mac";
+"whatsNew.v133.devices.detail" = "Partagez un dossier : l’usage de chaque Mac s’additionne.";
+"whatsNew.v133.detect.title" = "Détection affinée";
+"whatsNew.v133.detect.detail" = "Devin a son fournisseur ; les forfaits Claude App Store sont reconnus.";
 "whatsNew.v132.headline" = "Fini l’encoche bloquée";
 "whatsNew.v132.stuck.title" = "Plus jamais bloquée";
 "whatsNew.v132.stuck.detail" = "Éloigner le pointeur ou cliquer ailleurs la referme toujours.";

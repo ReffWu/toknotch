@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "Użycie DeepSeek Harness jest już liczone";
 "whatsNew.v131.tokscale.detail" = "Dwa wydania poprawek, w tym właściwa cena godzinowych zapisów do pamięci podręcznej w Claude Code oraz dokładniejsze liczenie w Codex i CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Oparte na tokscale 4.18";
+"whatsNew.v133.headline" = "Tygodniowo, na każdym Macu";
+"whatsNew.v133.week.title" = "Ten tydzień";
+"whatsNew.v133.week.detail" = "Pierścień według 7‑dniowego cyklu planu i limitu Codex.";
+"whatsNew.v133.devices.title" = "Wszystkie Maki";
+"whatsNew.v133.devices.detail" = "Udostępnij folder, a użycie każdego Maca się zsumuje.";
+"whatsNew.v133.detect.title" = "Lepsze wykrywanie";
+"whatsNew.v133.detect.detail" = "Devin jako osobny dostawca; plany Claude z App Store są wykrywane.";
 "whatsNew.v132.headline" = "Koniec z zawieszonym notchem";
 "whatsNew.v132.stuck.title" = "Nigdy nie zostaje otwarty";
 "whatsNew.v132.stuck.detail" = "Odsunięcie wskaźnika lub kliknięcie gdzie indziej zawsze go zamyka.";

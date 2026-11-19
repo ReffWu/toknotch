@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness kullanımı artık sayılıyor";
 "whatsNew.v131.tokscale.detail" = "İki sürümlük düzeltme: Claude Code'da bir saatlik önbellek yazımlarının doğru fiyatlandırması ve Codex ile CherryStudio'da daha isabetli sayım.";
 "whatsNew.v131.tokscale.title" = "tokscale 4.18 ile";
+"whatsNew.v133.headline" = "Haftalık, tüm Mac’lerde";
+"whatsNew.v133.week.title" = "Bu hafta";
+"whatsNew.v133.week.detail" = "Planınızın 7 günlük döngüsüne ve Codex haftalık sınırına uyan halka.";
+"whatsNew.v133.devices.title" = "Tüm Mac’leriniz";
+"whatsNew.v133.devices.detail" = "Bir klasör paylaşın, tüm Mac’lerin kullanımı toplansın.";
+"whatsNew.v133.detect.title" = "Daha iyi algılama";
+"whatsNew.v133.detect.detail" = "Devin ayrı sağlayıcı oldu; App Store Claude planları algılanıyor.";
 "whatsNew.v132.headline" = "Takılan çentik artık yok";
 "whatsNew.v132.stuck.title" = "Asla açık kalmıyor";
 "whatsNew.v132.stuck.detail" = "İmleci uzaklaştırmak veya başka yere tıklamak onu her zaman kapatır.";

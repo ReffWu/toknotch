@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "El uso de DeepSeek Harness ya cuenta";
 "whatsNew.v131.tokscale.detail" = "Dos versiones de correcciones, incluido el precio correcto de las escrituras de caché de una hora en Claude Code y un recuento más exacto en Codex y CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Con tokscale 4.18";
+"whatsNew.v133.headline" = "Por semana, en todos tus Mac";
+"whatsNew.v133.week.title" = "Esta semana";
+"whatsNew.v133.week.detail" = "Un anillo según el ciclo de 7 días del plan y el límite de Codex.";
+"whatsNew.v133.devices.title" = "Todos tus Mac";
+"whatsNew.v133.devices.detail" = "Comparte una carpeta y se suma el uso de cada Mac.";
+"whatsNew.v133.detect.title" = "Mejor detección";
+"whatsNew.v133.detect.detail" = "Devin tiene su propio proveedor; se detectan planes Claude de App Store.";
 "whatsNew.v132.headline" = "Adiós al notch atascado";
 "whatsNew.v132.stuck.title" = "Nunca se queda abierto";
 "whatsNew.v132.stuck.detail" = "Apartar el puntero o hacer clic en otro sitio siempre lo cierra.";

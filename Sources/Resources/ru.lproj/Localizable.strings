@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "Расход DeepSeek Harness теперь учитывается";
 "whatsNew.v131.tokscale.detail" = "Два выпуска исправлений, включая верную цену часовых записей в кэш в Claude Code и более точный учёт в Codex и CherryStudio.";
 "whatsNew.v131.tokscale.title" = "На базе tokscale 4.18";
+"whatsNew.v133.headline" = "По неделям, на всех Mac";
+"whatsNew.v133.week.title" = "Эта неделя";
+"whatsNew.v133.week.detail" = "Кольцо по 7‑дневному циклу тарифа и недельному лимиту Codex.";
+"whatsNew.v133.devices.title" = "Все ваши Mac";
+"whatsNew.v133.devices.detail" = "Общая папка — и расход всех Mac суммируется.";
+"whatsNew.v133.detect.title" = "Точнее распознавание";
+"whatsNew.v133.detect.detail" = "Devin — отдельный поставщик; тарифы Claude из App Store распознаются.";
 "whatsNew.v132.headline" = "Вырез больше не зависает";
 "whatsNew.v132.stuck.title" = "Не зависает открытым";
 "whatsNew.v132.stuck.detail" = "Уведите указатель или щёлкните в другом месте — он всегда закроется.";

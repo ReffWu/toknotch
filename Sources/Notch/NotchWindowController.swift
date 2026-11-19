@@ -442,6 +442,7 @@ final class NotchWindowController {
             guard !model.isExpanded else { return }
             openedAt = Date()
             withAnimation(NotchMotion.unfold) { model.isExpanded = true }
+            Telemetry.recordActivity()
             return
         }
 

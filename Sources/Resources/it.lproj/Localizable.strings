@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "Anche l'uso di DeepSeek Harness conta";
 "whatsNew.v131.tokscale.detail" = "Due versioni di correzioni, tra cui il prezzo giusto delle scritture in cache di un'ora di Claude Code e un conteggio più preciso per Codex e CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Basato su tokscale 4.18";
+"whatsNew.v133.headline" = "Per settimana, su ogni Mac";
+"whatsNew.v133.week.title" = "Questa settimana";
+"whatsNew.v133.week.detail" = "Un anello sul ciclo di 7 giorni del piano e il limite Codex.";
+"whatsNew.v133.devices.title" = "Tutti i tuoi Mac";
+"whatsNew.v133.devices.detail" = "Condividi una cartella e l’uso di ogni Mac si somma.";
+"whatsNew.v133.detect.title" = "Rilevamento migliore";
+"whatsNew.v133.detect.detail" = "Devin ha il suo fornitore; i piani Claude App Store vengono rilevati.";
 "whatsNew.v132.headline" = "Basta notch bloccato";
 "whatsNew.v132.stuck.title" = "Mai più bloccato aperto";
 "whatsNew.v132.stuck.detail" = "Allontanare il puntatore o fare clic altrove lo chiude sempre.";

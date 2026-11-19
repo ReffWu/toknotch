@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness 사용량 집계";
 "whatsNew.v131.tokscale.detail" = "두 번의 릴리스에 걸친 수정으로, Claude Code 1시간 캐시 쓰기 요금 계산과 Codex, CherryStudio 집계가 더 정확해졌습니다.";
 "whatsNew.v131.tokscale.title" = "tokscale 4.18 내장";
+"whatsNew.v133.headline" = "주간 보기, 모든 Mac 합산";
+"whatsNew.v133.week.title" = "이번 주";
+"whatsNew.v133.week.detail" = "플랜의 7일 주기와 Codex 주간 한도를 따르는 링.";
+"whatsNew.v133.devices.title" = "모든 Mac";
+"whatsNew.v133.devices.detail" = "폴더 하나를 공유하면 모든 Mac 사용량이 합산됩니다.";
+"whatsNew.v133.detect.title" = "더 정확한 감지";
+"whatsNew.v133.detect.detail" = "Devin을 별도 공급사로, App Store Claude 플랜도 감지.";
 "whatsNew.v132.headline" = "노치가 더 이상 멈추지 않음";
 "whatsNew.v132.stuck.title" = "열린 채 멈추지 않음";
 "whatsNew.v132.stuck.detail" = "포인터를 치우거나 다른 곳을 클릭하면 항상 닫힙니다.";

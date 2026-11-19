@@ -5,8 +5,11 @@ enum Telemetry {
     static let key = "sharesUsageStatistics"
     private static let endpoint = URL(string: "https://softfold-telemetry.reffwu.workers.dev/heartbeat")!
     private static var sending = false
+    /// Only the running app reports; a test host sharing its defaults does not.
+    private static var started = false
 
     static func start() {
+        started = true
         UserDefaults.standard.register(defaults: [key: true])
         send()
         Task {
@@ -17,7 +20,10 @@ enum Telemetry {
         }
     }
 
+    /// Somebody opened the notch to read it — TokNotch's one real use. At
+    /// most one write and one report a day, however often it opens.
     static func recordActivity() {
+        guard started, UserDefaults.standard.string(forKey: "lastActivityDay") != today else { return }
         UserDefaults.standard.set(today, forKey: "lastActivityDay")
         send()
     }

@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness の使用量を集計";
 "whatsNew.v131.tokscale.detail" = "2 リリース分の修正。Claude Code の 1 時間キャッシュ書き込みの料金計算や、Codex と CherryStudio の集計がより正確になりました。";
 "whatsNew.v131.tokscale.title" = "tokscale 4.18 を内蔵";
+"whatsNew.v133.headline" = "週ごとに、すべての Mac で";
+"whatsNew.v133.week.title" = "今週";
+"whatsNew.v133.week.detail" = "プランの 7 日周期と Codex の週上限に合わせたリング。";
+"whatsNew.v133.devices.title" = "すべての Mac";
+"whatsNew.v133.devices.detail" = "フォルダを共有すれば、各 Mac の使用量を合算。";
+"whatsNew.v133.detect.title" = "検出を強化";
+"whatsNew.v133.detect.detail" = "Devin を独立表示、App Store の Claude プランも検出。";
 "whatsNew.v132.headline" = "ノッチが固まらなくなりました";
 "whatsNew.v132.stuck.title" = "開いたまま固まらない";
 "whatsNew.v132.stuck.detail" = "ポインタを離すか別の場所をクリックすれば必ず閉じます。";

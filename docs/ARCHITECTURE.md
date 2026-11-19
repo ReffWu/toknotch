@@ -33,6 +33,10 @@ sign-in). Only the plan name and billing date, never the keys beside them.
 `BillingPeriod` handle the real billing window — a plan billed on the 3rd paid
 for the 3rd through the 2nd.
 
+`DeviceReport` and `DeviceSync` are the optional shared folder: each Mac
+writes its own per-day totals there and sums everyone else's into the two
+reports before the digest reads them. Nothing but aggregates crosses it.
+
 `RingBuilder` is the one place a number becomes words. Every string a person
 reads is decided here, in every language. Views below it draw formatted text
 and never do arithmetic.

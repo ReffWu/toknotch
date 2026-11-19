@@ -185,6 +185,13 @@
 "whatsNew.v131.headline" = "DeepSeek Harness wird mitgezählt";
 "whatsNew.v131.tokscale.detail" = "Zwei Releases voller Korrekturen, darunter die richtige Berechnung einstündiger Cache-Schreibvorgänge in Claude Code und genauere Zahlen für Codex und CherryStudio.";
 "whatsNew.v131.tokscale.title" = "Mit tokscale 4.18";
+"whatsNew.v133.headline" = "Pro Woche, auf jedem Mac";
+"whatsNew.v133.week.title" = "Diese Woche";
+"whatsNew.v133.week.detail" = "Ein Ring im 7‑Tage‑Takt deines Plans, mit Codex‑Wochenlimit.";
+"whatsNew.v133.devices.title" = "Alle deine Macs";
+"whatsNew.v133.devices.detail" = "Einen Ordner teilen, und die Nutzung aller Macs zählt zusammen.";
+"whatsNew.v133.detect.title" = "Bessere Erkennung";
+"whatsNew.v133.detect.detail" = "Devin als eigener Anbieter; App‑Store‑Claude‑Pläne werden erkannt.";
 "whatsNew.v132.headline" = "Keine hängende Notch mehr";
 "whatsNew.v132.stuck.title" = "Bleibt nie offen hängen";
 "whatsNew.v132.stuck.detail" = "Zeiger wegbewegen oder woanders klicken schließt sie jetzt immer.";
