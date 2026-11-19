@@ -154,29 +154,46 @@ enum TokscaleCLI {
                 let output = Pipe()
                 process.standardOutput = output
                 process.standardError = FileHandle.nullDevice
+                // Nothing to read from: a tool that stops to ask a question
+                // would otherwise wait on a terminal that is not there.
+                process.standardInput = FileHandle.nullDevice
 
+                let exited = DispatchSemaphore(value: 0)
+                process.terminationHandler = { _ in exited.signal() }
                 do {
                     try process.run()
                 } catch {
                     continuation.resume(throwing: Failure.notInstalled)
                     return
                 }
-                var timedOut = false
-                let deadline = DispatchWorkItem {
-                    if process.isRunning {
-                        timedOut = true
-                        process.terminate()
-                    }
-                }
-                DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + timeout,
-                                                               execute: deadline)
-                // Read before waiting: a report large enough to fill the pipe
-                // buffer deadlocks a process that is waited on first.
-                let data = output.fileHandleForReading.readDataToEndOfFile()
-                process.waitUntilExit()
-                deadline.cancel()
 
-                guard !timedOut else {
+                // Drained on its own thread, for two reasons. A report large
+                // enough to fill the pipe buffer deadlocks a process that is
+                // waited on before it is read. And end-of-file only arrives
+                // once *every* holder of the pipe has let go of it — so a
+                // helper tokscale started and left running would hold the read
+                // open forever, and with it the one refresh allowed at a time:
+                // the numbers would stop moving until TokNotch was restarted.
+                // Waiting on the exit with a deadline, and on the drain with a
+                // short one, means a read always ends.
+                let drained = DispatchSemaphore(value: 0)
+                let collected = Collected()
+                DispatchQueue.global(qos: .utility).async {
+                    collected.data = output.fileHandleForReading.readDataToEndOfFile()
+                    drained.signal()
+                }
+
+                guard exited.wait(timeout: .now() + timeout) == .success else {
+                    process.terminate()
+                    // A process that ignores SIGTERM gets the one it cannot.
+                    if exited.wait(timeout: .now() + 3) == .timedOut {
+                        kill(process.processIdentifier, SIGKILL)
+                        _ = exited.wait(timeout: .now() + 3)
+                    }
+                    continuation.resume(throwing: Failure.timedOut)
+                    return
+                }
+                guard drained.wait(timeout: .now() + 5) == .success else {
                     continuation.resume(throwing: Failure.timedOut)
                     return
                 }
@@ -184,10 +201,16 @@ enum TokscaleCLI {
                     continuation.resume(throwing: Failure.exited(code: process.terminationStatus))
                     return
                 }
-                continuation.resume(returning: data)
+                continuation.resume(returning: collected.data)
             }
         }
     }
+}
+
+/// What the drain thread read, handed back across the semaphore that says it
+/// has finished.
+private final class Collected: @unchecked Sendable {
+    var data = Data()
 }
 
 // MARK: - What the two commands return

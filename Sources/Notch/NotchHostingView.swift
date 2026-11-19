@@ -31,13 +31,18 @@ final class NotchContainerView: NSView {
 /// so everything outside the currently visible chrome has to pass clicks
 /// through to whatever is underneath.
 final class NotchHostingView<Content: View>: NSHostingView<Content> {
-    /// Regions that should receive events, in view coordinates. NSHostingView
-    /// is flipped, so these use a top-left origin.
-    var interactiveRects: [CGRect] = []
+    /// Whether a point, in view coordinates, is on something that takes events.
+    /// NSHostingView is flipped, so the point has a top-left origin.
+    ///
+    /// A question rather than a list of rects, because the honest answer is not
+    /// a union of boxes: the settings handle is two circles, and the bounding
+    /// box of the notch and the handle together took in a band the width of
+    /// the whole notch where nothing is drawn at all.
+    var isInteractive: (CGPoint) -> Bool = { _ in false }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         let local = convert(point, from: superview)
-        guard interactiveRects.contains(where: { $0.contains(local) }) else { return nil }
+        guard isInteractive(local) else { return nil }
         return super.hitTest(point)
     }
 
@@ -45,7 +50,7 @@ final class NotchHostingView<Content: View>: NSHostingView<Content> {
     /// of SwiftUI's, so AppKit would otherwise ask a view that has no menu.
     override func menu(for event: NSEvent) -> NSMenu? {
         let local = convert(event.locationInWindow, from: nil)
-        guard interactiveRects.contains(where: { $0.contains(local) }) else { return nil }
+        guard isInteractive(local) else { return nil }
         return menu
     }
 }

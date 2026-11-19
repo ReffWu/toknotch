@@ -55,7 +55,12 @@ serves all four. `SideNotchShape` draws the inverse-rounded corners that make it
 read as part of the bezel.
 
 `NotchPanel` is a non-activating `NSPanel` at status-bar level, click-through
-outside its own path. `NotchWindowController` re-anchors it when the screen
+outside its own path. What counts as "its own path" is
+`NotchViewModel.isLive(_:in:)`: the bar, or one of the settings handle's
+circles, each asked separately — never a union of rects, whose bounding box
+once held the notch open over an empty band. A click on the open bar pins it;
+a click anywhere else, the display sleeping or the session switching away
+lets the pin go. `NotchWindowController` re-anchors the panel when the screen
 arrangement changes. `NotchMotion` holds the springs.
 
 Every constant in `NotchLayout` is quoted in design-frame pixels via

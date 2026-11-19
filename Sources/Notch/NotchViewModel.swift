@@ -414,3 +414,54 @@ final class NotchViewModel: ObservableObject {
         )
     }
 }
+
+// MARK: - Hit regions
+
+/// What holds the notch open and takes the mouse, in panel coordinates with a
+/// top-left origin. Asked of the model, with the placement the panel actually
+/// has, so it can be checked against any screen without putting one up.
+extension NotchViewModel {
+    /// The notch body as it is drawn right now.
+    func notchRect(in place: NotchPlacement) -> CGRect {
+        place.rect(along: slack, across: 0, length: shapeLength, depth: notchDepth)
+    }
+
+    /// What wakes the folded notch. Generous *along* the edge — the resting
+    /// shape is a small target there — but only a hair deeper than the shape
+    /// itself, so the notch does not open while the pointer is still short of
+    /// it. Reaching far inward would swallow whatever sits just below the
+    /// bezel, which under the display's own notch is a browser's tab strip.
+    func pillRect(in place: NotchPlacement) -> CGRect {
+        // Whatever the resting shape is — the pill, or the display's own notch
+        // when it is joining one — the region that wakes it is that shape,
+        // widened along the edge because both are small targets there.
+        let length = max(restingLength, NotchLayout.pillHotZone)
+        return place.rect(
+            along: slack + (shapeLength - length) / 2,
+            across: 0,
+            length: length,
+            depth: restingDepth + NotchLayout.pillReachInward
+        )
+    }
+
+    /// On the settings handle's circles, not merely inside a box around them.
+    func isOverHandle(_ local: CGPoint, in place: NotchPlacement) -> Bool {
+        isOnOrbHandle(along: place.along(of: local) - slack, across: place.across(of: local))
+    }
+
+    /// Whether a point is on the notch: folded, its hot zone; open, the bar
+    /// **or** the handle, asked of each in turn.
+    ///
+    /// It used to be one rect, the union of the two — and a union of rects is
+    /// their bounding box. On a top notch joining the display's own, the handle
+    /// hangs below the bar's far corner, so that box took in a band under the
+    /// *entire* bar, about 47pt deep, where nothing is drawn. The pointer
+    /// resting there kept the notch open over an empty strip, and a click there
+    /// — on a browser's tabs, say — was swallowed and pinned the notch open
+    /// with no sign that it had, which from outside looks exactly like a notch
+    /// that is stuck until the app is restarted.
+    func isLive(_ local: CGPoint, in place: NotchPlacement) -> Bool {
+        guard isExpanded else { return pillRect(in: place).contains(local) }
+        return notchRect(in: place).contains(local) || isOverHandle(local, in: place)
+    }
+}

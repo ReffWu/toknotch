@@ -27,9 +27,19 @@ final class NotchWindowController {
     private var hostingView: NotchHostingView<NotchRootView>?
     private var cancellables = Set<AnyCancellable>()
     private var mouseMonitors: [Any] = []
+    private var systemObservers: [NSObjectProtocol] = []
     private var clearHoverWork: DispatchWorkItem?
     private var clockTimer: Timer?
     private var cursorTimer: Timer?
+    /// Set by `stop()`, and final. A stopped controller must never put a panel
+    /// back up: one that did would have nothing following the pointer, and a
+    /// notch nobody is tracking is a notch that never folds.
+    private var isStopped = false
+    /// When hovering last opened the notch.
+    private var openedAt: Date?
+    /// A click this soon after the notch opened under the pointer was aimed at
+    /// whatever was there a moment before, not at the notch.
+    private static let pinSettle: TimeInterval = 0.35
 
     private(set) var targetScreen: NSScreen?
     private(set) var displayID: CGDirectDisplayID?
@@ -68,6 +78,7 @@ final class NotchWindowController {
     func show() {
         relocate()
         startWatchingCursor()
+        startWatchingSystem()
         startClock()
 
         NotificationCenter.default.publisher(
@@ -78,9 +89,12 @@ final class NotchWindowController {
         }
         .store(in: &cancellables)
 
+        // On the next turn: `@Published` fires in `willSet`, so answering here
+        // would be answering for the card that is just going away.
         model.$hoveredIndex
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                MainActor.assumeIsolated { self?.updateInteractiveRects() }
+                MainActor.assumeIsolated { self?.updateMouseAcceptance() }
             }
             .store(in: &cancellables)
 
@@ -108,24 +122,36 @@ final class NotchWindowController {
         model.isAlwaysOn = true
         model.isExpanded = true
         model.hoveredIndex = index
-        updateInteractiveRects()
+        updateMouseAcceptance()
     }
 
     func stop() {
+        isStopped = true
         setPointing(false)
         foldWork?.cancel()
+        foldWork = nil
+        clearHoverWork?.cancel()
+        clearHoverWork = nil
+        edgeChange += 1   // a crossing still in flight must not land
         cursorTimer?.invalidate()
         cursorTimer = nil
         clockTimer?.invalidate()
+        clockTimer = nil
         mouseMonitors.forEach(NSEvent.removeMonitor)
         mouseMonitors.removeAll()
+        let workspace = NSWorkspace.shared.notificationCenter
+        systemObservers.forEach(workspace.removeObserver)
+        systemObservers.removeAll()
+        cancellables.removeAll()
         panel?.close()
         panel = nil
+        hostingView = nil
     }
 
     // MARK: - Placement
 
     func relocate(cellCount: Int? = nil, screen: NSScreen? = nil) {
+        guard !isStopped else { return }
         if let screen {
             self.targetScreen = screen
             self.displayID = screen.displayID
@@ -141,6 +167,10 @@ final class NotchWindowController {
         } else {
             let panel = NotchPanel(contentRect: frame)
             let hosting = NotchHostingView(rootView: NotchRootView(model: model))
+            // The panel's size is ours alone (see below), so SwiftUI is given
+            // no constraints to argue with it through either.
+            hosting.sizingOptions = []
+            hosting.isInteractive = { [weak self] in self?.isInteractive($0) ?? false }
             panel.contextMenuProvider = { [weak self] in self?.contextMenu() }
             panel.onClick = { [weak self] in self?.handleClick() }
 
@@ -174,7 +204,7 @@ final class NotchWindowController {
         if let panel {
             Log.usage.debug("panel \(NSStringFromRect(panel.frame), privacy: .public) on screen \(NSStringFromRect(screen.frame), privacy: .public)")
         }
-        updateInteractiveRects()
+        updateMouseAcceptance()
     }
 
     // MARK: - Hit regions
@@ -186,61 +216,33 @@ final class NotchWindowController {
     }
 
     /// The notch itself, in panel coordinates with a top-left origin.
-    private var notchRect: CGRect {
-        placement.rect(
-            along: model.slack,
-            across: 0,
-            length: model.shapeLength,
-            depth: model.notchDepth
-        )
-    }
+    private var notchRect: CGRect { model.notchRect(in: placement) }
 
-    /// What wakes the folded notch. Generous *along* the edge — the resting
-    /// shape is a small target there — but only a hair deeper than the shape
-    /// itself, so the notch does not open while the pointer is still short of
-    /// it. Reaching far inward would swallow whatever sits just below the
-    /// bezel, which under the display's own notch is a browser's tab strip.
-    private var pillRect: CGRect {
-        // Whatever the resting shape is — the pill, or the display's own notch
-        // when it is joining one — the region that wakes it is that shape,
-        // widened along the edge because both are small targets there.
-        let length = max(model.restingLength, NotchLayout.pillHotZone)
-        return placement.rect(
-            along: model.slack + (model.shapeLength - length) / 2,
-            across: 0,
-            length: length,
-            depth: model.restingDepth + NotchLayout.pillReachInward
-        )
-    }
-
-    /// The handle's bounding box, for deciding whether the panel takes events
-    /// at all. Whether a point is actually *on* the handle is a finer question
-    /// than a box can answer — see `isOverHandle`.
-    private var handleRect: CGRect {
-        let side = NotchLayout.orbHotZone
-        let boxes = model.orbHandlePoints.map { point -> CGRect in
-            let centre = placement.point(along: model.slack + point.x, across: point.y)
-            return CGRect(x: centre.x - side / 2, y: centre.y - side / 2,
-                          width: side, height: side)
-        }
-        return boxes.dropFirst().reduce(boxes.first ?? .zero) { $0.union($1) }
-    }
-
-    /// Whether the pointer is on the handle itself rather than merely inside
-    /// the box that contains it.
+    /// Whether the pointer is on the settings handle — its circles, not a box
+    /// around them.
     private func isOverHandle(_ local: CGPoint) -> Bool {
-        model.isOnOrbHandle(along: placement.along(of: local) - model.slack,
-                            across: placement.across(of: local))
+        model.isOverHandle(local, in: placement)
     }
 
-    /// The only region that takes the mouse. Everything else in the panel is a
-    /// hole — which matters far more folded than open, since the point of
-    /// folding away is to stop being in the way.
-    private var liveRect: CGRect {
-        guard model.isExpanded else { return pillRect }
-        // The orb hangs below the shape, so the live region is both together.
-        return notchRect.union(handleRect)
+    /// Whether a point is on the notch itself. See `NotchViewModel.isLive`.
+    private func isLive(_ local: CGPoint) -> Bool { model.isLive(local, in: placement) }
+
+    /// Whether a point takes the mouse: the notch, or the card it is showing.
+    private func isInteractive(_ local: CGPoint) -> Bool {
+        if isLive(local) { return true }
+        guard model.isExpanded, let index = model.hoveredIndex,
+              let card = tooltipRect(index: index) else { return false }
+        return card.contains(local)
     }
+
+    /// The pointer, wherever it is, in this panel's coordinates.
+    private var pointer: CGPoint? {
+        panel.map { localCursor(in: $0.frame) }
+    }
+
+    /// For tests: whether the real pointer is on this notch right now, so a
+    /// test that depends on it being elsewhere can tell when it is not.
+    var isPointerOnNotchForTesting: Bool { pointer.map(isInteractive) ?? false }
 
     /// The card, its tail, and the gap between the tail and the notch — so
     /// sliding the pointer off the notch and onto the card never leaves it.
@@ -261,15 +263,11 @@ final class NotchWindowController {
         )
     }
 
-    private func updateInteractiveRects() {
-        var rects = [liveRect]
-        if model.isExpanded, let index = model.hoveredIndex, let card = tooltipRect(index: index) {
-            rects.append(card)
-        }
-        hostingView?.interactiveRects = rects
-        if let panel {
-            panel.ignoresMouseEvents = !rects.contains { $0.contains(localCursor(in: panel.frame)) }
-        }
+    /// Takes the mouse only while the pointer is on something. The hosting view
+    /// asks `isInteractive` itself, live, so there is nothing to hand it here.
+    private func updateMouseAcceptance() {
+        guard let panel else { return }
+        panel.ignoresMouseEvents = !isInteractive(localCursor(in: panel.frame))
     }
 
     // MARK: - Cursor tracking
@@ -307,6 +305,74 @@ final class NotchWindowController {
         }) {
             mouseMonitors.append(local)
         }
+
+        // A click anywhere else lets go of a pin, the way a click outside
+        // closes any popover on the Mac. Without this a pin was released only
+        // by clicking the open notch again in a spot that is neither a ring,
+        // the card nor the handle — a target nobody can be expected to find,
+        // so a pin made by accident was, as far as anyone could tell, forever.
+        let clicks: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        if let global = NSEvent.addGlobalMonitorForEvents(matching: clicks, handler: { [weak self] _ in
+            MainActor.assumeIsolated { self?.clickedElsewhere() }
+        }) {
+            mouseMonitors.append(global)
+        }
+        // Our own other windows — Settings, the menu bar panel, another
+        // display's notch — are "elsewhere" too. This panel's own clicks are
+        // `handleClick`'s.
+        if let local = NSEvent.addLocalMonitorForEvents(matching: clicks, handler: { [weak self] event in
+            MainActor.assumeIsolated {
+                if let self, event.window !== self.panel { self.clickedElsewhere() }
+            }
+            return event
+        }) {
+            mouseMonitors.append(local)
+        }
+    }
+
+    /// Moments when the pointer's relation to the notch can change with no
+    /// event to say so — a Space sliding in underneath it, the display waking,
+    /// the session coming back — are asked about straight away rather than
+    /// left for the next mouse movement. Going to sleep or to the login window
+    /// lets go of a pin: nobody comes back expecting a notch they held open
+    /// before lunch to still be in the way.
+    private func startWatchingSystem() {
+        let workspace = NSWorkspace.shared.notificationCenter
+        let recheck: [Notification.Name] = [
+            NSWorkspace.activeSpaceDidChangeNotification,
+            NSWorkspace.screensDidWakeNotification,
+            NSWorkspace.sessionDidBecomeActiveNotification,
+        ]
+        for name in recheck {
+            systemObservers.append(workspace.addObserver(forName: name, object: nil, queue: .main) {
+                [weak self] _ in
+                MainActor.assumeIsolated { self?.cursorMoved() }
+            })
+        }
+        let away: [Notification.Name] = [
+            NSWorkspace.screensDidSleepNotification,
+            NSWorkspace.sessionDidResignActiveNotification,
+        ]
+        for name in away {
+            systemObservers.append(workspace.addObserver(forName: name, object: nil, queue: .main) {
+                [weak self] _ in
+                MainActor.assumeIsolated { self?.releasePin() }
+            })
+        }
+    }
+
+    /// A click that did not land on this notch or its card.
+    private func clickedElsewhere() {
+        guard model.isPinned, let pointer, !isInteractive(pointer) else { return }
+        releasePin()
+    }
+
+    /// Lets go of a pin made by hand and folds, as hovering would once the
+    /// pointer is away. Settings' Always show is not a pin and is untouched.
+    private func releasePin() {
+        guard model.isPinned else { return }
+        model.isPinned = false
+        cursorMoved()
     }
 
     private func localCursor(in frame: CGRect) -> CGPoint {
@@ -325,10 +391,7 @@ final class NotchWindowController {
     private func cursorMoved() {
         guard let panel else { return }
         let local = localCursor(in: panel.frame)
-        let overTooltip = model.hoveredIndex
-            .flatMap(tooltipRect(index:))
-            .map { model.isExpanded && $0.contains(local) } ?? false
-        setExpanded(liveRect.contains(local) || overTooltip)
+        setExpanded(isInteractive(local))
 
         var target: Int?
         if model.isExpanded, notchRect.contains(local) {
@@ -367,7 +430,7 @@ final class NotchWindowController {
             DispatchQueue.main.asyncAfter(deadline: .now() + hoverGrace, execute: work)
         }
 
-        updateInteractiveRects()
+        updateMouseAcceptance()
     }
 
     /// Opens on contact, folds shut after a pause — unless it has been pinned
@@ -377,6 +440,7 @@ final class NotchWindowController {
             foldWork?.cancel()
             foldWork = nil
             guard !model.isExpanded else { return }
+            openedAt = Date()
             withAnimation(NotchMotion.unfold) { model.isExpanded = true }
             return
         }
@@ -387,12 +451,15 @@ final class NotchWindowController {
                 guard let self else { return }
                 self.foldWork = nil
                 guard !self.model.staysOpen else { return }
+                // Asked again rather than trusted: the pointer may have come
+                // back in the grace period without an event to say so.
+                if let pointer = self.pointer, self.isInteractive(pointer) { return }
                 withAnimation(NotchMotion.unfold) {
                     self.model.isExpanded = false
                     self.model.hoveredIndex = nil
                 }
                 self.setPointing(false)
-                self.updateInteractiveRects()
+                self.updateMouseAcceptance()
             }
         }
         foldWork = work
@@ -447,14 +514,22 @@ final class NotchWindowController {
             model.toggleExpansion()
             return
         }
-        if notchRect.contains(local),
-           let index = cellIndex(along: placement.along(of: local)),
+        // Only the bar itself is a target from here on. A click beside the
+        // handle's circles, or anywhere else the panel happens to be taking the
+        // mouse, is not a request for anything.
+        guard notchRect.contains(local) else { return }
+        if let index = cellIndex(along: placement.along(of: local)),
            model.rings.indices.contains(index) {
             // Every ring is a view of the same local read, so clicking any of
             // them asks for that read again rather than for one ring's share.
             onRefresh?()
             return
         }
+        // Hover opens the notch the instant the pointer arrives, so a click
+        // aimed at whatever was under it a moment ago lands on an open notch.
+        // That is the case the folded-notch guard above was written for, and
+        // it never reached it.
+        if let openedAt, Date().timeIntervalSince(openedAt) < Self.pinSettle { return }
         togglePinned()
     }
 
@@ -471,14 +546,20 @@ final class NotchWindowController {
     /// like a bug rather than a choice — hence the crossing rather than a
     /// slide.
     func apply(edge: NotchEdge) {
-        guard model.edge != edge else { return }
+        // Against where the notch is *going*, not where it still is: going
+        // right → top → right inside one crossing otherwise read the second
+        // right as "already there", skipped it, and let the top move land —
+        // leaving the notch on an edge Settings no longer said.
+        guard (pendingEdge ?? model.edge) != edge else { return }
         guard let panel else {   // before there is anything on screen to fade
             model.edge = edge
             relocate()
             return
         }
 
-        let wasOpen = model.isExpanded
+        let wasOpen = model.isExpanded || pendingWasOpen
+        pendingWasOpen = wasOpen
+        pendingEdge = edge
         model.hoveredIndex = nil
         setPointing(false)
 
@@ -497,21 +578,23 @@ final class NotchWindowController {
 
                 // Land folded, and at full strength: the opening *is* the
                 // animation, and fading in underneath it would be two at once.
+                self.pendingEdge = nil
+                self.pendingWasOpen = false
                 self.model.edge = edge
                 self.model.isExpanded = false
                 self.relocate()
-                self.updateInteractiveRects()
+                self.updateMouseAcceptance()
                 panel.alphaValue = 1
 
                 guard wasOpen else { return }
                 // A beat, then open. Not decoration: setting it shut and open
                 // again inside one turn lets SwiftUI coalesce the pair, and the
                 // notch arrives at full size having animated nothing.
-                DispatchQueue.main.asyncAfter(deadline: .now() + Self.arrivalBeat) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + Self.arrivalBeat) { [weak self] in
                     MainActor.assumeIsolated {
-                        guard change == self.edgeChange else { return }
+                        guard let self, change == self.edgeChange else { return }
                         withAnimation(NotchMotion.unfold) { self.model.isExpanded = true }
-                        self.updateInteractiveRects()
+                        self.updateMouseAcceptance()
                     }
                 }
             }
@@ -524,6 +607,10 @@ final class NotchWindowController {
     /// The pause between landing and opening.
     private static let arrivalBeat: TimeInterval = 0.05
     private var edgeChange = 0
+    /// The edge a crossing in flight is heading for, and whether the notch
+    /// was open when the first of a run of crossings began.
+    private var pendingEdge: NotchEdge?
+    private var pendingWasOpen = false
 
     func apply(_ visibility: NotchVisibility) {
         switch visibility {
@@ -549,7 +636,7 @@ final class NotchWindowController {
             }
         }
         setPointing(false)
-        updateInteractiveRects()
+        updateMouseAcceptance()
     }
 
     /// Clicking the open notch pins it, so it stays put while you read it.
@@ -565,7 +652,7 @@ final class NotchWindowController {
             foldWork = nil
             withAnimation(NotchMotion.unfold) { model.isExpanded = true }
         }
-        updateInteractiveRects()
+        updateMouseAcceptance()
     }
 
     private func cellIndex(along: CGFloat) -> Int? {
